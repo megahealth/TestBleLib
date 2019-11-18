@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/Toolbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        android:id="@+id/tv_device_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:listSeparatorTextViewStyle"
+        android:text="@string/no_conn" />
+
+    <FrameLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/tv_clear"
+            android:visibility="invisible"
+            android:text="X"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="10dp"
+            style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
+    <io.zjw.testblelib.MyScrollView
+        android:id="@+id/sv_scrollView"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="0dp">
+
+                <LinearLayout
+                    android:id="@+id/main_content"
+                    android:visibility="invisible"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.GridLayout
+                        app:rowCount="2"
+                        app:columnCount="2"
+                        app:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Name:"
+                            app:layout_columnWeight="1"
+                            android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/tv_name"
+                            android:textSize="20sp"
+                            app:layout_columnWeight="4" />
+
+                        <TextView
+                            android:text="Mac:"
+                            app:layout_columnWeight="1"
+                            android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/tv_mac"
+                            android:textSize="20sp"
+                            app:layout_columnWeight="4" />
+
+                        <TextView
+                            android:text="SN:"
+                            app:layout_columnWeight="1"
+                            android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/tv_sn"
+                            android:textSize="20sp"
+                            app:layout_columnWeight="4" />
+
+                        <TextView
+                            android:text="Version:"
+                            app:layout_columnWeight="1"
+                            android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/tv_fw_version"
+                            android:textSize="20sp"
+                            app:layout_columnWeight="4" />
+                    </android.support.v7.widget.GridLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#000000" />
+
+                    <TextView
+                        android:id="@+id/tv_other_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.v7.widget.GridLayout
+                        app:columnCount="3"
+                        app:rowCount="1"
+                        app:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+                            <TextView
+                                android:text="@string/label_battery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_batt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+                            <TextView
+                                android:text="@string/label_batt_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_batt_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+                            <TextView
+                                android:text="rssi: "
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_rssi"
+                                android:layout_height="wrap_content"
+                                android:layout_width="wrap_content" />
+                        </LinearLayout>
+
+                    </android.support.v7.widget.GridLayout>
+
+                    <android.support.v7.widget.GridLayout
+                        app:columnCount="3"
+                        app:rowCount="1"
+                        app:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+
+                            <TextView
+                                android:text="SpO2: "
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_spo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+
+                            <TextView
+                                android:text="Hr: "
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_hr"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            app:layout_columnWeight="1" >
+
+                            <TextView
+                                android:text="@string/label_live_desc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_live_desc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_smile"
+                                android:text=" ●"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                    </android.support.v7.widget.GridLayout>
+
+                    <TextView
+                        android:id="@+id/tv_v2_live"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="@string/label_sync_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/tv_sync_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#000000" />
+
+                <HorizontalScrollView
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/btn_choose_file"
+                            android:text="@string/label_choose_file"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/btn_start_dfu"
+                            android:text="@string/label_start_dfu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/btn_open_global_live"
+                            android:text="@string/label_open_global_live_pipe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
+                            android:text="@string/label_open_live"
+                            android:textColor="@color/colorAccent"
+                            android:id="@+id/btn_live_on"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+<!--                        <Button-->
+<!--                            android:text="@string/label_close_live"-->
+<!--                            android:id="@+id/btn_live_off"-->
+<!--                            android:textColor="@color/colorPrimary"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content" />-->
+
+                        <Button
+                            android:text="@string/label_enable_monitor"
+                            android:id="@+id/btn_monitor_on"
+                            android:textColor="@color/colorAccent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
+                            android:text="@string/label_enable_sport"
+                            android:id="@+id/btn_sport_on"
+                            android:textColor="@color/colorAccent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
+                            android:text="@string/label_disable_monitor"
+                            android:id="@+id/btn_monitor_off"
+                            android:textColor="@color/colorAccent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
+                            android:text="@string/label_sync"
+                            android:id="@+id/btn_sync_data"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:text="@string/label_parse"
+                            android:id="@+id/btn_parse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
+                            android:text="@string/label_parse_sport"
+                            android:id="@+id/btn_parse_sport"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/tv_dfu_path"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_dfu_progress"
+                    android:text="@string/dfu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </io.zjw.testblelib.MyScrollView>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <Button
+            android:text="scan"
+            android:id="@+id/btn_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
