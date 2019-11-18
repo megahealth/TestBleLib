@@ -323,14 +323,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onBatteryChanged(int value, int status) {
             runOnUiThread(() -> {
                 // 请使用MegaBleBattery来判断电池状态，充电中可以收数据，但不能做监测相关动作
+                // 请随时响应电池状态改变
+                // normal(0, "normal"),
+                // charging(1, "charging"),
+                // full(2, "full"),
+                // lowPower(3, "lowPower");
                 tvBatt.setText(String.valueOf(value));
                 tvBattStatus.setText(MegaBleBattery.getDescription(status));
                 if (status == MegaBleBattery.charging.ordinal()) {
-                    // normal(0, "normal"),
-                    // charging(1, "charging"),
-                    // full(2, "full"),
-                    // lowPower(3, "lowPower");
-                    // 在充电中，无法进行监测相关操作，但可收数据！！！请随时响应电池状态改变
+                    // ...
                 }
             });
         }
