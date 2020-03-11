@@ -1,0 +1,816 @@
+package io.zjw.testblelib
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothAdapter.LeScanCallback
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Message
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.PermissionChecker
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
+import com.leon.lfilepickerlibrary.LFilePicker
+import com.leon.lfilepickerlibrary.utils.Constant
+import io.mega.megablelib.*
+import io.mega.megablelib.enums.MegaBleBattery
+import io.mega.megablelib.model.MegaBleDevice
+import io.mega.megablelib.model.bean.*
+import io.mega.megableparse.ParsedPrBean
+import io.mega.megableparse.ParsedSpoPrBean
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.zjw.testblelib.MainActivity
+import io.zjw.testblelib.RequestPermissionHandler.RequestPermissionListener
+import io.zjw.testblelib.dfu.DfuService
+import kotlinx.android.synthetic.main.activity_main.*
+import no.nordicsemi.android.dfu.DfuProgressListener
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
+import no.nordicsemi.android.dfu.DfuServiceInitiator
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.TimeUnit
+
+class MainActivity : AppCompatActivity(), View.OnClickListener {
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val SCAN_PERIOD: Long = 5
+        private const val EVENT_CONNECTED = 10000
+        private const val EVENT_DISCONNECTED = 10001
+        private const val REQUEST_ENABLE_BT = 10002
+        private const val REQUESTCODE_CHOOSE_FILE = 20000
+        private const val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124
+        private const val REQUEST_ACCESS_COARSE_LOCATION = 2
+    }
+
+    /**
+     * 固件升级 dfu 状态监听
+     */
+    private var mDfuProgressListener: DfuProgressListener = object : DfuProgressListenerAdapter() {
+        override fun onProgressChanged(deviceAddress: String, percent: Int, speed: Float, avgSpeed: Float, currentPart: Int, partsTotal: Int) {
+            super.onProgressChanged(deviceAddress, percent, speed, avgSpeed, currentPart, partsTotal)
+            tv_dfu_progress!!.text = percent.toString()
+        }
+
+        override fun onDfuCompleted(deviceAddress: String) {
+            Log.d(TAG, "dfu listener, onDfuCompleted")
+            // dfu 完成
+            // 根据实际情况处理dfu完成后的业务。例如：重连
+        }
+
+        override fun onDfuProcessStarted(deviceAddress: String) {
+            Log.d(TAG, "dfu listener, onDfuProcessStarted")
+        }
+
+        override fun onError(deviceAddress: String, error: Int, errorType: Int, message: String) {
+            Log.d(TAG, "dfu listener, onDfuError")
+        }
+
+        override fun onDeviceConnected(deviceAddress: String) {
+            Log.d(TAG, "dfu listener, onDeviceConnected")
+        }
+
+        override fun onDeviceDisconnected(deviceAddress: String) {
+            Log.d(TAG, "dfu listener, onDeviceDisconnected")
+        }
+    }
+    private val handler = Handler(Handler.Callback { msg: Message ->
+        when (msg.what) {
+            EVENT_CONNECTED -> {
+                val bundle = msg.data
+                val device = bundle.getSerializable("device") as MegaBleDevice
+                setMegaDeviceInfo(device)
+            }
+            EVENT_DISCONNECTED -> clearMegaDeviceInfo()
+            else -> {
+            }
+        }
+        true
+    })
+    // ui
+//    private var btnScan: Button? = null
+//    private var mRecyclerView: RecyclerView? = null
+    private var mScannedAdapter: ScannedAdapter? = null
+    //    private var mainContent: LinearLayout? = null
+//    private var tvStatus: TextView? = null
+//    private var tvName: TextView? = null
+//    private var tvMac: TextView? = null
+//    private var tvSN: TextView? = null
+//    private var tvVersion: TextView? = null
+//    private var tvOtherInfo: TextView? = null
+//    private var btnChooseFile: Button? = null
+//    private var tvDfuPath: TextView? = null
+//    private var btnStartDfu: Button? = null
+//    private var tvBatt: TextView? = null
+//    private var tvBattStatus: TextView? = null
+//    private var tvRssi: TextView? = null
+//    private var tvAppVersionName: TextView? = null
+//    private var btnMonitorOn: Button? = null
+//    private var btnSportOn: Button? = null
+//    private var btnMonitorOff: Button? = null // 血氧监测，运动监测，实时监测的关闭都是同一个
+//    private var btnSyncData: Button? = null
+//    private var tvSpo: TextView? = null
+//    private var tvHr: TextView? = null
+//    private var tvLiveDesc: TextView? = null
+//    private var btnLiveOn: Button? = null
+//    private var btnOpenGlobalLive: Button? = null
+//    private var tvSyncProgress: TextView? = null
+//    private var tvSmile: TextView? = null
+//    private var etToken: EditText? = null
+//    private var tvClear: TextView? = null
+//    private var tvV2Live: TextView? = null
+//    private var btnParse: Button? = null
+//    private var btnParseSport: Button? = null
+//    private var tvDfuProgress: TextView? = null
+    // permission checker
+    private var mRequestPermissionHandler: RequestPermissionHandler? = null
+    // ble
+    private var mBluetoothAdapter: BluetoothAdapter? = null
+    private val mScannedDevices: MutableList<ScannedDevice> = ArrayList()
+    // sdk ble
+    private var mDfuPath: String? = null
+    private var megaBleClient: MegaBleClient? = null
+    private var megaBleDevice: MegaBleDevice? = null
+    private val mLeScanCallback = LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
+        if (device.name == null) return@LeScanCallback
+        // 过滤掉了设备名称中不含ring的设备，请看情况使用
+        if (!device.name.toLowerCase().contains("ring")) return@LeScanCallback
+        // 戒指设备广播scanRecord的长度为62
+        if (scanRecord.size < 62) return@LeScanCallback
+        // 解析广播事例，先解析3代戒指广播
+        val advOnly = MegaAdvParse.parse(scanRecord)
+        if (advOnly == null) { // 不行了再解析2代戒指广播
+            val advEntity = MegaBleClient.parseScanRecord(device, scanRecord)
+            if (advEntity != null) Log.d(TAG, advEntity.toString())
+        } else {
+            Log.d(TAG, advOnly.toString())
+        }
+        val scannedDevice = ScannedDevice(device.name, device.address, rssi)
+        Log.d(TAG, "device: $scannedDevice")
+        val i = mScannedDevices.indexOf(scannedDevice)
+        if (i == -1) {
+            mScannedDevices.add(scannedDevice)
+        } else {
+            mScannedDevices[i].rssi = rssi
+        }
+    }
+    private val megaBleCallback: MegaBleCallback = object : MegaBleCallback() {
+        override fun onConnectionStateChange(connected: Boolean, device: MegaBleDevice) {
+            Log.d(TAG, "onConnectionStateChange: $connected")
+            if (connected) {
+                megaBleDevice = device
+                sendToHandler(device)
+            } else {
+                handler.sendEmptyMessage(EVENT_DISCONNECTED)
+            }
+        }
+
+        override fun onDfuBleConnectionChange(connected: Boolean, device: MegaBleDevice) {
+            Log.d(TAG, "onDfuBleConnectionChange: $connected")
+            if (connected) {
+                megaBleDevice = device // 务必别忘了这一步
+            }
+        }
+
+        override fun onError(code: Int) {
+            Log.e(TAG, "Error code: $code")
+        }
+
+        override fun onStart() {
+            val userId = "5837288dc59e0d00577c5f9a" // 12 2 digit hex strings, total 24 length
+            //            String userId = "313736313031373332323131"; // 12 2 digit hex strings, total 24 length
+//            String mac = "BC:E5:9F:48:81:3F";
+//            megaBleClient.startWithoutToken(userId, mac);
+//            String random = "129,57,79,122,227,76";
+//            megaBleClient.startWithToken(userId, random);
+            val token = UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
+            runOnUiThread { et_token!!.setText(token) }
+            if (token == null) {
+                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
+            } else {
+                megaBleClient!!.startWithToken(userId, token)
+            }
+        }
+
+        override fun onDeviceInfoReceived(device: MegaBleDevice) {
+            // 提前获取电池电量、监测模式；在此处调用，可以在idle之前获得
+            // 方便在idle后判断该做什么事
+            megaBleClient!!.getV2Batt()
+            megaBleClient!!.getV2Mode()
+            Log.d(TAG, "onDeviceInfoReceived $device")
+            sendToHandler(device)
+        }
+
+        // default setting. Use this default value is ok.
+        // 强制设置用户身体信息，请使用默认值即可，不用更改
+        override fun onSetUserInfo() {
+            megaBleClient!!.setUserInfo(25.toByte(), 1.toByte(), 170.toByte(), 60.toByte(), 0.toByte())
+        }
+
+        override fun onIdle() {
+            // 设备闲时，可开启实时、开启长时监控、收监控数据。
+            // 长时监控数据会被记录到戒指内部，实时数据不会。
+            // 长时监控开启后，可断开蓝牙连接，戒指将自动保存心率血氧数据，以便后续手机连上收取。默认每次连上会同步过来。
+            // 绑定token有变动时，用户信息，监测数据将被清空。
+            // 建议默认开启全局实时通道，无需关闭，重复开启无影响
+            // suggested setting, repeated call is ok.
+            megaBleClient!!.toggleLive(true)
+        }
+
+        // default setting
+        override fun onEnsureBindWhenTokenNotMatch() {
+            megaBleClient!!.ensureBind(true)
+        }
+
+        override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
+            when (live.status) {
+                MegaBleConst.STATUS_LIVE_VALID -> {
+                    updateV2Live(live)
+                }
+                MegaBleConst.STATUS_LIVE_PREPARING -> {
+                    updateV2Live("$live(值准备中)")
+                }
+                MegaBleConst.STATUS_LIVE_INVALID -> {
+                    updateV2Live("$live(值无效)")
+                }
+            }
+        }
+
+        // 实时血氧仪模式的回调
+        override fun onV2LiveSpoMonitor(live: MegaV2LiveSpoMonitor) {
+            when (live.status) {
+                MegaBleConst.STATUS_LIVE_VALID -> {
+                    updateV2Live(live)
+                }
+                MegaBleConst.STATUS_LIVE_PREPARING -> {
+                    updateV2Live("$live(值准备中)")
+                }
+                MegaBleConst.STATUS_LIVE_INVALID -> {
+                    updateV2Live("$live(值无效)")
+                }
+            }
+        }
+
+        override fun onV2LiveSport(live: MegaV2LiveSport) {
+            when (live.status) {
+                MegaBleConst.STATUS_LIVE_VALID -> {
+                    updateV2Live(live)
+                }
+                MegaBleConst.STATUS_LIVE_PREPARING -> {
+                    updateV2Live("$live(值准备中)")
+                }
+                MegaBleConst.STATUS_LIVE_INVALID -> {
+                    updateV2Live("$live(值无效)")
+                }
+            }
+        }
+
+        // 请提示用户：敲击、晃动戒指
+        // show user a window to shaking, in order to bind the ring
+        // if token is matched (bind success), this step will be skipped
+        override fun onKnockDevice() {
+            Log.d(TAG, "onKnockDevice!!!")
+            runOnUiThread {
+                val alertDialog = AlertDialog.Builder(this@MainActivity).create()
+                alertDialog.setTitle("Hint")
+                alertDialog.setMessage("Please shake device")
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK"
+                ) { dialog: DialogInterface, which: Int -> dialog.dismiss() }
+                alertDialog.show()
+            }
+        }
+
+        // 绑定成功得到token, 下次用token验证匹配无需再敲击
+        // get token when bind success, next time start with this token
+        override fun onTokenReceived(token: String) {
+            Log.d(TAG, "onTokenReceived: $token")
+            runOnUiThread { et_token!!.setText(token) }
+            UtilsSharedPreference.put(this@MainActivity, UtilsSharedPreference.KEY_TOKEN, token)
+        }
+
+        override fun onRssiReceived(rssi: Int) {
+            Log.d(TAG, "onRssiReceived: $rssi")
+            runOnUiThread { tv_rssi!!.text = rssi.toString() }
+        }
+
+        // 重要
+        override fun onBatteryChanged(value: Int, status: Int) {
+            runOnUiThread {
+                // 请使用MegaBleBattery来判断电池状态，充电中可以收数据，但不能做监测相关动作
+                // 请随时响应电池状态改变
+                // normal(0, "normal"),
+                // charging(1, "charging"),
+                // full(2, "full"),
+                // lowPower(3, "lowPower");
+                // error(4, "error");
+                // shutdown(5, "shutdown");
+                tv_batt!!.text = value.toString()
+                tv_batt_status!!.text = MegaBleBattery.getDescription(status)
+                when (status) {
+                    MegaBleBattery.charging.ordinal -> { // todo
+                    }
+                    MegaBleBattery.normal.ordinal -> { // todo
+                    }
+                    MegaBleBattery.lowPower.ordinal -> { // todo
+                    }
+                    MegaBleBattery.full.ordinal -> { // todo
+                    }
+                }
+            }
+        }
+
+        override fun onV2ModeReceived(mode: MegaV2Mode) {
+            when (mode.mode) {
+                MegaBleConst.MODE_MONITOR -> {
+                    // 正处于血氧长时监测模式
+                }
+                MegaBleConst.MODE_LIVE -> {
+                    // 正处于监测实时监测模式
+                }
+                MegaBleConst.MODE_SPORT -> {
+                    // 正处于运动模式
+                }
+            }
+        }
+
+        /**
+         * 固件升级
+         * dfu 库使用参考
+         * https://github.com/NordicSemiconductor/Android-DFU-Library/tree/release/documentation
+         */
+        override fun onReadyToDfu() {
+            // if不写的话，在高版本的系统上可能会有问题
+            // 另行定义方法，接收mac, name, path也可；发送消息给升级页面也可。这里就直接写在回调里了
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DfuServiceInitiator.createDfuNotificationChannel(this@MainActivity)
+            }
+            val starter = DfuServiceInitiator(megaBleDevice!!.mac)
+                    .setDeviceName(megaBleDevice!!.name) // onDfuBleConnectionChange里device赋值的原因，这里要用
+                    .setKeepBond(false)
+                    .setZip(mDfuPath!!)
+            starter.setDisableNotification(true) // 禁止notification的交互
+            starter.start(this@MainActivity, DfuService::class.java)
+        }
+
+        override fun onSyncingDataProgress(progress: Int) {
+            Log.d(TAG, "onSyncingDataProgress: $progress")
+            runOnUiThread { tv_sync_progress.text = progress.toString() }
+        }
+
+        override fun onSyncMonitorDataComplete(bytes: ByteArray, dataStopType: Int, dataType: Int, uid: String) {
+            Log.d(TAG, "onSyncMonitorDataComplete: " + bytes.contentToString())
+            Log.d(TAG, "uid: $uid")
+            Log.d(TAG, "dataType: $dataType")
+            when (dataType) {
+                MegaBleConst.MODE_MONITOR -> {
+                    megaBleClient!!.parseSpoPr(bytes, object : MegaAuth.Callback<ParsedSpoPrBean> {
+                        override fun onFail(s: String) {
+                            Log.d(TAG, s)
+                        }
+
+                        override fun onSuccess(bean: ParsedSpoPrBean) {
+                            Log.d(TAG, bean.toString())
+                        }
+                    })
+                }
+                MegaBleConst.MODE_SPORT -> {
+                    megaBleClient!!.parseSport(bytes, object : MegaAuth.Callback<ParsedPrBean> {
+                        override fun onFail(s: String) {
+                            Log.d(TAG, s)
+                        }
+
+                        override fun onSuccess(bean: ParsedPrBean) {
+                            Log.d(TAG, bean.toString())
+                        }
+                    })
+                }
+                else -> {
+                }
+            }
+        }
+
+        override fun onSyncNoDataOfMonitor() {
+            Log.d(TAG, "no data")
+        }
+
+        // result of client cmd
+        override fun onOperationStatus(operationType: Int, status: Int) { //            switch (operationType) {
+//                case  MegaBleConfig.CMD_V2_MODE_SPO_MONITOR:
+//                    //
+//                break;
+//                case  MegaBleConfig.CMD_V2_MODE_LIVE_SPO:
+//                    //
+//                break;
+//                case  MegaBleConfig.CMD_V2_GET_MODE:
+//                    //
+//                break;
+//            }
+            val msg: String = when (status) {
+                MegaBleConst.STATUS_OK -> {
+                    "Success"
+                }
+                MegaBleConst.STATUS_LOWPOWER -> {
+                    "Err, low power"
+                }
+                MegaBleConst.STATUS_RECORDS_CTRL_ERR -> {
+                    "Err, busy or redo"
+                }
+                MegaBleConst.STATUS_NO_DATA -> {
+                    "Err, no data"
+                }
+                MegaBleConst.STATUS_REFUSED -> {
+                    "Err, refused"
+                }
+                else -> {
+                    "Err, unknown"
+                }
+            }
+            runOnUiThread { Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show() }
+        }
+
+        override fun onHeartBeatReceived(heartBeat: MegaBleHeartBeat) {
+            // 心跳内容可以不用关心
+        }
+
+        override fun onRawdataParse(a: IntArray?) {
+            // 血氧监测原始数据
+            Log.d(TAG, Arrays.toString(a))
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        mRequestPermissionHandler = RequestPermissionHandler()
+        checkAppPermission()
+        initView()
+        initBle()
+        // mock id, key，use yours
+        megaBleClient = MegaBleBuilder()
+                .withSecretId("D4CE5DD515F81247")
+                .withSecretKey("uedQ2MgVEFlsGIWSgofHYHNdZSyHmmJ5")
+                .withContext(this)
+                .withCallback(megaBleCallback)
+                .build()
+        megaBleClient!!.setDebugEnable(true)
+    }
+
+    override fun onDestroy() {
+        if (megaBleClient != null) megaBleClient!!.disConnect()
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener)
+    }
+
+    private fun initView() {
+        try {
+            val versionName = packageManager.getPackageInfo(this.packageName, 0).versionName
+            tv_version.text = "v$versionName"
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        setSupportActionBar(toolbar)
+        btn_scan.setOnClickListener(this)
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        mScannedAdapter = ScannedAdapter(mScannedDevices)
+        recycler_view.adapter = mScannedAdapter
+        btn_choose_file.setOnClickListener(this)
+        btn_start_dfu.setOnClickListener(this)
+        btn_live_on.setOnClickListener(this)
+        btn_monitor_on.setOnClickListener(this)
+        btn_sport_on.setOnClickListener(this)
+        btn_monitor_off.setOnClickListener(this)
+        btn_sync_data.setOnClickListener(this)
+        tv_clear.setOnClickListener(this)
+        btn_open_global_live.setOnClickListener(this)
+        btn_parse.setOnClickListener(this)
+        btn_parse_sport.setOnClickListener(this)
+        // get token form shardPreference
+        et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
+        et_token.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                if (s != null) tv_clear.visibility = View.VISIBLE
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) { //                if (s == null) tv_clear.setVisibility(View.INVISIBLE);
+//                else tv_clear.setVisibility(View.VISIBLE);
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                if (s.isEmpty()) tv_clear.visibility = View.INVISIBLE
+            }
+        })
+        findViewById<View>(android.R.id.content).setOnTouchListener { v, event ->
+            if (this@MainActivity.currentFocus != null) {
+                tv_clear.visibility = View.INVISIBLE
+                et_token.clearFocus()
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(this@MainActivity.currentFocus.windowToken, 0)
+            }
+            false
+        }
+    }
+
+    private fun initBle() {
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        mBluetoothAdapter = bluetoothManager.adapter
+    }
+
+    override fun onClick(v: View) {
+        if (v.id != R.id.btn_choose_file
+                && v.id != R.id.btn_scan
+                && v.id != R.id.btn_parse
+                && v.id != R.id.btn_parse_sport
+                && R.id.tv_clear != v.id) {
+            if (megaBleDevice == null) {
+                Toast.makeText(this, "ble offline", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        when (v.id) {
+            R.id.btn_scan -> {
+                if (PermissionChecker.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_ACCESS_COARSE_LOCATION)
+                    return
+                }
+                scanLeDevices()
+            }
+            R.id.btn_choose_file -> LFilePicker()
+                    .withActivity(this)
+                    .withTitle("选择文件")
+                    .withRequestCode(REQUESTCODE_CHOOSE_FILE)
+                    .withFileFilter(arrayOf(".zip"))
+                    .withMutilyMode(false)
+                    .withNotFoundBooks("未选中")
+                    .start()
+            R.id.btn_start_dfu -> {
+                if (mDfuPath == null) {
+                    Toast.makeText(this, "未选择文件", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                megaBleClient!!.startDfu(megaBleDevice!!.mac)
+            }
+            R.id.btn_open_global_live -> megaBleClient!!.toggleLive(true)
+            R.id.btn_live_on -> megaBleClient!!.enableV2ModeLiveSpo(true)
+            R.id.btn_monitor_off -> megaBleClient!!.enableV2ModeDaily(true)
+            R.id.btn_monitor_on -> megaBleClient!!.enableV2ModeSpoMonitor(true)
+            R.id.btn_sport_on -> megaBleClient!!.enableV2ModeSport(true)
+            R.id.btn_sync_data -> megaBleClient!!.syncData()
+            R.id.tv_clear -> {
+                et_token!!.text = null
+                UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)
+            }
+            R.id.btn_parse ->
+                // mock data; 解析血氧监测数据
+                // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
+                try {
+                    val bytes = readMockFromAsset("mock_spo2.bin")
+                    megaBleClient!!.parseSpoPr(bytes, object : MegaAuth.Callback<ParsedSpoPrBean> {
+                        override fun onFail(s: String) {
+                            Log.d(TAG, s)
+                            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+                        }
+
+                        override fun onSuccess(bean: ParsedSpoPrBean) {
+                            Log.d(TAG, bean.toString())
+                            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+                        }
+                    })
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            R.id.btn_parse_sport ->  // mock data; 解析运动监测数据
+// byte[] bytes1 = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data
+                try {
+                    val bytes1 = readMockFromAsset("mock_sport.bin")
+                    megaBleClient!!.parseSport(bytes1, object : MegaAuth.Callback<ParsedPrBean> {
+                        override fun onFail(s: String) {
+                            Log.d(TAG, s)
+                            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+                        }
+
+                        override fun onSuccess(bean: ParsedPrBean) {
+                            Log.d(TAG, bean.toString())
+                            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+                        }
+                    })
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            R.id.btn_rawdata_on -> {
+                val rawdataConfig = MegaRawdataConfig(false, false, "", 0)
+                megaBleClient!!.enableRawdata(rawdataConfig)
+            }
+            R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
+            else -> {
+            }
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun scanLeDevices() {
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "ble not support", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!statusOfGPS) {
+            Toast.makeText(this, "GPS disable, plz enable", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (!mBluetoothAdapter!!.isEnabled) {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            return
+        }
+        mScannedDevices.clear()
+        mScannedAdapter!!.notifyDataSetChanged()
+        btn_scan!!.isClickable = false
+        Observable.timer(SCAN_PERIOD, TimeUnit.SECONDS).subscribe { aLong: Long? ->
+            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+            btn_scan!!.isClickable = true
+        }
+        mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+        Observable.interval(1, TimeUnit.SECONDS)
+                .take(SCAN_PERIOD)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { aLong: Long ->
+                    Log.d(TAG, aLong.toString() + "scaning...")
+                    mScannedAdapter!!.notifyDataSetChanged()
+                }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUESTCODE_CHOOSE_FILE) {
+                val list = data!!.getStringArrayListExtra(Constant.RESULT_INFO)
+                tv_dfu_path!!.text = list[0]
+                mDfuPath = list[0]
+            }
+        } else if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode == Activity.RESULT_OK) {
+                scanLeDevices()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        mRequestPermissionHandler!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    internal inner class ScannedAdapter(private val mList: List<ScannedDevice>) : RecyclerView.Adapter<ScannedViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScannedViewHolder {
+            val view = LayoutInflater.from(this@MainActivity).inflate(R.layout.item_scan_result, parent, false)
+            return ScannedViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ScannedViewHolder, position: Int) {
+            val device = mList[position]
+            holder.bindView(device)
+        }
+
+        override fun getItemCount(): Int {
+            return mList.size
+        }
+
+    }
+
+    internal inner class ScannedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val v: CardView = itemView as CardView
+        private val tvName: TextView
+        private val tvAddress: TextView
+        private val tvRssi: TextView
+
+        init {
+            tvName = v.findViewById(R.id.tv_name)
+            tvAddress = v.findViewById(R.id.tv_mac)
+            tvRssi = v.findViewById(R.id.tv_rssi)
+        }
+
+        fun bindView(device: ScannedDevice) {
+            tvName.text = device.name
+            tvAddress.text = device.address
+            tvRssi.text = device.rssi.toString()
+            v.setOnClickListener { v: View? ->
+                Toast.makeText(this@MainActivity, "Connecting -> " + device.name + " " + device.address, Toast.LENGTH_SHORT).show()
+                megaBleClient!!.connect(device.address, device.name)
+            }
+        }
+    }
+
+    /**
+     * set UI
+     */
+    private fun setMegaDeviceInfo(device: MegaBleDevice) {
+        main_content.visibility = View.VISIBLE
+        tv_name.text = device.name
+        tv_mac.text = device.mac
+        tv_fw_version.text = device.fwVer
+        tv_sn.text = device.sn
+        tv_other_info.text = device.otherInfo
+        tv_device_status.text = "already connected"
+    }
+
+    private fun clearMegaDeviceInfo() {
+        tv_name.text = null
+        tv_mac.text = null
+        tv_fw_version.text = null
+        tv_sn.text = null
+        tv_device_status.text = "offline"
+        tv_other_info.text = null
+        tv_batt.text = null
+        tv_batt_status.text = null
+        tv_rssi.text = null
+        tv_spo.text = null
+        tv_hr.text = null
+        tv_live_desc.text = null
+        tv_sync_progress.text = null
+        et_token.text = null
+        megaBleDevice = null
+    }
+
+    private fun sendToHandler(device: MegaBleDevice) {
+        val msg = Message.obtain()
+        msg.what = EVENT_CONNECTED
+        val bundle = Bundle()
+        bundle.putSerializable("device", device)
+        msg.data = bundle
+        handler.sendMessage(msg)
+    }
+
+    private fun <T> updateV2Live(live: T) {
+        runOnUiThread {
+            tv_v2_live!!.text = live.toString()
+            // 使用AnimationUtils装载动画配置文件
+            val animation = AnimationUtils.loadAnimation(this@MainActivity, R.anim.alpha)
+            // 启动动画
+            tv_smile!!.startAnimation(animation)
+        }
+    }
+
+    private fun checkAppPermission() {
+        mRequestPermissionHandler!!.requestPermission(this, arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, object : RequestPermissionListener {
+            override fun onSuccess() {
+                // Toast.makeText(MainActivity.this, "request permission success", Toast.LENGTH_SHORT).show();
+            }
+
+            override fun onFailed() {
+                Toast.makeText(this@MainActivity, "request permission failed", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    @Throws(IOException::class)
+    private fun readMockFromAsset(filename: String): ByteArray {
+        val ins = resources.assets.open(filename)
+        val bos = ByteArrayOutputStream()
+        val buf = ByteArray(10 * 1024)
+        var size: Int
+        while (ins.read(buf).also { size = it } != -1) bos.write(buf, 0, size)
+        ins.close()
+        bos.flush()
+        bos.close()
+        return bos.toByteArray()
+    }
+}

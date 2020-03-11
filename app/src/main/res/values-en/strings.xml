@@ -6,15 +6,15 @@
     <string name="label_sync_progress">sync progress:</string>
     <string name="label_choose_file">choose file</string>
     <string name="label_start_dfu">start dfu</string>
-    <string name="label_enable_monitor">monitor on</string>
+    <string name="label_enable_monitor">monitor spo2 on</string>
     <string name="label_sync">sync data</string>
     <string name="no_conn">offline</string>
-    <string name="label_open_global_live_pipe">open global live pipe</string>
-    <string name="label_open_live">live on</string>
+    <string name="label_open_global_live_pipe">open global live listener</string>
+    <string name="label_open_live">monitor live on</string>
     <string name="label_disable_monitor">monitor off</string>
-    <string name="label_close_live">live off</string>
+    <string name="label_close_live">monitor live off</string>
     <string name="label_parse">parse</string>
     <string name="dfu">dfu progress:</string>
     <string name="label_parse_sport">parse sport</string>
-    <string name="label_enable_sport">sport on</string>
+    <string name="label_enable_sport">monitor sport on</string>
 </resources>

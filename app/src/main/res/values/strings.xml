@@ -7,10 +7,10 @@
     <string name="label_sync_progress">接收大数据进度:</string>
     <string name="label_choose_file">选择文件</string>
     <string name="label_start_dfu">开始dfu</string>
-    <string name="label_open_global_live_pipe">开全局实时通道</string>
-    <string name="label_open_live">开实时</string>
-    <string name="label_close_live">关实时</string>
-    <string name="label_enable_monitor">开监控</string>
+    <string name="label_open_global_live_pipe">开全局live监听</string>
+    <string name="label_open_live">开实时血氧</string>
+    <string name="label_close_live">关实时血氧</string>
+    <string name="label_enable_monitor">开血氧</string>
     <string name="label_enable_sport">开运动</string>
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>

@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "io.zjw.testblelib"
         minSdkVersion 19
-        targetSdkVersion 27
-        versionCode 4
-        versionName "1.0.4"
+        targetSdkVersion 28
+        versionCode 6
+        versionName "1.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,7 +25,7 @@ android {
 }
 
 dependencies {
-    def supportLibVersion = "27.1.1"
+    def supportLibVersion = "28.0.0"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
@@ -40,8 +42,12 @@ dependencies {
     // choose file
     implementation 'com.leon:lfilepickerlibrary:1.8.0'
     // dfu lib. higher dfu lib may not work, use this one
-    implementation 'no.nordicsemi.android:dfu:1.5.2'
+    implementation 'no.nordicsemi.android:dfu:1.8.1'
     // flex layout
     implementation 'com.google.android:flexbox:0.3.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(path: ':megablelibopen')
+}
+repositories {
+    mavenCentral()
 }
