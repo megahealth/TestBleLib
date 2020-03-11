@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
     private val megaBleCallback: MegaBleCallback = object : MegaBleCallback() {
-        override fun onConnectionStateChange(connected: Boolean, device: MegaBleDevice) {
+        override fun onConnectionStateChange(connected: Boolean, device: MegaBleDevice?) {
             Log.d(TAG, "onConnectionStateChange: $connected")
             if (connected) {
                 megaBleDevice = device
@@ -204,15 +204,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         override fun onStart() {
             val userId = "5837288dc59e0d00577c5f9a" // 12 2 digit hex strings, total 24 length
-            //            String userId = "313736313031373332323131"; // 12 2 digit hex strings, total 24 length
+//            String userId = "313736313031373332323131"; // 12 2 digit hex strings, total 24 length
 //            String mac = "BC:E5:9F:48:81:3F";
 //            megaBleClient.startWithoutToken(userId, mac);
 //            String random = "129,57,79,122,227,76";
 //            megaBleClient.startWithToken(userId, random);
+
             val token = UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
             runOnUiThread { et_token!!.setText(token) }
             if (token == null) {
-                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
+//                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
+                // 下面的方法更易用
+                megaBleClient!!.startWithToken(userId, "0,0,0,0,0,0")
             } else {
                 megaBleClient!!.startWithToken(userId, token)
             }
@@ -240,6 +243,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             // 绑定token有变动时，用户信息，监测数据将被清空。
             // 建议默认开启全局实时通道，无需关闭，重复开启无影响
             // suggested setting, repeated call is ok.
+            Log.d(TAG, "Important: the remote device is idle.")
             megaBleClient!!.toggleLive(true)
         }
 
@@ -383,6 +387,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             runOnUiThread { tv_sync_progress.text = progress.toString() }
         }
 
+        //
         override fun onSyncMonitorDataComplete(bytes: ByteArray, dataStopType: Int, dataType: Int, uid: String) {
             Log.d(TAG, "onSyncMonitorDataComplete: " + bytes.contentToString())
             Log.d(TAG, "uid: $uid")
@@ -458,9 +463,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             // 心跳内容可以不用关心
         }
 
-        override fun onRawdataParse(a: IntArray?) {
-            // 血氧监测原始数据
-            Log.d(TAG, Arrays.toString(a))
+        override fun onRawdataParsed(a: Array<out IntArray>?) {
+            // [[red, infra], [red, infra]]
+            // log -> onRawdataParsed: 48642, 49911 48080, 49188
+            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
         }
     }
 
@@ -478,6 +484,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 .withContext(this)
                 .withCallback(megaBleCallback)
                 .build()
+        // 开发测试时，可以开启debug
         megaBleClient!!.setDebugEnable(true)
     }
 
@@ -519,6 +526,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_open_global_live.setOnClickListener(this)
         btn_parse.setOnClickListener(this)
         btn_parse_sport.setOnClickListener(this)
+        btn_rawdata_on.setOnClickListener(this)
+        btn_rawdata_off.setOnClickListener(this)
         // get token form shardPreference
         et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
         et_token.addTextChangedListener(object : TextWatcher {
@@ -584,16 +593,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 megaBleClient!!.startDfu(megaBleDevice!!.mac)
             }
+            // 开全局live监听
             R.id.btn_open_global_live -> megaBleClient!!.toggleLive(true)
+            // 开实时血氧
             R.id.btn_live_on -> megaBleClient!!.enableV2ModeLiveSpo(true)
+            // 关监控
             R.id.btn_monitor_off -> megaBleClient!!.enableV2ModeDaily(true)
+            // 开血氧
             R.id.btn_monitor_on -> megaBleClient!!.enableV2ModeSpoMonitor(true)
+            // 开运动
             R.id.btn_sport_on -> megaBleClient!!.enableV2ModeSport(true)
+            // 收数据
             R.id.btn_sync_data -> megaBleClient!!.syncData()
             R.id.tv_clear -> {
                 et_token!!.text = null
                 UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)
             }
+            // 解析血氧
             R.id.btn_parse ->
                 // mock data; 解析血氧监测数据
                 // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
@@ -613,8 +629,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-            R.id.btn_parse_sport ->  // mock data; 解析运动监测数据
-// byte[] bytes1 = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data
+            // 解析运动
+            R.id.btn_parse_sport ->
+                // mock data; 解析运动监测数据
+                // byte[] bytes1 = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes1 = readMockFromAsset("mock_sport.bin")
                     megaBleClient!!.parseSport(bytes1, object : MegaAuth.Callback<ParsedPrBean> {
@@ -631,10 +649,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
+            // 开rawdata，该功能只能在【开启血氧相关模式】后才有用
             R.id.btn_rawdata_on -> {
                 val rawdataConfig = MegaRawdataConfig(false, false, "", 0)
                 megaBleClient!!.enableRawdata(rawdataConfig)
             }
+            // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
             else -> {
             }
@@ -766,7 +786,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         megaBleDevice = null
     }
 
-    private fun sendToHandler(device: MegaBleDevice) {
+    private fun sendToHandler(device: MegaBleDevice?) {
         val msg = Message.obtain()
         msg.what = EVENT_CONNECTED
         val bundle = Bundle()
