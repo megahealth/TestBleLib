@@ -465,7 +465,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         override fun onRawdataParsed(a: Array<out IntArray>?) {
             // [[red, infra], [red, infra]]
-            // log -> onRawdataParsed: 48642, 49911 48080, 49188
+            // log -> onRawdataParsed: 48642, 49911; 48080, 49188
             Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
         }
     }
