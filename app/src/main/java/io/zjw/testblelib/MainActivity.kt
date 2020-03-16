@@ -26,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -212,7 +213,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             val token = UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
             runOnUiThread { et_token!!.setText(token) }
-            if (token == null) {
+            if (TextUtils.isEmpty(token)) {
 //                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
                 // 下面的方法更易用
                 megaBleClient!!.startWithToken(userId, "0,0,0,0,0,0")
@@ -248,9 +249,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         // default setting
-        override fun onEnsureBindWhenTokenNotMatch() {
-            megaBleClient!!.ensureBind(true)
-        }
+//        override fun onEnsureBindWhenTokenNotMatch() {
+//            megaBleClient!!.ensureBind(true)
+//        }
 
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
             when (live.status) {
