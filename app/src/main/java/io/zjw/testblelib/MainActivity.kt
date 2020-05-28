@@ -253,10 +253,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            megaBleClient!!.ensureBind(true)
 //        }
 
+        // 血氧实时模式、脉诊模式共用此回调
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
             when (live.status) {
                 MegaBleConst.STATUS_LIVE_VALID -> {
-                    updateV2Live(live)
+                    updateV2Live("$live(可显示)")
                 }
                 MegaBleConst.STATUS_LIVE_PREPARING -> {
                     updateV2Live("$live(值准备中)")
@@ -338,14 +339,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 tv_batt!!.text = value.toString()
                 tv_batt_status!!.text = MegaBleBattery.getDescription(status)
                 when (status) {
-                    MegaBleBattery.charging.ordinal -> { // todo
-                    }
-                    MegaBleBattery.normal.ordinal -> { // todo
-                    }
-                    MegaBleBattery.lowPower.ordinal -> { // todo
-                    }
-                    MegaBleBattery.full.ordinal -> { // todo
-                    }
+                    MegaBleBattery.charging.ordinal -> { /* todo */ }
+                    MegaBleBattery.normal.ordinal -> { /* todo */ }
+                    MegaBleBattery.lowPower.ordinal -> { /* todo */ }
+                    MegaBleBattery.full.ordinal -> { /* todo */ }
                 }
             }
         }
@@ -360,6 +357,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 MegaBleConst.MODE_SPORT -> {
                     // 正处于运动模式
+                }
+                MegaBleConst.MODE_PULSE -> {
+                    // 正处于脉诊模式
                 }
             }
         }

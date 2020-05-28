@@ -4,7 +4,7 @@
 ## sdk文件
  - [arr库 v1.5.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
  - [.so库 v9463](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.9](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.10](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -26,8 +26,7 @@
 实时输出，戒指自身不存储
 
 ### 4. 脉诊模式
-提供脉诊rawdata
-
+实时+脉诊rawdata
 
 ## 推荐工作流程
 [工作流程图pdf](https://file-mhn.megahealth.cn/62630b5d10f14ecce727/App%E4%B8%8E%E6%88%92%E6%8C%87%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B%E5%9B%BE.pdf)
