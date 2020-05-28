@@ -2,7 +2,7 @@
 库名: megablelibopen
 
 ## sdk文件
- - [arr库 v1.5.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
+ - [arr库 v1.6.0](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
  - [.so库 v9463](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.10](https://github.com/megahealth/TestBleLib)
 
