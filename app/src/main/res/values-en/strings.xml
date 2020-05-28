@@ -17,4 +17,5 @@
     <string name="dfu">dfu progress:</string>
     <string name="label_parse_sport">parse sport</string>
     <string name="label_enable_sport">monitor sport on</string>
+    <string name="label_enable_pulse">pulse on</string>
 </resources>

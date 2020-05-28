@@ -319,6 +319,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                         <Button
+                            android:text="@string/label_enable_pulse"
+                            android:id="@+id/btn_pulse_on"
+                            android:textColor="@color/colorAccent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <Button
                             android:text="@string/label_disable_monitor"
                             android:id="@+id/btn_monitor_off"
                             android:textColor="@color/colorAccent"
@@ -341,7 +347,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                         <Button
-                            android:text="开rawdata"
+                            android:text="开rawdata脉诊"
                             android:id="@+id/btn_rawdata_on"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />

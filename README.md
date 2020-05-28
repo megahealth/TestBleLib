@@ -4,7 +4,7 @@
 ## sdk文件
  - [arr库 v1.5.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
  - [.so库 v9463](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.8](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.9](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -24,6 +24,9 @@
 
 ### 3. 血氧实时模式
 实时输出，戒指自身不存储
+
+### 4. 脉诊模式
+提供脉诊rawdata
 
 
 ## 推荐工作流程
@@ -59,11 +62,15 @@ client = new MegaBleBuilder()
 
 - public class MegaBleClient
 ```
-client.toggleLive(true); // 开/关全局实时通道。血氧长时、运动、血氧实时
-client.enableV2ModeLiveSpo(true); // 打开实时
-client.enableV2ModeDaily(true); // 关闭监测
-client.enableV2ModeSpoMonitor(true); // 打开血氧监测
-client.enableV2ModeSport(true); // 打开运动监测
+client.toggleLive(true); // 开/关全局实时通道。兼容：血氧长时、运动、血氧实时
+client.enableV2ModeLiveSpo(true); // 打开血氧实时模式
+client.enableV2ModeDaily(true); // 关闭所有模式
+client.enableV2ModeSpoMonitor(true); // 打开血氧长时模式 (睡眠血氧监测)
+client.enableV2ModeSport(true); // 打开运动模式
+client.enableV2ModePulse(true); // 打开脉诊模式
+client.enableRawdataSpo // 打开血氧rawdata，需要打开血氧相关模式
+client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
+client.disableRawdata // 关闭所有rawdata
 ```
 
 - public abstract class MegaBleCallback
@@ -132,7 +139,7 @@ demo为了方便使用本地选择文件，后续应将升级文件(.zip包)放�
 - 收数据 - 收取【血氧长时监测】【运动监测】结束后产生的数据
 - 解析血氧 - 收取到的血氧数据，调用api联网验证并解析
 - 解析运动 - 收取到的运动数据，调用api联网验证并解析
-- 开rawdata - 开启血氧相关模式后，才能使用此功能
+- 开rawdata脉诊 - 获取脉诊模式时的rawdata数据
 - 关rawdata
 
 请在demo源码中搜索button名字，查看响应事件，详细api请参考在线java doc

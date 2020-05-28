@@ -12,6 +12,7 @@
     <string name="label_close_live">关实时血氧</string>
     <string name="label_enable_monitor">开血氧</string>
     <string name="label_enable_sport">开运动</string>
+    <string name="label_enable_pulse">开脉诊</string>
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>
     <string name="label_parse">解析血氧</string>

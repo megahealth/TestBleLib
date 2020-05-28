@@ -388,9 +388,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             runOnUiThread { tv_sync_progress.text = progress.toString() }
         }
 
-        //
-        override fun onSyncMonitorDataComplete(bytes: ByteArray, dataStopType: Int, dataType: Int, uid: String) {
-            Log.d(TAG, "onSyncMonitorDataComplete: " + bytes.contentToString())
+        override fun onSyncMonitorDataComplete(bytes: ByteArray?, dataStopType: Int, dataType: Int, uid: String?, steps: Int) {
+            Log.d(TAG, "onSyncMonitorDataComplete: " + bytes?.contentToString())
             Log.d(TAG, "uid: $uid")
             Log.d(TAG, "dataType: $dataType")
             when (dataType) {
@@ -467,7 +466,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         override fun onRawdataParsed(a: Array<out IntArray>?) {
             // [[red, infra], [red, infra]]
             // log -> onRawdataParsed: 48642, 49911; 48080, 49188
-            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
+//            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
+            runOnUiThread { tv_sync_progress.text =
+                    "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }}
         }
     }
 
@@ -521,6 +522,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_live_on.setOnClickListener(this)
         btn_monitor_on.setOnClickListener(this)
         btn_sport_on.setOnClickListener(this)
+        btn_pulse_on.setOnClickListener(this)
         btn_monitor_off.setOnClickListener(this)
         btn_sync_data.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
@@ -604,6 +606,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_monitor_on -> megaBleClient!!.enableV2ModeSpoMonitor(true)
             // 开运动
             R.id.btn_sport_on -> megaBleClient!!.enableV2ModeSport(true)
+            // 开脉诊
+            R.id.btn_pulse_on -> megaBleClient!!.enableV2ModePulse(true)
             // 收数据
             R.id.btn_sync_data -> megaBleClient!!.syncData()
             R.id.tv_clear -> {
@@ -650,10 +654,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-            // 开rawdata，该功能只能在【开启血氧相关模式】后才有用
+            // 开rawdata，该功能只能在开启【脉诊模式】后才有用
             R.id.btn_rawdata_on -> {
                 val rawdataConfig = MegaRawdataConfig(false, false, "", 0)
-                megaBleClient!!.enableRawdata(rawdataConfig)
+                megaBleClient!!.enableRawdataPulse(rawdataConfig)
+                megaBleClient!!.enableRawdataSpo(rawdataConfig)
             }
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
