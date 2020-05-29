@@ -73,6 +73,11 @@ client.disableRawdata // 关闭所有rawdata
 ```
 
 - public abstract class MegaBleCallback
+```
+// 参数：[[通道1value, 通道2value], [通道1value, 通道2value]]。长度不固定，可能1组或2组；
+// 血氧、脉诊都是此通道
+onRawdataParsed([])
+```
 
 - public class ParsedSpoPrBean
 
@@ -134,11 +139,17 @@ demo为了方便使用本地选择文件，后续应将升级文件(.zip包)放�
 - 开实时血氧 - 开启血氧实时监测模式
 - 开血氧 - 开启血氧长时监测模式（睡眠监测）
 - 开运动 - 开启运动监测模式
+- 开脉诊 - 开启脉诊监测模式
 - 关监控 - 关闭所有监测模式
 - 收数据 - 收取【血氧长时监测】【运动监测】结束后产生的数据
 - 解析血氧 - 收取到的血氧数据，调用api联网验证并解析
 - 解析运动 - 收取到的运动数据，调用api联网验证并解析
 - 开rawdata脉诊 - 获取脉诊模式时的rawdata数据
 - 关rawdata
+
+## 示例
+1. 获取脉诊rawdata
+    步骤：开脉诊、开rawdata脉诊
+
 
 请在demo源码中搜索button名字，查看响应事件，详细api请参考在线java doc
