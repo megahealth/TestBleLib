@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TestBleLib.iml" filepath="$PROJECT_DIR$/TestBleLib.iml" group="TestBleLib" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="TestBleLib/app" />
-      <module fileurl="file://$PROJECT_DIR$/megablelibopen/megablelibopen.iml" filepath="$PROJECT_DIR$/megablelibopen/megablelibopen.iml" group="TestBleLib/megablelibopen" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/TestBleLib-master.iml" filepath="$PROJECT_DIR$/.idea/modules/TestBleLib-master.iml" group="TestBleLib-master" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="TestBleLib-master/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/megablelibopen/megablelibopen.iml" filepath="$PROJECT_DIR$/.idea/modules/megablelibopen/megablelibopen.iml" group="TestBleLib-master/megablelibopen" />
     </modules>
   </component>
 </project>

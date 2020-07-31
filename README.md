@@ -2,9 +2,9 @@
 库名: megablelibopen
 
 ## sdk文件
- - [arr库 v1.6.0](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
- - [.so库 v9463](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.10](https://github.com/megahealth/TestBleLib)
+ - [arr库 v1.6.2](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen.aar)
+ - [.so库 v9789](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.12](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -27,6 +27,8 @@
 
 ### 4. 脉诊模式
 实时+脉诊rawdata
+
+### 5. 收取日常计步数据
 
 ## 推荐工作流程
 [工作流程图pdf](https://file-mhn.megahealth.cn/62630b5d10f14ecce727/App%E4%B8%8E%E6%88%92%E6%8C%87%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B%E5%9B%BE.pdf)
@@ -70,6 +72,7 @@ client.enableV2ModePulse(true); // 打开脉诊模式
 client.enableRawdataSpo // 打开血氧rawdata，需要打开血氧相关模式
 client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
 client.disableRawdata // 关闭所有rawdata
+client.syncDailyData() // 同步日常计步数据
 ```
 
 - public abstract class MegaBleCallback
@@ -79,11 +82,11 @@ client.disableRawdata // 关闭所有rawdata
 onRawdataParsed([])
 ```
 
-- public class ParsedSpoPrBean
+- public class ParsedSpoPrBean（已废弃，替换为MegaSpoPrBean）
 
     解析血氧数据：血氧、脉率、睡眠分期；其他统计信息
 
-- public class ParsedPrBean
+- public class ParsedPrBean（已废弃，替换为MegaPrBean）
 
     解析运动数据：脉率；其他统计信息
 
@@ -102,9 +105,61 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     - MegaAdvParse.parse (三代戒指)
     - MegaBleClient.parseScanRecord (二代戒指)
 
-## 完整Java Doc
-  - [在线文档](https://ble-sdk-doc.now.sh/)
+- 获取算法解析版本
+    - MegaBleClient.megaParseVesrion()
 
+## 字段说明
+| MegaSpoPrBean |说明|
+| :-:|:-:|
+|startAt|开始时间戳(s)|
+|endAt|结束时间戳(s)|
+|duration|监测时长(s)|
+|handOnDuration|上手时长(s)|
+|maxPr|最大脉率(bpm)|
+|avgPr|平均脉率(bpm)|
+|minPr|最小脉率(bpm)|
+|minO2|最小血氧|
+|avgO2|平均血氧|
+|prArr|解析后得到的心率数组。间隔时间(s))|
+|handOffArr|离手的时间戳(成对)，方便显示用户何时离手|
+|o2Arr|解析后得到的血氧数组，连续的，间隔时间(s)。|
+|stageArr|睡眠分期数组 0:清醒 2:眼动 3:浅睡 4:深睡 6:离手/无效|
+|maxDownDuration|最长氧减时间(s)|
+|offhandMinutes|离手时长(minutes)|
+|wakeMinutes|清醒期(minutes)|
+|remMinutes|眼动期(minutes)|
+|lightMinutes|浅睡期(minutes)|
+|deepMinutes|深睡期(minutes)|
+|downIndex|氧减指数|
+|downTimes|氧减次数|
+|secondsUnder60|血氧饱和度 <60% 的时间(s)|
+|secondsUnder70|血氧饱和度 <70% 的时间(s)|
+|secondsUnder80|血氧饱和度 <80% 的时间(s)|
+|secondsUnder85|血氧饱和度 <85% 的时间(s)|
+|secondsUnder90|血氧饱和度 <90% 的时间(s)|
+|secondsUnder95|血氧饱和度 <95% 的时间(s)|
+|shareUnder60|血氧饱和度 <60% 的时间占比(*100转换为%)|
+|shareUnder70|血氧饱和度 <70% 的时间占比(*100转换为%)|
+|shareUnder80|血氧饱和度 <80% 的时间占比(*100转换为%)|
+|shareUnder85|血氧饱和度 <85% 的时间占比(*100转换为%)|
+|shareUnder90|血氧饱和度 <90% 的时间占比(*100转换为%)|
+|shareUnder95|血氧饱和度 <95% 的时间占比(*100转换为%)|
+
+|MegaPrBean|说明|
+| :-:|:-:|
+|startAt|开始时间戳(s)|
+|endAt|结束时间戳(s)|
+|duration|监测时长(s)|
+|handOnDuration|上手时长(s)|
+|maxPr|最大脉率(bpm)|
+|avgPr|平均脉率(bpm)|
+|minPr|最小脉率(bpm)|
+|prArr|解析后得到的心率数组。间隔时间(s))|
+|handOffArr|离手的时间戳(成对)，方便显示用户何时离手|
+
+## 完整Java Doc
+  - [在线文档](https://wangkelei.github.io/megadoc/)
+  
 ## 注
 - 导包方法：android studio， file -> new -> new module... -> import .jar/.aar package
 - 导入native库
@@ -124,9 +179,9 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 # Demo使用说明
 请结合android studio控制台查看输出信息
 
-## assets资源、解析血氧，解析运动
-目录下有两份参考数据：血氧监测数据(mock_spo2.bin)、运动监测数据(mock_sport.bin)。
-对应按钮：解析血氧，解析运动
+## assets资源、解析血氧，解析运动，解析日常计步数据
+目录下有三份参考数据：血氧监测数据(mock_spo2.bin)、运动监测数据(mock_sport.bin)、日常计步数据(mock_daily.bin)。
+对应按钮：解析血氧，解析运动，解析日常数据
 
 ## 选择文件、开始dfu
 这两个按钮是后续戒指固件升级(dfu)时使用的，前期可不用关心。
@@ -142,8 +197,10 @@ demo为了方便使用本地选择文件，后续应将升级文件(.zip包)放�
 - 开脉诊 - 开启脉诊监测模式
 - 关监控 - 关闭所有监测模式
 - 收数据 - 收取【血氧长时监测】【运动监测】结束后产生的数据
+- 收日常数据 - 收取日常计步数据
 - 解析血氧 - 收取到的血氧数据，调用api联网验证并解析
 - 解析运动 - 收取到的运动数据，调用api联网验证并解析
+- 解析日常数据 - 收取到的日常计步数据，调用api联网验证并解析
 - 开rawdata脉诊 - 获取脉诊模式时的rawdata数据
 - 关rawdata
 

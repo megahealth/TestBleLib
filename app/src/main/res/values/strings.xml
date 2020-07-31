@@ -15,7 +15,14 @@
     <string name="label_enable_pulse">开脉诊</string>
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>
+    <string name="label_sync_daily">收日常数据</string>
     <string name="label_parse">解析血氧</string>
     <string name="label_parse_sport">解析运动</string>
+    <string name="label_parse_daily">解析日常数据</string>
     <string name="dfu">固件升级(dfu)进度:</string>
+    <string name="pulse_rawdata_on">开rawdata脉诊</string>
+    <string name="close_rawdata">关rawdata</string>
+    <string name="info_title">关于</string>
+    <string name="info_content">App版本:v%s\n算法版本:%d</string>
+    <string name="ok">确定</string>
 </resources>

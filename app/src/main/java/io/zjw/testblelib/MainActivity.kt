@@ -23,8 +23,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -34,19 +34,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.TextView
+import android.widget.Toast
 import com.leon.lfilepickerlibrary.LFilePicker
 import com.leon.lfilepickerlibrary.utils.Constant
 import io.mega.megablelib.*
 import io.mega.megablelib.enums.MegaBleBattery
 import io.mega.megablelib.model.MegaBleDevice
 import io.mega.megablelib.model.bean.*
-import io.mega.megableparse.ParsedPrBean
-import io.mega.megableparse.ParsedSpoPrBean
+import io.mega.megableparse.MegaPrBean
+import io.mega.megableparse.MegaSpoPrBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.zjw.testblelib.MainActivity
-import io.zjw.testblelib.RequestPermissionHandler.RequestPermissionListener
 import io.zjw.testblelib.dfu.DfuService
 import kotlinx.android.synthetic.main.activity_main.*
 import no.nordicsemi.android.dfu.DfuProgressListener
@@ -114,10 +113,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         true
     })
+
     // ui
 //    private var btnScan: Button? = null
 //    private var mRecyclerView: RecyclerView? = null
     private var mScannedAdapter: ScannedAdapter? = null
+
     //    private var mainContent: LinearLayout? = null
 //    private var tvStatus: TextView? = null
 //    private var tvName: TextView? = null
@@ -151,13 +152,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //    private var tvDfuProgress: TextView? = null
     // permission checker
     private var mRequestPermissionHandler: RequestPermissionHandler? = null
+
     // ble
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mScannedDevices: MutableList<ScannedDevice> = ArrayList()
+
     // sdk ble
     private var mDfuPath: String? = null
     private var megaBleClient: MegaBleClient? = null
     private var megaBleDevice: MegaBleDevice? = null
+    private lateinit var infoDialog: AlertDialog
     private val mLeScanCallback = LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
         if (device.name == null) return@LeScanCallback
         // 过滤掉了设备名称中不含ring的设备，请看情况使用
@@ -257,13 +261,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
             when (live.status) {
                 MegaBleConst.STATUS_LIVE_VALID -> {
-                    updateV2Live("$live(可显示)")
+                    updateV2Live("$live(valid)")
                 }
                 MegaBleConst.STATUS_LIVE_PREPARING -> {
-                    updateV2Live("$live(值准备中)")
+                    updateV2Live("$live(preparing)")
                 }
                 MegaBleConst.STATUS_LIVE_INVALID -> {
-                    updateV2Live("$live(值无效)")
+                    updateV2Live("$live(invalid)")
                 }
             }
         }
@@ -275,10 +279,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     updateV2Live(live)
                 }
                 MegaBleConst.STATUS_LIVE_PREPARING -> {
-                    updateV2Live("$live(值准备中)")
+                    updateV2Live("$live(preparing)")
                 }
                 MegaBleConst.STATUS_LIVE_INVALID -> {
-                    updateV2Live("$live(值无效)")
+                    updateV2Live("$live(invalid)")
                 }
             }
         }
@@ -289,10 +293,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     updateV2Live(live)
                 }
                 MegaBleConst.STATUS_LIVE_PREPARING -> {
-                    updateV2Live("$live(值准备中)")
+                    updateV2Live("$live(preparing)")
                 }
                 MegaBleConst.STATUS_LIVE_INVALID -> {
-                    updateV2Live("$live(值无效)")
+                    updateV2Live("$live(invalid)")
                 }
             }
         }
@@ -339,10 +343,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 tv_batt!!.text = value.toString()
                 tv_batt_status!!.text = MegaBleBattery.getDescription(status)
                 when (status) {
-                    MegaBleBattery.charging.ordinal -> { /* todo */ }
-                    MegaBleBattery.normal.ordinal -> { /* todo */ }
-                    MegaBleBattery.lowPower.ordinal -> { /* todo */ }
-                    MegaBleBattery.full.ordinal -> { /* todo */ }
+                    MegaBleBattery.charging.ordinal -> { /* todo */
+                    }
+                    MegaBleBattery.normal.ordinal -> { /* todo */
+                    }
+                    MegaBleBattery.lowPower.ordinal -> { /* todo */
+                    }
+                    MegaBleBattery.full.ordinal -> { /* todo */
+                    }
                 }
             }
         }
@@ -383,6 +391,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             starter.start(this@MainActivity, DfuService::class.java)
         }
 
+        override fun onSyncDailyDataComplete(bytes: ByteArray?) {
+            Log.d(TAG, "onSyncDailyDataComplete: " + bytes?.contentToString())
+            var result = megaBleClient!!.parseDailyEntry(bytes)
+            Log.d(TAG, "$result")
+            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+        }
+
+        override fun onSyncNoDataOfDaily() {
+            Log.d(TAG, "no daily data")
+        }
+
         override fun onSyncingDataProgress(progress: Int) {
             Log.d(TAG, "onSyncingDataProgress: $progress")
             runOnUiThread { tv_sync_progress.text = progress.toString() }
@@ -392,28 +411,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Log.d(TAG, "onSyncMonitorDataComplete: " + bytes?.contentToString())
             Log.d(TAG, "uid: $uid")
             Log.d(TAG, "dataType: $dataType")
+            Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
             when (dataType) {
                 MegaBleConst.MODE_MONITOR -> {
-                    megaBleClient!!.parseSpoPr(bytes, object : MegaAuth.Callback<ParsedSpoPrBean> {
-                        override fun onFail(s: String) {
-                            Log.d(TAG, s)
-                        }
-
-                        override fun onSuccess(bean: ParsedSpoPrBean) {
-                            Log.d(TAG, bean.toString())
-                        }
-                    })
+                    megaBleClient!!.parseSpoPr(bytes, parseSpoPrResult)
                 }
                 MegaBleConst.MODE_SPORT -> {
-                    megaBleClient!!.parseSport(bytes, object : MegaAuth.Callback<ParsedPrBean> {
-                        override fun onFail(s: String) {
-                            Log.d(TAG, s)
-                        }
-
-                        override fun onSuccess(bean: ParsedPrBean) {
-                            Log.d(TAG, bean.toString())
-                        }
-                    })
+                    megaBleClient!!.parseSport(bytes, parsePrResult)
                 }
                 else -> {
                 }
@@ -467,8 +471,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             // [[red, infra], [red, infra]]
             // log -> onRawdataParsed: 48642, 49911; 48080, 49188
 //            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
-            runOnUiThread { tv_sync_progress.text =
-                    "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }}
+            runOnUiThread {
+                tv_sync_progress.text =
+                        "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }
+            }
         }
     }
 
@@ -491,6 +497,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onDestroy() {
+        if (infoDialog != null && infoDialog.isShowing)
+            infoDialog.dismiss()
         if (megaBleClient != null) megaBleClient!!.disConnect()
         super.onDestroy()
     }
@@ -509,12 +517,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         try {
             val versionName = packageManager.getPackageInfo(this.packageName, 0).versionName
             tv_version.text = "v$versionName"
+            var message = String.format(getString(R.string.info_content), versionName, MegaBleClient.megaParseVesrion())
+            infoDialog = AlertDialog.Builder(this)
+                    .setTitle(R.string.info_title)
+                    .setPositiveButton(R.string.ok, null)
+                    .setMessage(message)
+                    .create()
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
         setSupportActionBar(toolbar)
         btn_scan.setOnClickListener(this)
-        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        LinearSnapHelper().attachToRecyclerView(recycler_view)
         mScannedAdapter = ScannedAdapter(mScannedDevices)
         recycler_view.adapter = mScannedAdapter
         btn_choose_file.setOnClickListener(this)
@@ -525,12 +540,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_pulse_on.setOnClickListener(this)
         btn_monitor_off.setOnClickListener(this)
         btn_sync_data.setOnClickListener(this)
+        btn_sync_daily_data.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
         btn_open_global_live.setOnClickListener(this)
         btn_parse.setOnClickListener(this)
         btn_parse_sport.setOnClickListener(this)
+        btn_parse_daily.setOnClickListener(this)
         btn_rawdata_on.setOnClickListener(this)
         btn_rawdata_off.setOnClickListener(this)
+        iv_info.setOnClickListener(this)
         // get token form shardPreference
         et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
         et_token.addTextChangedListener(object : TextWatcher {
@@ -567,6 +585,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 && v.id != R.id.btn_scan
                 && v.id != R.id.btn_parse
                 && v.id != R.id.btn_parse_sport
+                && v.id != R.id.btn_parse_daily
+                && v.id != R.id.iv_info
                 && R.id.tv_clear != v.id) {
             if (megaBleDevice == null) {
                 Toast.makeText(this, "ble offline", Toast.LENGTH_SHORT).show()
@@ -610,6 +630,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_pulse_on -> megaBleClient!!.enableV2ModePulse(true)
             // 收数据
             R.id.btn_sync_data -> megaBleClient!!.syncData()
+            R.id.btn_sync_daily_data -> megaBleClient!!.syncDailyData()
             R.id.tv_clear -> {
                 et_token!!.text = null
                 UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)
@@ -620,17 +641,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes = readMockFromAsset("mock_spo2.bin")
-                    megaBleClient!!.parseSpoPr(bytes, object : MegaAuth.Callback<ParsedSpoPrBean> {
-                        override fun onFail(s: String) {
-                            Log.d(TAG, s)
-                            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
-                        }
-
-                        override fun onSuccess(bean: ParsedSpoPrBean) {
-                            Log.d(TAG, bean.toString())
-                            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
-                        }
-                    })
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    megaBleClient!!.parseSpoPr(bytes, parseSpoPrResult)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -640,17 +652,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 // byte[] bytes1 = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes1 = readMockFromAsset("mock_sport.bin")
-                    megaBleClient!!.parseSport(bytes1, object : MegaAuth.Callback<ParsedPrBean> {
-                        override fun onFail(s: String) {
-                            Log.d(TAG, s)
-                            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
-                        }
-
-                        override fun onSuccess(bean: ParsedPrBean) {
-                            Log.d(TAG, bean.toString())
-                            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
-                        }
-                    })
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    megaBleClient!!.parseSport(bytes1, parsePrResult)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            // 解析日常
+            R.id.btn_parse_daily ->
+                // mock data; 解析日常计步数据
+                // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
+                try {
+                    val bytes = readMockFromAsset("mock_daily.bin")
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    var result = megaBleClient!!.parseDailyEntry(bytes)
+                    Log.d(TAG, "$result")
+                    runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -662,6 +678,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
+            R.id.iv_info -> infoDialog.show()
             else -> {
             }
         }
@@ -816,7 +833,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, object : RequestPermissionListener {
+        ), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, object : RequestPermissionHandler.RequestPermissionListener {
             override fun onSuccess() {
                 // Toast.makeText(MainActivity.this, "request permission success", Toast.LENGTH_SHORT).show();
             }
@@ -838,5 +855,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         bos.flush()
         bos.close()
         return bos.toByteArray()
+    }
+
+    var parseSpoPrResult = object : MegaAuth.Callback<MegaSpoPrBean> {
+        override fun onSuccess(p0: MegaSpoPrBean?) {
+            Log.d(TAG, p0.toString())
+            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+        }
+
+        override fun onFail(p0: String?) {
+            Log.d(TAG, p0)
+            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+        }
+    }
+
+    var parsePrResult = object : MegaAuth.Callback<MegaPrBean> {
+        override fun onSuccess(p0: MegaPrBean?) {
+            Log.d(TAG, p0.toString())
+            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+        }
+
+        override fun onFail(p0: String?) {
+            Log.d(TAG, p0)
+            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+        }
     }
 }
