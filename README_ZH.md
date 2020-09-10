@@ -1,7 +1,7 @@
 # Mega Ble SDK 库使用文档（原生Android端）
 库名: megablelibopen
 
-- [EN](https://github.com/megahealth/TestBleLib/README.md) | 中文
+- [EN](./README.md) | 中文
 
 ## sdk文件
  - [arr库 v1.6.4](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.4.aar)

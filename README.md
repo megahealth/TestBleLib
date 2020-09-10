@@ -1,7 +1,7 @@
 # Mega Ble SDK Document（Android）
 name: megablelibopen
 
-- EN | [中文](https://github.com/megahealth/TestBleLib/README_ZH.md)
+- EN | [中文](./README_ZH.md)
 
 ## Files
  - [arr v1.6.4](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.4.aar)
