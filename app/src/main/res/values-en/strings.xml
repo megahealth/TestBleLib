@@ -25,4 +25,24 @@
     <string name="info_title">About</string>
     <string name="info_content">App Version:%s\nParse Version:%d</string>
     <string name="ok">Ok</string>
+    <string name="parse_success">Parse data success</string>
+    <string-array name="spinner_items_period_monitor_duration">
+        <item>10 m</item>
+        <item>1 h</item>
+        <item>5 h</item>
+        <item>10 h</item>
+    </string-array>
+
+    <string name="period_monitor_setting">get period monitor setting</string>
+    <string name="enable_period_monitor">enable period monitor</string>
+    <string name="disable_period_monitor">disable period monitor</string>
+    <string name="period_monitor_loop">Everyday</string>
+    <string name="period_monitor_start_time">Choose start time</string>
+    <string name="period_monitor_duration">Choose monitor duration</string>
+
+    <string name="choose_file">Choose File</string>
+    <string name="not_choose">unselected</string>
+    <string name="not_choose_tip">Please choose file</string>
+    <string name="period_disable_tip">if period monitor has started, it will take effect after this monitor end</string>
+    <string name="period_monitor_start_tip">Please choose start time.</string>
 </resources>

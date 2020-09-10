@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
@@ -34,7 +35,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
 import com.leon.lfilepickerlibrary.LFilePicker
 import com.leon.lfilepickerlibrary.utils.Constant
@@ -57,7 +60,7 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeListener {
     companion object {
         private const val TAG = "MainActivity"
         private const val SCAN_PERIOD: Long = 5
@@ -162,6 +165,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var megaBleClient: MegaBleClient? = null
     private var megaBleDevice: MegaBleDevice? = null
     private lateinit var infoDialog: AlertDialog
+    private var periodTime = 0L
     private val mLeScanCallback = LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
         if (device.name == null) return@LeScanCallback
         // 过滤掉了设备名称中不含ring的设备，请看情况使用
@@ -442,7 +446,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            }
             val msg: String = when (status) {
                 MegaBleConst.STATUS_OK -> {
-                    "Success"
+                    when (operationType) {
+                        MegaBleConfig.CMD_V2_MODE_LIVE_SPO -> "Turn on live SPO2 mode success"
+                        MegaBleConfig.CMD_V2_MODE_SPORT -> "Turn on sport mode success"
+                        MegaBleConfig.CMD_V2_MODE_SPO_MONITOR -> "Turn on sleep mode success"
+                        MegaBleConfig.CMD_V2_PERIOD_MONITOR -> "Set period monitor success"
+                        MegaBleConfig.CMD_V2_GET_PERIOD_SETTING -> "Get period monitor info success"
+                        else -> "Success"
+                    }
                 }
                 MegaBleConst.STATUS_LOWPOWER -> {
                     "Err, low power"
@@ -464,7 +475,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         override fun onHeartBeatReceived(heartBeat: MegaBleHeartBeat) {
-            // 心跳内容可以不用关心
+            Log.i(TAG, "$heartBeat")
         }
 
         override fun onRawdataParsed(a: Array<out IntArray>?) {
@@ -476,6 +487,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }
             }
         }
+
+
+        override fun onV2PeriodSettingReceived(setting: MegaV2PeriodSetting?) {
+            Log.i(TAG, "onV2PeriodSettingReceived:$setting")
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -499,6 +516,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onDestroy() {
         if (infoDialog != null && infoDialog.isShowing)
             infoDialog.dismiss()
+        if (chooseTimeDialog.isShowing)
+            chooseTimeDialog.dismiss()
         if (megaBleClient != null) megaBleClient!!.disConnect()
         super.onDestroy()
     }
@@ -573,12 +592,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             false
         }
+        btn_enable_period.setOnClickListener(this)
+        btn_disable_period.setOnClickListener(this)
+        btn_period_start_time.setOnClickListener(this)
+        btn_period_setting.setOnClickListener(this)
+        chooseTimeDialog = ChooseTimeDialog(this, this)
     }
 
     private fun initBle() {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         mBluetoothAdapter = bluetoothManager.adapter
     }
+
+    lateinit var chooseTimeDialog: ChooseTimeDialog
 
     override fun onClick(v: View) {
         if (v.id != R.id.btn_choose_file
@@ -603,15 +629,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btn_choose_file -> LFilePicker()
                     .withActivity(this)
-                    .withTitle("选择文件")
+                    .withTitle(resources.getString(R.string.choose_file))
                     .withRequestCode(REQUESTCODE_CHOOSE_FILE)
                     .withFileFilter(arrayOf(".zip"))
                     .withMutilyMode(false)
-                    .withNotFoundBooks("未选中")
+                    .withNotFoundBooks(resources.getString(R.string.not_choose))
                     .start()
             R.id.btn_start_dfu -> {
                 if (mDfuPath == null) {
-                    Toast.makeText(this, "未选择文件", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.not_choose_tip, Toast.LENGTH_SHORT).show()
                     return
                 }
                 megaBleClient!!.startDfu(megaBleDevice!!.mac)
@@ -666,7 +692,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
                     var result = megaBleClient!!.parseDailyEntry(bytes)
                     Log.d(TAG, "$result")
-                    runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+                    runOnUiThread { Toast.makeText(this@MainActivity, R.string.parse_success, Toast.LENGTH_SHORT).show() }
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -679,6 +705,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
             R.id.iv_info -> infoDialog.show()
+            R.id.btn_enable_period -> {
+                if (periodTime == 0L) {
+                    Toast.makeText(this, R.string.period_monitor_start_tip, Toast.LENGTH_LONG).show()
+                    return
+                }
+                var selectDurationIndex = spinner_period_monitor_duration.selectedItemPosition
+                var monitorDuration = when (selectDurationIndex) {
+                    1 -> 3600
+                    2 -> 3600 * 5
+                    3 -> 3600 * 10
+                    else -> 600
+                }
+                var currentTime = System.currentTimeMillis()
+                if (periodTime < currentTime)
+                    periodTime += 24 * 3600 * 1000
+                var timeLeft = ((periodTime - currentTime) / 1000).toInt()
+                Log.i(TAG, "monitorDuration:$monitorDuration isLoop:${sw_loop.isChecked} timeLeft:$timeLeft")
+                megaBleClient?.enableV2PeriodMonitor(true, sw_loop.isChecked, monitorDuration, timeLeft)
+            }
+            R.id.btn_disable_period -> {
+                megaBleClient?.enableV2PeriodMonitor(false, false, 0, 0)
+                Toast.makeText(this, R.string.period_disable_tip, Toast.LENGTH_LONG).show()
+            }
+            R.id.btn_period_start_time -> chooseTimeDialog.show()
+            R.id.btn_period_setting -> megaBleClient?.getV2PeriodSetting()
             else -> {
             }
         }
@@ -880,4 +931,45 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
         }
     }
+
+    class ChooseTimeDialog(context: Context, listener: OnChooseTimeListener) : BottomSheetDialog(context) {
+        var timePicker: TimePicker? = null
+        var calendar: Calendar = Calendar.getInstance()
+
+        init {
+            setContentView(R.layout.view_time_picker)
+            timePicker = findViewById(R.id.time_picker)
+            timePicker?.setIs24HourView(true)
+            findViewById<Button>(R.id.btn_ok)?.setOnClickListener {
+                listener.chooseTime(timePicker!!.currentHour, timePicker!!.currentMinute)
+                dismiss()
+            }
+        }
+
+        override fun show() {
+            calendar.timeInMillis = System.currentTimeMillis()
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                timePicker?.currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+                timePicker?.currentMinute = calendar.get(Calendar.MINUTE)
+            } else {
+                timePicker?.hour = calendar.get(Calendar.HOUR_OF_DAY)
+                timePicker?.minute = calendar.get(Calendar.MINUTE)
+            }
+            super.show()
+        }
+    }
+
+    override fun chooseTime(hour: Int, minute: Int) {
+        Log.i(TAG, "$hour:$minute")
+        tv_time.text = "$hour:$minute"
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        periodTime = calendar.timeInMillis
+    }
+}
+
+interface OnChooseTimeListener {
+    fun chooseTime(hour: Int, minute: Int)
 }

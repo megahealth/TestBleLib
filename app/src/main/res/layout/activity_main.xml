@@ -406,6 +406,62 @@
 
                 </HorizontalScrollView>
 
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_period_setting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/period_monitor_setting" />
+
+                        <Button
+                            android:id="@+id/btn_period_start_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/period_monitor_start_time" />
+
+                        <TextView
+                            android:id="@+id/tv_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--:--" />
+
+                        <Button
+                            android:id="@+id/btn_enable_period"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable_period_monitor" />
+
+                        <Button
+                            android:id="@+id/btn_disable_period"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/disable_period_monitor" />
+
+                        <Spinner
+                            android:id="@+id/spinner_period_monitor_duration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/spinner_items_period_monitor_duration"
+                            android:prompt="@string/period_monitor_duration"
+                            android:spinnerMode="dialog" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/sw_loop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/period_monitor_loop" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
                 <TextView
                     android:id="@+id/tv_dfu_path"
                     android:layout_width="match_parent"

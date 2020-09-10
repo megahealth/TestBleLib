@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -32,7 +33,8 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_width="20dp"
-            android:layout_height="20dp" />
+            android:layout_height="20dp"
+            tools:ignore="VectorDrawableCompat" />
 
         <TextView
             android:id="@+id/tv_rssi"
@@ -46,7 +48,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_width="16dp"
-            android:layout_height="16dp" />
+            android:layout_height="16dp"
+            tools:ignore="VectorDrawableCompat" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
