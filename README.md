@@ -176,6 +176,15 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |mode|working mode|
 |recordStatus|is/not recording data|
 
+|MegaBleDevice|Description|
+|:-:|:-:|
+|name|device name|
+|mac|mac|
+|sn|sn|
+|hwVer|hardware version|
+|fwVer|firmware version|
+|blVer|BootLoader version|
+
 |Operation Code|Description|
 |:-:|:-:|
 |0x00|CMD_SUCCESS|

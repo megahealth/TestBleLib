@@ -190,6 +190,15 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |mode|工作模式|
 |recordStatus|是否正在记录数据|
 
+|MegaBleDevice|说明|
+|:-:|:-:|
+|name|设备名称|
+|mac|mac|
+|sn|sn|
+|hwVer|硬件版本|
+|fwVer|固件版本|
+|blVer|BootLoader版本|
+
 操作返回码
 |返回码|说明|
 |:-:|:-:|
