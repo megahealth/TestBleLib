@@ -242,6 +242,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         // default setting. Use this default value is ok.
         // 强制设置用户身体信息，请使用默认值即可，不用更改
         override fun onSetUserInfo() {
+            megaBleClient!!.getV2Mode()
             megaBleClient!!.setUserInfo(25.toByte(), 1.toByte(), 170.toByte(), 60.toByte(), 0.toByte())
         }
 
@@ -415,7 +416,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.d(TAG, "onSyncMonitorDataComplete: " + bytes?.contentToString())
             Log.d(TAG, "uid: $uid")
             Log.d(TAG, "dataType: $dataType")
-            Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+            Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
             when (dataType) {
                 MegaBleConst.MODE_MONITOR -> {
                     megaBleClient!!.parseSpoPr(bytes, parseSpoPrResult)
@@ -507,6 +508,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 .withSecretId("D4CE5DD515F81247")
                 .withSecretKey("uedQ2MgVEFlsGIWSgofHYHNdZSyHmmJ5")
                 .withContext(this)
+                .uploadData(true)
                 .withCallback(megaBleCallback)
                 .build()
         // 开发测试时，可以开启debug
@@ -536,7 +538,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         try {
             val versionName = packageManager.getPackageInfo(this.packageName, 0).versionName
             tv_version.text = "v$versionName"
-            var message = String.format(getString(R.string.info_content), versionName, MegaBleClient.megaParseVesrion())
+            var message = String.format(getString(R.string.info_content), versionName, MegaBleClient.megaParseVersion())
             infoDialog = AlertDialog.Builder(this)
                     .setTitle(R.string.info_title)
                     .setPositiveButton(R.string.ok, null)
@@ -667,7 +669,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes = readMockFromAsset("mock_spo2.bin")
-                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
                     megaBleClient!!.parseSpoPr(bytes, parseSpoPrResult)
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -678,7 +680,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 // byte[] bytes1 = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes1 = readMockFromAsset("mock_sport.bin")
-                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
                     megaBleClient!!.parseSport(bytes1, parsePrResult)
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -689,7 +691,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 // byte[] bytes = new byte[]{1, 2, 3, 4, 5}; // an invalid mock data, return null
                 try {
                     val bytes = readMockFromAsset("mock_daily.bin")
-                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVesrion()}")
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
                     var result = megaBleClient!!.parseDailyEntry(bytes)
                     Log.d(TAG, "$result")
                     runOnUiThread { Toast.makeText(this@MainActivity, R.string.parse_success, Toast.LENGTH_SHORT).show() }

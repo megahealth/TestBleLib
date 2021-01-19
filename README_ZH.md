@@ -4,9 +4,9 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.4](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.4.aar)
+ - [arr库 v1.6.5](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.5.aar)
  - [.so库 v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.13](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.14](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -59,6 +59,7 @@ client = new MegaBleBuilder()
                 .withSecretId(id)
                 .withSecretKey(key)
                 .withContext(context)
+                .uploadData(true) // 上传数据帮助我们优化解析算法.(默认不上传)
                 .withCallback(megaBleCallback)
                 .build();
 ```
@@ -78,6 +79,10 @@ client.syncDailyData() // 同步日常计步数据
 client.getV2PeriodSetting() // 获取定时监测的设置信息 (MegaBleCallback.onV2PeriodSettingReceived返回设置信息)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // 打开定时监测 参数释义：true、是否重复、监测时长(s)、距离监测开启的时长(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // 关闭定时监测
+clinet.parseSpoPr(bytes, callback) // 解析血氧数据
+clinet.parseSport(bytes, callback) // 解析运动数据
+clinet.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSpoPr方法)
+clinet.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
 ```
 
 - public abstract class MegaBleCallback
@@ -111,7 +116,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     - MegaBleClient.parseScanRecord (二代戒指)
 
 - 获取算法解析版本
-    - MegaBleClient.megaParseVesrion()
+    - MegaBleClient.megaParseVersion()
 
 ## 字段说明
 | MegaSpoPrBean |说明|
@@ -231,6 +236,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 - 每次连上戒指，若不在监测中，建议都要尝试收取监测数据。若戒指内部监测数据满了，会导致无法开启监测
 - 一般需要监测1小时以上数据才有效
 - MegaBleCallback.onOperationStatus回调会返回相关操作的结果
+- 当您切换至新的解析函数时，请仔细阅读返回的的字段信息。
 - 其他
   - 权限要求：
   蓝牙、写文件、网络、定位

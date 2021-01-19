@@ -4,9 +4,9 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.4](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.4.aar)
+ - [arr v1.6.5](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.5.aar)
  - [.so v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.13](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.14](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
 1. Android studio import .arr and .so.
@@ -29,6 +29,7 @@ client = new MegaBleBuilder()
                 .withSecretId(id)
                 .withSecretKey(key)
                 .withContext(context)
+                .uploadData(true) //enable upload data to optimize algorithm.(default is false)
                 .withCallback(megaBleCallback)
                 .build();
 ```
@@ -48,6 +49,10 @@ client.syncDailyData() // Sync daily step data
 client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // close peroid monitor
+clinet.parseSpoPr(bytes, callback) // parse SPO2Monitor data
+clinet.parseSport(bytes, callback) // parse Sport data
+clinet.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
+clinet.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
 ```
 
 - public abstract class MegaBleCallback
@@ -80,7 +85,7 @@ void onV2ModeReceived(MegaV2Mode mode)
 - public class ParsedPrBean（Deprecated use MegaPrBean）
 
     Parse sport data：PR etc.
-  
+
 - native libary
   - jniLibs
 
@@ -97,7 +102,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     - MegaBleClient.parseScanRecord (MegaRing V2)
 
 - Algorithm version
-    - MegaBleClient.megaParseVesrion()
+    - MegaBleClient.megaParseVersion()
 
 ## Description
 | MegaSpoPrBean |Description|
@@ -203,7 +208,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |0xA7|BQ25120_IS_FAULT|
 |0xC1|RECORDS_NO_STOP|
 |0xFF|DEVICE_UNKNOWN_ERR|
-  
+
 ## Permissions required
 bluetooth, write file, internet, GPS
 minSdkVersion 19
@@ -218,3 +223,4 @@ targetSdkVersion 28
 - The Ring can save data in itself when enabling monitoring. So it is not necessary to keep connection between ring and phone.
 After monitoring started, it's ok to disconnect.
 - All data will be wiped out if TOKEN is changed.
+- Please check the returned fields carefully, If you change to new parse functions.
