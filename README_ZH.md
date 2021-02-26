@@ -4,9 +4,9 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.5](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.5.aar)
+ - [arr库 v1.6.6](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.6.aar)
  - [.so库 v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.14](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.15](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -48,7 +48,7 @@
   2. 已绑定设备状态下需要传入用户的userId 和 token
 方法为：startWithoutToken，startWithToken
 7. (强制)设置用户信息：setUserInfo(...)。完成此步后，蓝牙设备和用户进入已绑定状态
-8. Idle状态。用户可以开始进行操作，如：收数据、开监测
+8. Idle状态。用户可以开始进行操作，如：收数据、开监测(建议在此先获取下设备当前的模式信息)
 9. 解析数据(需要强制联网验证)，可以输出类似兆观健康应用中的报告统计信息
 
 ## 主要API：
@@ -67,6 +67,7 @@ client = new MegaBleBuilder()
 - public class MegaBleClient
 ```
 client.toggleLive(true); // 开/关全局实时通道。兼容：血氧长时、运动、血氧实时
+client.getV2Mode(); // 获取设备当前所处的模式
 client.enableV2ModeLiveSpo(true); // 打开血氧实时模式
 client.enableV2ModeDaily(true); // 关闭所有模式
 client.enableV2ModeSpoMonitor(true); // 打开血氧长时模式 (睡眠血氧监测)
@@ -79,10 +80,10 @@ client.syncDailyData() // 同步日常计步数据
 client.getV2PeriodSetting() // 获取定时监测的设置信息 (MegaBleCallback.onV2PeriodSettingReceived返回设置信息)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // 打开定时监测 参数释义：true、是否重复、监测时长(s)、距离监测开启的时长(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // 关闭定时监测
-clinet.parseSpoPr(bytes, callback) // 解析血氧数据
-clinet.parseSport(bytes, callback) // 解析运动数据
-clinet.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSpoPr方法)
-clinet.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
+client.parseSpoPr(bytes, callback) // 解析血氧数据
+client.parseSport(bytes, callback) // 解析运动数据
+client.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSpoPr方法)
+client.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
 ```
 
 - public abstract class MegaBleCallback
@@ -174,7 +175,16 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |s|秒|
 |maxTime|监测时长(s)|
 
-|MegaV2LiveSpoMonitor/MegaV2LiveSpoLive|说明|
+|MegaV2LiveSpoLive|说明|
+|:-:|:-:|
+|status|  0--->值有效 <br>1--->准备中 <br>2--->值无效|
+|hr|心率|
+|spo2|血氧(%)|
+|accX|acc|
+|accY|acc|
+|accZ|acc|
+
+|MegaV2LiveSpoMonitor|说明|
 |:-:|:-:|
 |status|  0--->值有效 <br>1--->准备中 <br>2--->值无效|
 |hr|心率|
@@ -205,6 +215,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |blVer|BootLoader版本|
 
 操作返回码
+
 |返回码|说明|
 |:-:|:-:|
 |0x00|CMD_SUCCESS|
@@ -226,7 +237,12 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 
 ## 完整Java Doc
   - [在线文档](https://wangkelei.github.io/megadoc/)
-  
+
+## 佩戴检测
+    1. 切换至实现血氧模式
+    2. onV2LiveSpoLive()返回包含acc值的实时血氧对象
+    3. 引导用户摆出指定手势，若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ = 0
+
 ## 注
 - 导包方法：android studio， file -> new -> new module... -> import .jar/.aar package
 - 导入native库
@@ -237,6 +253,8 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 - 一般需要监测1小时以上数据才有效
 - MegaBleCallback.onOperationStatus回调会返回相关操作的结果
 - 当您切换至新的解析函数时，请仔细阅读返回的的字段信息。
+- 数据和日志的路径--->sdcard/megaBle (client.setDebugEnable(true))
+- 开发者需要连续获取10秒-20秒的实时acc值来判断用户的佩戴方向,若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ= 0
 - 其他
   - 权限要求：
   蓝牙、写文件、网络、定位

@@ -242,7 +242,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         // default setting. Use this default value is ok.
         // 强制设置用户身体信息，请使用默认值即可，不用更改
         override fun onSetUserInfo() {
-            megaBleClient!!.getV2Mode()
             megaBleClient!!.setUserInfo(25.toByte(), 1.toByte(), 170.toByte(), 60.toByte(), 0.toByte())
         }
 
@@ -255,6 +254,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             // suggested setting, repeated call is ok.
             Log.d(TAG, "Important: the remote device is idle.")
             megaBleClient!!.toggleLive(true)
+            megaBleClient!!.getV2Mode()
+            runOnUiThread {
+                mScannedDevices.clear()
+                mScannedAdapter?.notifyDataSetChanged()
+            }
         }
 
         // default setting
@@ -264,6 +268,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
         // 血氧实时模式、脉诊模式共用此回调
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
+            Log.i(TAG, "$live")
             when (live.status) {
                 MegaBleConst.STATUS_LIVE_VALID -> {
                     updateV2Live("$live(valid)")
@@ -362,16 +367,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
         override fun onV2ModeReceived(mode: MegaV2Mode) {
             when (mode.mode) {
+                MegaBleConst.MODE_DAILY -> {
+                    // In daily mode, you can sync data/turn on monitor.If device is not in this mode, the operation will get error.
+                    // 正处于日常模式,可以收数据,开监测,不再此模式收数据或者开监测会失败，详情请参考错误码.
+                }
                 MegaBleConst.MODE_MONITOR -> {
+                    // In SPO2Monitor mode
                     // 正处于血氧长时监测模式
                 }
                 MegaBleConst.MODE_LIVE -> {
+                    // In liveSPO2 mode
                     // 正处于监测实时监测模式
                 }
                 MegaBleConst.MODE_SPORT -> {
+                    // In sport mode
                     // 正处于运动模式
                 }
                 MegaBleConst.MODE_PULSE -> {
+                    // In pulse mode
                     // 正处于脉诊模式
                 }
             }
@@ -825,6 +838,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             tvAddress.text = device.address
             tvRssi.text = device.rssi.toString()
             v.setOnClickListener { v: View? ->
+                Log.i(TAG, "Connecting -> " + device.name + " " + device.address)
                 Toast.makeText(this@MainActivity, "Connecting -> " + device.name + " " + device.address, Toast.LENGTH_SHORT).show()
                 megaBleClient!!.connect(device.address, device.name)
             }

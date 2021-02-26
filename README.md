@@ -4,9 +4,9 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.5](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.5.aar)
+ - [arr v1.6.6](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.6.aar)
  - [.so v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.14](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.15](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
 1. Android studio import .arr and .so.
@@ -36,7 +36,8 @@ client = new MegaBleBuilder()
 
 - public class MegaBleClient
 ```
-client.toggleLive(true); // Turn on/off the global real-time channel。Compatible：liveSPO2/sport/SPO2Monitor/pulse
+client.toggleLive(true); // Turn on/off the global real-time channel.Compatible：liveSPO2/sport/SPO2Monitor/pulse
+client.getV2Mode(); // Get current mode.
 client.enableV2ModeLiveSpo(true); // Turn on liveSPO2 mode
 client.enableV2ModeDaily(true); // Turn off liveSPO2/sport/SPO2Monitor
 client.enableV2ModeSpoMonitor(true); // Turn on SPO2Monitor(Sleep SPO2Monitor) mode
@@ -48,11 +49,11 @@ client.disableRawdata // Turn off rawdata
 client.syncDailyData() // Sync daily step data
 client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
-client.enableV2PeriodMonitor(false, false, 0, 0) // close peroid monitor
-clinet.parseSpoPr(bytes, callback) // parse SPO2Monitor data
-clinet.parseSport(bytes, callback) // parse Sport data
-clinet.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
-clinet.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
+client.enableV2PeriodMonitor(false, false, 0, 0) // close period monitor
+client.parseSpoPr(bytes, callback) // parse SPO2Monitor data
+client.parseSport(bytes, callback) // parse Sport data
+client.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
+client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
 ```
 
 - public abstract class MegaBleCallback
@@ -78,18 +79,18 @@ void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live)
 void onV2ModeReceived(MegaV2Mode mode)
 ```
 
-- public class ParsedSpoPrBean（Deprecated，use MegaSpoPrBean）
+- public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
 
-    Prase SPO2 data：SPO2、PR、sleep area etc.
+    Parse SPO2 data：SPO2、PR、sleep area etc.
 
-- public class ParsedPrBean（Deprecated use MegaPrBean）
+- public class ParsedPrBean（Deprecated, use MegaPrBean）
 
     Parse sport data：PR etc.
 
-- native libary
+- native library
   - jniLibs
 
-- dfu（firware upgrade）dependencies
+- dfu（firmware upgrade）dependencies
 ```
 // dfu lib. higher dfu lib may not work, use this one
 // href：https://github.com/NordicSemiconductor/Android-DFU-Library
@@ -116,7 +117,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |minO2|minO2|
 |avgO2|avgO2|
 |prArr|Pr array|
-|handOffArr|handoff timestamp pair|
+|handOffArr|handOff timestamp pair|
 |o2Arr|spo2 array(s)。|
 |stageArr|sleep stage array：0-w，2-r，3-l，4-d，6-offhand. (Awake, REM, Light, Deep)|
 |maxDownDuration|(s)|
@@ -149,7 +150,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |avgPr||
 |minPr||
 |prArr|Pr array(s))|
-|handOffArr|handoff timestamp pair|
+|handOffArr|handOff timestamp pair|
 
 |MegaV2PeriodSetting|Description|
 |:-:|:-:|
@@ -160,7 +161,16 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |s|second|
 |maxTime|duration(s)|
 
-|MegaV2LiveSpoMonitor/MegaV2LiveSpoLive|Description|
+|MegaV2LiveSpoLive|Description|
+|:-:|:-:|
+|status|  0--->valid value <br>1--->preparing <br>2--->invalid value|
+|hr|heart rate(bpm)|
+|spo2|spo2(%)|
+|accX|acc|
+|accY|acc|
+|accZ|acc|
+
+|MegaV2LiveSpoMonitor|Description|
 |:-:|:-:|
 |status|  0--->valid value <br>1--->preparing <br>2--->invalid value|
 |hr|heart rate(bpm)|
@@ -215,7 +225,10 @@ minSdkVersion 19
 targetSdkVersion 28
 - It is recommended to refer to the demo source code and run the experience
 
-
+## Wearing Test
+ 1. Switch to liveSPO2 mode
+ 2. onV2LiveSpoLive() will return MegaV2LiveSpoLive data
+ 3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
 
 # Remarks
 - Please view the output information with the android studio console
@@ -224,3 +237,5 @@ targetSdkVersion 28
 After monitoring started, it's ok to disconnect.
 - All data will be wiped out if TOKEN is changed.
 - Please check the returned fields carefully, If you change to new parse functions.
+- Data and Log path--->sdcard/megaBle (client.setDebugEnable(true))
+- Developers need to continuously collect 10s-20s real-time values to judge wearing.If the user wears the ring correctly:accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
