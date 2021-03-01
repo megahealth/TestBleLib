@@ -268,7 +268,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
         // 血氧实时模式、脉诊模式共用此回调
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
-            Log.i(TAG, "$live")
+            Log.d(TAG, "accX:${live.accX} accY:${live.accY} accZ:${live.accZ}")
             when (live.status) {
                 MegaBleConst.STATUS_LIVE_VALID -> {
                     updateV2Live("$live(valid)")
