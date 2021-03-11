@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
         }
 
-        override fun onDfuBleConnectionChange(connected: Boolean, device: MegaBleDevice) {
+        override fun onDfuBleConnectionChange(connected: Boolean, device: MegaBleDevice?) {
             Log.d(TAG, "onDfuBleConnectionChange: $connected")
             if (connected) {
                 megaBleDevice = device // 务必别忘了这一步

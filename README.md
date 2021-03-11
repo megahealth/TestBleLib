@@ -4,9 +4,9 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.6](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.6.aar)
- - [.so v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.15](https://github.com/megahealth/TestBleLib)
+ - [arr v1.6.7](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.7.aar)
+ - [.so v10830](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
 1. Android studio import .arr and .so.

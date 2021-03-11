@@ -4,9 +4,9 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.6](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.6.aar)
- - [.so库 v10120](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.15](https://github.com/megahealth/TestBleLib)
+ - [arr库 v1.6.7](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.7.aar)
+ - [.so库 v10830](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -242,6 +242,12 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     1. 切换至实现血氧模式
     2. onV2LiveSpoLive()返回包含acc值的实时血氧对象
     3. 引导用户摆出指定手势，若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ = 0
+
+## 数据说明
+- 每监测 82 秒产生 256 字节的数据;
+- 结束监测时指环里会保存这次监测的数据, 其中不足 256 字节的部分会被舍去;
+- 数据在被收取后自动删除;
+- 指环内部空间能存储 12 小时的睡眠监测, 建议在开始新的监测前检查收取数据;
 
 ## 注
 - 导包方法：android studio， file -> new -> new module... -> import .jar/.aar package
