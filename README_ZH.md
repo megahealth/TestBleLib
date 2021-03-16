@@ -4,8 +4,8 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.7](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.7.aar)
- - [.so库 v10830](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [arr库 v1.6.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.8.aar)
+ - [.so库 v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
@@ -135,7 +135,6 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |o2Arr|解析后得到的血氧数组，连续的，间隔时间(s)。|
 |stageArr|睡眠分期数组 0:清醒 2:眼动 3:浅睡 4:深睡 6:离手/无效|
 |maxDownDuration|最长氧减时间(s)|
-|offhandMinutes|离手时长(minutes)|
 |wakeMinutes|清醒期(minutes)|
 |remMinutes|眼动期(minutes)|
 |lightMinutes|浅睡期(minutes)|

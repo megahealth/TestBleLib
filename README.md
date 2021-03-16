@@ -4,8 +4,8 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.7](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.7.aar)
- - [.so v10830](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [arr v1.6.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.8.aar)
+ - [.so v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
@@ -121,7 +121,6 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |o2Arr|spo2 array(s)。|
 |stageArr|sleep stage array：0-w，2-r，3-l，4-d，6-offhand. (Awake, REM, Light, Deep)|
 |maxDownDuration|(s)|
-|offhandMinutes|(s)|
 |wakeMinutes|(s)|
 |remMinutes|(s)|
 |lightMinutes|(s))|

@@ -927,6 +927,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     var parseSpoPrResult = object : MegaAuth.Callback<MegaSpoPrBean> {
         override fun onSuccess(p0: MegaSpoPrBean?) {
             Log.d(TAG, p0.toString())
+            p0!!.offhandMinutes
             runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
         }
 
