@@ -373,6 +373,12 @@
                             android:text="@string/label_sync_daily" />
 
                         <Button
+                            android:id="@+id/btn_sync_glu_data"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_sync_glu" />
+
+                        <Button
                             android:id="@+id/btn_parse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -414,6 +420,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_get_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/get_mode" />
+
+                        <Button
+                            android:id="@+id/btn_turn_on_glu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/turn_on_glu" />
+
+                        <Button
+                            android:id="@+id/btn_turn_off_glu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/turn_off_glu" />
 
                         <Button
                             android:id="@+id/btn_period_setting"

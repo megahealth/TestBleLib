@@ -9,6 +9,7 @@
     <string name="label_enable_monitor">monitor spo2 on</string>
     <string name="label_sync">sync data</string>
     <string name="label_sync_daily">sync daily data</string>
+    <string name="label_sync_glu">sync glu data</string>
     <string name="no_conn">offline</string>
     <string name="label_open_global_live_pipe">open global live listener</string>
     <string name="label_open_live">monitor live on</string>
@@ -39,6 +40,10 @@
     <string name="period_monitor_loop">Everyday</string>
     <string name="period_monitor_start_time">Choose start time</string>
     <string name="period_monitor_duration">Choose monitor duration</string>
+
+    <string name="get_mode">Current Mode</string>
+    <string name="turn_on_glu">Turn on GLU</string>
+    <string name="turn_off_glu">Turn off GLU</string>
 
     <string name="choose_file">Choose File</string>
     <string name="not_choose">unselected</string>

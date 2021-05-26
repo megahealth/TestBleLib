@@ -4,9 +4,9 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.8.aar)
+ - [arr v1.6.10](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.10.aar)
  - [.so v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.17](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
 1. Android studio import .arr and .so.
@@ -46,6 +46,7 @@ client.enableV2ModePulse(true); // Turn on pulse mode
 client.enableRawdataSpo // Turn on SPO2 rawdata(need turn on liveSPO2/sport/SPO2Monitor/pulse)
 client.enableRawdataPulse // Turn on pulse rawdata(need turn on pulse mode)
 client.disableRawdata // Turn off rawdata
+client.syncData() // Sync monitor data
 client.syncDailyData() // Sync daily step data
 client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
@@ -70,13 +71,16 @@ void onDeviceInfoReceived(MegaBleDevice device)
 void onBatteryChanged(int value, int status)
 void onReadyToDfu()
 void onSyncingDataProgress(int progress)
-void onSyncMonitorDataComplete(byte[] bytes)
+void onSyncMonitorDataComplete(byte[] bytes, int dataStopType, int dataType, String uid, int steps)
+void onSyncDailyDataComplete(byte[] bytes)
 void onSyncNoDataOfMonitor()
+void onSyncNoDataOfDaily()
 void onOperationStatus(int status)
 void onHeartBeatReceived(MegaBleHeartBeat heartBeat)
 void onV2LiveSleep(MegaV2LiveSleep live)
 void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live)
-void onV2ModeReceived(MegaV2Mode mode)
+void onV2ModeReceived(MegaV2Mode mode) // get current mode
+void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting 
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -226,7 +230,9 @@ targetSdkVersion 28
 
 ## Wearing Test
  1. Switch to liveSPO2 mode
+
  2. onV2LiveSpoLive() will return MegaV2LiveSpoLive data
+
  3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
 
 # Remarks

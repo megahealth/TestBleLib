@@ -42,6 +42,7 @@ import android.widget.Toast
 import com.leon.lfilepickerlibrary.LFilePicker
 import com.leon.lfilepickerlibrary.utils.Constant
 import io.mega.megablelib.*
+import io.mega.megablelib.enums.GLUMode
 import io.mega.megablelib.enums.MegaBleBattery
 import io.mega.megablelib.model.MegaBleDevice
 import io.mega.megablelib.model.bean.*
@@ -169,7 +170,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     private val mLeScanCallback = LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
         if (device.name == null) return@LeScanCallback
         // 过滤掉了设备名称中不含ring的设备，请看情况使用
-        if (!device.name.toLowerCase().contains("ring")) return@LeScanCallback
+        if (!device.name.toLowerCase().contains("ring") && !device.name.toLowerCase().contains("mr")) return@LeScanCallback
         // 戒指设备广播scanRecord的长度为62
         if (scanRecord.size < 62) return@LeScanCallback
         // 解析广播事例，先解析3代戒指广播
@@ -234,7 +235,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             // 提前获取电池电量、监测模式；在此处调用，可以在idle之前获得
             // 方便在idle后判断该做什么事
             megaBleClient!!.getV2Batt()
-            megaBleClient!!.getV2Mode()
             Log.d(TAG, "onDeviceInfoReceived $device")
             sendToHandler(device)
         }
@@ -366,6 +366,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
 
         override fun onV2ModeReceived(mode: MegaV2Mode) {
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, mode.toString(), Toast.LENGTH_LONG).show()
+            }
             when (mode.mode) {
                 MegaBleConst.MODE_DAILY -> {
                     // In daily mode, you can sync data/turn on monitor.If device is not in this mode, the operation will get error.
@@ -446,6 +449,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.d(TAG, "no data")
         }
 
+        override fun onSyncNoDataOfGlu() {
+            Log.d(TAG, "no glu data")
+        }
+
         // result of client cmd
         override fun onOperationStatus(operationType: Int, status: Int) { //            switch (operationType) {
 //                case  MegaBleConfig.CMD_V2_MODE_SPO_MONITOR:
@@ -490,6 +497,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
         override fun onHeartBeatReceived(heartBeat: MegaBleHeartBeat) {
             Log.i(TAG, "$heartBeat")
+        }
+
+        override fun onRawdataPath(path: String?) {
+            super.onRawdataPath(path)
         }
 
         override fun onRawdataParsed(a: Array<out IntArray>?) {
@@ -598,7 +609,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 if (s.isEmpty()) tv_clear.visibility = View.INVISIBLE
             }
         })
-        findViewById<View>(android.R.id.content).setOnTouchListener { v, event ->
+        findViewById<View>(android.R.id.content).setOnTouchListener { _, _ ->
             if (this@MainActivity.currentFocus != null) {
                 tv_clear.visibility = View.INVISIBLE
                 et_token.clearFocus()
@@ -611,6 +622,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_disable_period.setOnClickListener(this)
         btn_period_start_time.setOnClickListener(this)
         btn_period_setting.setOnClickListener(this)
+        btn_sync_glu_data.setOnClickListener(this)
+        btn_get_mode.setOnClickListener(this)
+        btn_turn_on_glu.setOnClickListener(this)
+        btn_turn_off_glu.setOnClickListener(this)
         chooseTimeDialog = ChooseTimeDialog(this, this)
     }
 
@@ -670,7 +685,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             // 开脉诊
             R.id.btn_pulse_on -> megaBleClient!!.enableV2ModePulse(true)
             // 收数据
-            R.id.btn_sync_data -> megaBleClient!!.syncData()
+            R.id.btn_sync_data -> {
+                megaBleClient!!.syncData()
+            }
             R.id.btn_sync_daily_data -> megaBleClient!!.syncDailyData()
             R.id.tv_clear -> {
                 et_token!!.text = null
@@ -745,6 +762,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
             R.id.btn_period_start_time -> chooseTimeDialog.show()
             R.id.btn_period_setting -> megaBleClient?.getV2PeriodSetting()
+            R.id.btn_get_mode -> megaBleClient?.getV2Mode()
+            R.id.btn_turn_on_glu -> megaBleClient?.setGLUMode(GLUMode.MINUTES_15)
+            R.id.btn_turn_off_glu -> megaBleClient?.setGLUMode(GLUMode.OFF)
+            R.id.btn_sync_glu_data -> megaBleClient?.syncGluData()
             else -> {
             }
         }

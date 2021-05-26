@@ -4,9 +4,9 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.8](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.8.aar)
+ - [arr库 v1.6.10](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.10.aar)
  - [.so库 v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.16](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.17](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -76,6 +76,7 @@ client.enableV2ModePulse(true); // 打开脉诊模式
 client.enableRawdataSpo // 打开血氧rawdata，需要打开血氧相关模式
 client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
 client.disableRawdata // 关闭所有rawdata
+client.syncData() // 同步监测数据
 client.syncDailyData() // 同步日常计步数据
 client.getV2PeriodSetting() // 获取定时监测的设置信息 (MegaBleCallback.onV2PeriodSettingReceived返回设置信息)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // 打开定时监测 参数释义：true、是否重复、监测时长(s)、距离监测开启的时长(s)
@@ -241,7 +242,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     1. 切换至实现血氧模式
     2. onV2LiveSpoLive()返回包含acc值的实时血氧对象
     3. 引导用户摆出指定手势，若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ = 0
-
+ 
 ## 数据说明
 - 每监测 82 秒产生 256 字节的数据;
 - 结束监测时指环里会保存这次监测的数据, 其中不足 256 字节的部分会被舍去;
@@ -295,6 +296,7 @@ demo为了方便使用本地选择文件，后续应将升级文件(.zip包)放�
 - 解析日常数据 - 收取到的日常计步数据，调用api联网验证并解析
 - 开rawdata脉诊 - 获取脉诊模式时的rawdata数据
 - 关rawdata
+- 查看当前模式 - 查看戒指当前处于的模式
 - 查看定时监测设置 - 获取定时监测的设置信息
 - 选择开始时间 - 设置定时监测的开始时间
 - 打开定时监测

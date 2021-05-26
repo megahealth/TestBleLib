@@ -16,6 +16,7 @@
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>
     <string name="label_sync_daily">收日常数据</string>
+    <string name="label_sync_glu">收血糖</string>
     <string name="label_parse">解析血氧</string>
     <string name="label_parse_sport">解析运动</string>
     <string name="label_parse_daily">解析日常数据</string>
@@ -40,6 +41,10 @@
     <string name="period_monitor_loop">每天</string>
     <string name="period_monitor_start_time">选择开始时间</string>
     <string name="period_monitor_duration">选择监测时长</string>
+
+    <string name="get_mode">查看当前模式</string>
+    <string name="turn_on_glu">开血糖</string>
+    <string name="turn_off_glu">关血糖</string>
 
     <string name="choose_file">选择文件</string>
     <string name="not_choose">未选中</string>
