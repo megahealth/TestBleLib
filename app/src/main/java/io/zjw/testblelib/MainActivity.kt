@@ -118,43 +118,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         true
     })
 
-    // ui
-//    private var btnScan: Button? = null
-//    private var mRecyclerView: RecyclerView? = null
     private var mScannedAdapter: ScannedAdapter? = null
 
-    //    private var mainContent: LinearLayout? = null
-//    private var tvStatus: TextView? = null
-//    private var tvName: TextView? = null
-//    private var tvMac: TextView? = null
-//    private var tvSN: TextView? = null
-//    private var tvVersion: TextView? = null
-//    private var tvOtherInfo: TextView? = null
-//    private var btnChooseFile: Button? = null
-//    private var tvDfuPath: TextView? = null
-//    private var btnStartDfu: Button? = null
-//    private var tvBatt: TextView? = null
-//    private var tvBattStatus: TextView? = null
-//    private var tvRssi: TextView? = null
-//    private var tvAppVersionName: TextView? = null
-//    private var btnMonitorOn: Button? = null
-//    private var btnSportOn: Button? = null
-//    private var btnMonitorOff: Button? = null // 血氧监测，运动监测，实时监测的关闭都是同一个
-//    private var btnSyncData: Button? = null
-//    private var tvSpo: TextView? = null
-//    private var tvHr: TextView? = null
-//    private var tvLiveDesc: TextView? = null
-//    private var btnLiveOn: Button? = null
-//    private var btnOpenGlobalLive: Button? = null
-//    private var tvSyncProgress: TextView? = null
-//    private var tvSmile: TextView? = null
-//    private var etToken: EditText? = null
-//    private var tvClear: TextView? = null
-//    private var tvV2Live: TextView? = null
-//    private var btnParse: Button? = null
-//    private var btnParseSport: Button? = null
-//    private var tvDfuProgress: TextView? = null
-    // permission checker
     private var mRequestPermissionHandler: RequestPermissionHandler? = null
 
     // ble
@@ -948,7 +913,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     var parseSpoPrResult = object : MegaAuth.Callback<MegaSpoPrBean> {
         override fun onSuccess(p0: MegaSpoPrBean?) {
             Log.d(TAG, p0.toString())
-            p0!!.offhandMinutes
             runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
         }
 

@@ -4,9 +4,9 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.10](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.10.aar)
- - [.so v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.17](https://github.com/megahealth/TestBleLib)
+ - [arr v1.6.11](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.11.aar)
+ - [.so v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.18](https://github.com/megahealth/TestBleLib)
 
 ## Quick start
 1. Android studio import .arr and .so.
@@ -55,6 +55,7 @@ client.parseSpoPr(bytes, callback) // parse SPO2Monitor data
 client.parseSport(bytes, callback) // parse Sport data
 client.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
 client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
+client.startDfu() // enter to dfu mode to upgrade firmware.
 ```
 
 - public abstract class MegaBleCallback
@@ -77,10 +78,11 @@ void onSyncNoDataOfMonitor()
 void onSyncNoDataOfDaily()
 void onOperationStatus(int status)
 void onHeartBeatReceived(MegaBleHeartBeat heartBeat)
-void onV2LiveSleep(MegaV2LiveSleep live)
-void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live)
+void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live); // SPO2/Sleep live data
+void onV2LiveSport(MegaV2LiveSport live); // Sport live data
+void onV2LiveSpoLive(MegaV2LiveSpoLive live); // Live SPO2 data
 void onV2ModeReceived(MegaV2Mode mode) // get current mode
-void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting 
+void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -112,9 +114,11 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 ## Description
 | MegaSpoPrBean |Description|
 | :-:|:-:|
-|startAt|start time(s)|
-|endAt|end time(s)|
-|duration|duration(s)|
+|startAt|start time(timestamp)|
+|endAt|end time(timestamp)|
+|startPos|SPO2/PR offset of start|
+|endPos|SPO2/PR offset of end|
+|duration|duration(second)|
 |maxPr|maxPr(bpm)|
 |avgPr|avgPr(bpm)|
 |minPr|minPr(bpm)|
@@ -122,37 +126,115 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |avgO2|avgO2|
 |prArr|Pr array|
 |handOffArr|handOff timestamp pair|
-|o2Arr|spo2 array(s)。|
+|o2Arr|spo2 array(second)|
 |stageArr|sleep stage array：0-w，2-r，3-l，4-d，6-offhand. (Awake, REM, Light, Deep)|
-|maxDownDuration|(s)|
-|wakeMinutes|(s)|
-|remMinutes|(s)|
-|lightMinutes|(s))|
-|deepMinutes|(s)|
+|maxDownDuration|(second)|
+|wakeMinutes|(minutes)|
+|remMinutes|(minutes)|
+|lightMinutes|(minutes))|
+|deepMinutes|(minutes)|
+|wakeInSMinutes|(minutes)|
+|fallSMinutes|(minutes)|
 |downIndex|spo2 down index|
 |downTimes|spo2 down counts|
+|downIndexW|spo2 down index of whole night|
 |secondsUnder60|spo2 <60% seconds|
+|secondsUnder65|spo2 <65% seconds|
 |secondsUnder70|spo2 <70% seconds|
+|secondsUnder75|spo2 <75% seconds|
 |secondsUnder80|spo2 <80% seconds|
 |secondsUnder85|spo2 <85% seconds|
 |secondsUnder90|spo2 <90% seconds|
 |secondsUnder95|spo2 <95% seconds|
+|secondsUnder100|spo2 <100% seconds|
 |shareUnder60|spo2 <60% time percent(%), notice:convert to percent need *100)|
+|shareUnder65|spo2 <65% time percent(%), notice:convert to percent need *100)|
 |shareUnder70|spo2 <70% time percent(%), notice:convert to percent need *100|
+|shareUnder75|spo2 <75% time percent(%), notice:convert to percent need *100)|
 |shareUnder80|spo2 <80% time percent(%), notice:convert to percent need *100|
 |shareUnder85|spo2 <85% time percent(%), notice:convert to percent need *100|
 |shareUnder90|spo2 <90% time percent(%), notice:convert to percent need *100|
 |shareUnder95|spo2 <95% time percent(%), notice:convert to percent need *100|
+|shareUnder100|spo2 <100% time percent(%), notice:convert to percent need *100)|
+|ODI3Less100Cnt||
+|ODI3Less95Cnt||
+|ODI3Less90Cnt||
+|ODI3Less85Cnt||
+|ODI3Less80Cnt||
+|ODI3Less75Cnt||
+|ODI3Less70Cnt||
+|ODI3Less65Cnt||
+|ODI3Less60Cnt||
+|ODI3Less100Percent||
+|ODI3Less95Percent||
+|ODI3Less90Percent||
+|ODI3Less85Percent||
+|ODI3Less80Percent||
+|ODI3Less75Percent||
+|ODI3Less70Percent||
+|ODI3Less65Percent||
+|ODI3Less60Percent||
+|ODI3Less10sCnt||
+|ODI3Less20sCnt||
+|ODI3Less30sCnt||
+|ODI3Less40sCnt||
+|ODI3Less50sCnt||
+|ODI3Less60sCnt||
+|ODI3Longer60sCnt||
+|ODI3Less10sPercent||
+|ODI3Less20sPercent||
+|ODI3Less30sPercent||
+|ODI3Less40sPercent||
+|ODI3Less50sPercent||
+|ODI3Less60sPercent||
+|ODI3Longer60sPercent||
+|downTimes4||
+|downIndex4||
+|downIndexW4||
+|maxDownDuration4||
+|ODI4Less100Cnt||
+|ODI4Less95Cnt||
+|ODI4Less90Cnt||
+|ODI4Less85Cnt||
+|ODI4Less80Cnt||
+|ODI4Less75Cnt||
+|ODI4Less70Cnt||
+|ODI4Less65Cnt||
+|ODI4Less60Cnt||
+|ODI4Less100Percent||
+|ODI4Less95Percent||
+|ODI4Less90Percent||
+|ODI4Less85Percent||
+|ODI4Less80Percent||
+|ODI4Less75Percent||
+|ODI4Less70Percent||
+|ODI4Less65Percent||
+|ODI4Less60Percent||
+|ODI4Less10sCnt||
+|secondsUnder100||
+|ODI4Less20sCnt||
+|ODI4Less30sCnt||
+|ODI4Less40sCnt||
+|ODI4Less50sCnt||
+|ODI4Less60sCnt||
+|ODI4Longer60sCnt||
+|ODI4Less10sPercent||
+|ODI4Less20sPercent||
+|ODI4Less30sPercent||
+|ODI4Less40sPercent||
+|ODI4Less50sPercent||
+|ODI4Less60sPercent||
+|ODI4Longer60sPercent||
 
 |MegaPrBean|Description|
 | :-:|:-:|
-|startAt|start time(s)|
-|endAt|end time(s)|
-|duration|duration(s)|
+|startAt|start time(timestamp)|
+|endAt|end time(timestamp)|
+|duration|duration(second)|
 |maxPr|(bpm)|
 |avgPr||
 |minPr||
-|prArr|Pr array(s))|
+|prArr|Pr array(second))|
 |handOffArr|handOff timestamp pair|
 
 |MegaV2PeriodSetting|Description|
@@ -162,7 +244,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |h|hour|
 |m|minute|
 |s|second|
-|maxTime|duration(s)|
+|maxTime|duration(second)|
 
 |MegaV2LiveSpoLive|Description|
 |:-:|:-:|

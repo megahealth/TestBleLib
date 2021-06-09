@@ -4,9 +4,9 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.10](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.10.aar)
- - [.so库 v10854](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.17](https://github.com/megahealth/TestBleLib)
+ - [arr库 v1.6.11](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.11.aar)
+ - [.so库 v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.18](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
@@ -85,13 +85,37 @@ client.parseSpoPr(bytes, callback) // 解析血氧数据
 client.parseSport(bytes, callback) // 解析运动数据
 client.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSpoPr方法)
 client.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
+client.startDfu() // 进入DFU模式，onReadyToDfu()表示已进入升级模式，可向戒指发送升级包
 ```
 
-- public abstract class MegaBleCallback
+- public abstract class MegaBleCallback // 指环操作回调
 ```
+void onConnectionStateChange(boolean connected); // 蓝牙连接状态变化
+void onError(int code); //操作异常
+void onStart(); // 开始绑定指环
+void onSetUserInfo(); // 发送用户信息
+void onIdle(); // 绑定完成，指环空闲
+void onKnockDevice(); // 没有token或者token改变时会走这个回调，需提示用户晃动指环
+void onTokenReceived(String token); // 返回当前的token，请妥善保存
+void onRssiReceived(int rssi); //获取指环的信号
+void onDeviceInfoReceived(MegaBleDevice device); //返回指环的信息
+void onBatteryChanged(int value, int status); // 电量变换
+void onReadyToDfu(); // 指环已进入DFU模式
+void onSyncingDataProgress(int progress); // 数据收取进度
+void onSyncMonitorDataComplete(byte[] bytes, int dataStopType, int dataType, String uid, int steps); // 监测数据收取完成
+void onSyncDailyDataComplete(byte[] bytes); // 日常数据收取成功
+void onSyncNoDataOfMonitor(); // 暂无监测数据/监测数据收取完成
+void onSyncNoDataOfDaily(); // 暂无日常数据/日常数据收取完成
+void onOperationStatus(int status); // 指令发送结果
+void onHeartBeatReceived(MegaBleHeartBeat heartBeat); // 心跳包获取结果
+void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live); // 睡眠监测实时值
+void onV2LiveSport(MegaV2LiveSport live); // 运动监测实时值
+void onV2LiveSpoLive(MegaV2LiveSpoLive live); // 实时血氧监测值
+void onV2ModeReceived(MegaV2Mode mode); // 返回当前模式
+void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // 返回当前定时信息
 // 参数：[[通道1value, 通道2value], [通道1value, 通道2value]]。长度不固定，可能1组或2组；
 // 血氧、脉诊都是此通道
-onRawdataParsed([])
+void onRawdataParsed([]);
 ```
 
 - public class ParsedSpoPrBean（已废弃，替换为MegaSpoPrBean）
@@ -125,6 +149,8 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 | :-:|:-:|
 |startAt|开始时间戳(s)|
 |endAt|结束时间戳(s)|
+|startPos|氧、心率开始（偏移）|
+|endPos|血氧、心率结束（偏移）|
 |duration|监测时长(s)|
 |maxPr|最大脉率(bpm)|
 |avgPr|平均脉率(bpm)|
@@ -140,20 +166,98 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |remMinutes|眼动期(minutes)|
 |lightMinutes|浅睡期(minutes)|
 |deepMinutes|深睡期(minutes)|
+|wakeInSMinutes|入睡后觉醒时长(minutes)|
+|fallSMinutes|入睡等待时长(minutes)|
 |downIndex|氧减指数|
 |downTimes|氧减次数|
+|downIndexW|氧减指数 对整晚数据，不做分期的统计|
 |secondsUnder60|血氧饱和度 <60% 的时间(s)|
+|secondsUnder65|血氧饱和度 <65% 的时间(s)|
 |secondsUnder70|血氧饱和度 <70% 的时间(s)|
+|secondsUnder75|血氧饱和度 <75% 的时间(s)|
 |secondsUnder80|血氧饱和度 <80% 的时间(s)|
 |secondsUnder85|血氧饱和度 <85% 的时间(s)|
 |secondsUnder90|血氧饱和度 <90% 的时间(s)|
 |secondsUnder95|血氧饱和度 <95% 的时间(s)|
+|secondsUnder100|血氧饱和度 <100% 的时间(s)|
 |shareUnder60|血氧饱和度 <60% 的时间占比(*100转换为%)|
+|shareUnder65|血氧饱和度 <65% 的时间占比(*100转换为%)|
 |shareUnder70|血氧饱和度 <70% 的时间占比(*100转换为%)|
+|shareUnder75|血氧饱和度 <75% 的时间占比(*100转换为%)|
 |shareUnder80|血氧饱和度 <80% 的时间占比(*100转换为%)|
 |shareUnder85|血氧饱和度 <85% 的时间占比(*100转换为%)|
 |shareUnder90|血氧饱和度 <90% 的时间占比(*100转换为%)|
 |shareUnder95|血氧饱和度 <95% 的时间占比(*100转换为%)|
+|shareUnder100|血氧饱和度 <100% 的时间占比(*100转换为%)|
+|ODI3Less100Cnt|血氧低于100高于95的事件个数|
+|ODI3Less95Cnt|血氧低于95高于90的事件个数|
+|ODI3Less90Cnt|血氧低于90高于85的事件个数|
+|ODI3Less85Cnt|血氧低于85高于80的事件个数|
+|ODI3Less80Cnt|血氧低于80高于75的事件个数|
+|ODI3Less75Cnt|血氧低于75高于70的事件个数|
+|ODI3Less70Cnt|血氧低于70高于65的事件个数|
+|ODI3Less65Cnt|血氧低于65高于60的事件个数|
+|ODI3Less60Cnt|血氧低于60的事件个数|
+|ODI3Less100Percent|血氧低于100高于95的事件占比|
+|ODI3Less95Percent|血氧低于95高于90的事件占比|
+|ODI3Less90Percent|血氧低于90高于85的事件占比|
+|ODI3Less85Percent|血氧低于85高于80的事件占比|
+|ODI3Less80Percent|血氧低于80高于75的事件占比|
+|ODI3Less75Percent|血氧低于75高于70的事件占比|
+|ODI3Less70Percent|血氧低于70高于65的事件占比|
+|ODI3Less65Percent|血氧低于65高于60的事件占比|
+|ODI3Less60Percent|血氧低于60的事件占比|
+|ODI3Less10sCnt|时间少于10秒的事件个数|
+|ODI3Less20sCnt|时间少于20秒大于10秒的事件个数|
+|ODI3Less30sCnt|时间少于30秒大于20秒的事件个数|
+|ODI3Less40sCnt|时间少于40秒大于30秒的事件个数|
+|ODI3Less50sCnt|时间少于50秒大于40秒的事件个数|
+|ODI3Less60sCnt|时间少于60秒大于50秒的事件个数|
+|ODI3Longer60sCnt|时间大于60秒的事件个数|
+|ODI3Less10sPercent|时间少于10秒的事件占比|
+|ODI3Less20sPercent|时间少于20秒大于10秒的事件占比|
+|ODI3Less30sPercent|时间少于30秒大于20秒的事件占比|
+|ODI3Less40sPercent|时间少于40秒大于30秒的事件占比|
+|ODI3Less50sPercent|时间少于50秒大于40秒的事件占比|
+|ODI3Less60sPercent|时间少于60秒大于50秒的事件占比|
+|ODI3Longer60sPercent|时间大于60秒的事件占比|
+|downTimes4|氧减次数|
+|downIndex4|氧减指数|
+|downIndexW4|氧减指数 对整晚数据，不做分期的统计|
+|maxDownDuration4|最长氧减时间|
+|ODI4Less100Cnt||
+|ODI4Less95Cnt||
+|ODI4Less90Cnt||
+|ODI4Less85Cnt||
+|ODI4Less80Cnt||
+|ODI4Less75Cnt||
+|ODI4Less70Cnt||
+|ODI4Less65Cnt||
+|ODI4Less60Cnt||
+|ODI4Less100Percent||
+|ODI4Less95Percent||
+|ODI4Less90Percent||
+|ODI4Less85Percent||
+|ODI4Less80Percent||
+|ODI4Less75Percent||
+|ODI4Less70Percent||
+|ODI4Less65Percent||
+|ODI4Less60Percent||
+|ODI4Less10sCnt||
+|secondsUnder100||
+|ODI4Less20sCnt||
+|ODI4Less30sCnt||
+|ODI4Less40sCnt||
+|ODI4Less50sCnt||
+|ODI4Less60sCnt||
+|ODI4Longer60sCnt||
+|ODI4Less10sPercent||
+|ODI4Less20sPercent||
+|ODI4Less30sPercent||
+|ODI4Less40sPercent||
+|ODI4Less50sPercent||
+|ODI4Less60sPercent||
+|ODI4Longer60sPercent||
 
 |MegaPrBean|说明|
 | :-:|:-:|
