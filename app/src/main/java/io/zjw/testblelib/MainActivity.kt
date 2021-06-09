@@ -226,11 +226,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
         }
 
-        // default setting
-//        override fun onEnsureBindWhenTokenNotMatch() {
-//            megaBleClient!!.ensureBind(true)
-//        }
-
         // 血氧实时模式、脉诊模式共用此回调
         override fun onV2LiveSpoLive(live: MegaV2LiveSpoLive) {
             Log.d(TAG, "accX:${live.accX} accY:${live.accY} accZ:${live.accZ}")
