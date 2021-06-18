@@ -428,6 +428,12 @@
                             android:text="@string/get_mode" />
 
                         <Button
+                            android:id="@+id/btn_get_crash_log"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CrashLog" />
+
+                        <Button
                             android:id="@+id/btn_turn_on_glu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

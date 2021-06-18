@@ -77,8 +77,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
      * 固件升级 dfu 状态监听
      */
     private var mDfuProgressListener: DfuProgressListener = object : DfuProgressListenerAdapter() {
-        override fun onProgressChanged(deviceAddress: String, percent: Int, speed: Float, avgSpeed: Float, currentPart: Int, partsTotal: Int) {
-            super.onProgressChanged(deviceAddress, percent, speed, avgSpeed, currentPart, partsTotal)
+        override fun onProgressChanged(
+            deviceAddress: String,
+            percent: Int,
+            speed: Float,
+            avgSpeed: Float,
+            currentPart: Int,
+            partsTotal: Int
+        ) {
+            super.onProgressChanged(
+                deviceAddress,
+                percent,
+                speed,
+                avgSpeed,
+                currentPart,
+                partsTotal
+            )
             tv_dfu_progress!!.text = percent.toString()
         }
 
@@ -132,29 +146,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     private var megaBleDevice: MegaBleDevice? = null
     private lateinit var infoDialog: AlertDialog
     private var periodTime = 0L
-    private val mLeScanCallback = LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
-        if (device.name == null) return@LeScanCallback
-        // 过滤掉了设备名称中不含ring的设备，请看情况使用
-        if (!device.name.toLowerCase().contains("ring") && !device.name.toLowerCase().contains("mr")) return@LeScanCallback
-        // 戒指设备广播scanRecord的长度为62
-        if (scanRecord.size < 62) return@LeScanCallback
-        // 解析广播事例，先解析3代戒指广播
-        val advOnly = MegaAdvParse.parse(scanRecord)
-        if (advOnly == null) { // 不行了再解析2代戒指广播
-            val advEntity = MegaBleClient.parseScanRecord(device, scanRecord)
-            if (advEntity != null) Log.d(TAG, advEntity.toString())
-        } else {
-            Log.d(TAG, advOnly.toString())
+    private val mLeScanCallback =
+        LeScanCallback { device: BluetoothDevice, rssi: Int, scanRecord: ByteArray ->
+            if (device.name == null) return@LeScanCallback
+            // 过滤掉了设备名称中不含ring的设备，请看情况使用
+            if (!device.name.toLowerCase().contains("ring") && !device.name.toLowerCase()
+                    .contains("mr")
+            ) return@LeScanCallback
+            // 戒指设备广播scanRecord的长度为62
+            if (scanRecord.size < 62) return@LeScanCallback
+            // 解析广播事例，先解析3代戒指广播
+            val advOnly = MegaAdvParse.parse(scanRecord)
+            if (advOnly == null) { // 不行了再解析2代戒指广播
+                val advEntity = MegaBleClient.parseScanRecord(device, scanRecord)
+                if (advEntity != null) Log.d(TAG, advEntity.toString())
+            } else {
+                Log.d(TAG, advOnly.toString())
+            }
+            val scannedDevice = ScannedDevice(device.name, device.address, rssi)
+            Log.d(TAG, "device: $scannedDevice")
+            val i = mScannedDevices.indexOf(scannedDevice)
+            if (i == -1) {
+                mScannedDevices.add(scannedDevice)
+            } else {
+                mScannedDevices[i].rssi = rssi
+            }
         }
-        val scannedDevice = ScannedDevice(device.name, device.address, rssi)
-        Log.d(TAG, "device: $scannedDevice")
-        val i = mScannedDevices.indexOf(scannedDevice)
-        if (i == -1) {
-            mScannedDevices.add(scannedDevice)
-        } else {
-            mScannedDevices[i].rssi = rssi
-        }
-    }
     private val megaBleCallback: MegaBleCallback = object : MegaBleCallback() {
         override fun onConnectionStateChange(connected: Boolean, device: MegaBleDevice?) {
             Log.d(TAG, "onConnectionStateChange: $connected")
@@ -185,7 +202,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 //            String random = "129,57,79,122,227,76";
 //            megaBleClient.startWithToken(userId, random);
 
-            val token = UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
+            val token =
+                UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
             runOnUiThread { et_token!!.setText(token) }
             if (TextUtils.isEmpty(token)) {
 //                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
@@ -207,7 +225,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         // default setting. Use this default value is ok.
         // 强制设置用户身体信息，请使用默认值即可，不用更改
         override fun onSetUserInfo() {
-            megaBleClient!!.setUserInfo(25.toByte(), 1.toByte(), 170.toByte(), 60.toByte(), 0.toByte())
+            megaBleClient!!.setUserInfo(
+                25.toByte(),
+                1.toByte(),
+                170.toByte(),
+                60.toByte(),
+                0.toByte()
+            )
         }
 
         override fun onIdle() {
@@ -280,7 +304,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 val alertDialog = AlertDialog.Builder(this@MainActivity).create()
                 alertDialog.setTitle("Hint")
                 alertDialog.setMessage("Please shake device")
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK"
+                alertDialog.setButton(
+                    AlertDialog.BUTTON_NEUTRAL, "OK"
                 ) { dialog: DialogInterface, which: Int -> dialog.dismiss() }
                 alertDialog.show()
             }
@@ -365,9 +390,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 DfuServiceInitiator.createDfuNotificationChannel(this@MainActivity)
             }
             val starter = DfuServiceInitiator(megaBleDevice!!.mac)
-                    .setDeviceName(megaBleDevice!!.name) // onDfuBleConnectionChange里device赋值的原因，这里要用
-                    .setKeepBond(false)
-                    .setZip(mDfuPath!!)
+                .setDeviceName(megaBleDevice!!.name) // onDfuBleConnectionChange里device赋值的原因，这里要用
+                .setKeepBond(false)
+                .setZip(mDfuPath!!)
             starter.setDisableNotification(true) // 禁止notification的交互
             starter.start(this@MainActivity, DfuService::class.java)
         }
@@ -376,7 +401,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.d(TAG, "onSyncDailyDataComplete: " + bytes?.contentToString())
             var result = megaBleClient!!.parseDailyEntry(bytes)
             Log.d(TAG, "$result")
-            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show()
+            }
         }
 
         override fun onSyncNoDataOfDaily() {
@@ -388,7 +415,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             runOnUiThread { tv_sync_progress.text = progress.toString() }
         }
 
-        override fun onSyncMonitorDataComplete(bytes: ByteArray?, dataStopType: Int, dataType: Int, uid: String?, steps: Int) {
+        override fun onSyncMonitorDataComplete(
+            bytes: ByteArray?,
+            dataStopType: Int,
+            dataType: Int,
+            uid: String?,
+            steps: Int
+        ) {
             Log.d(TAG, "onSyncMonitorDataComplete: " + bytes?.contentToString())
             Log.d(TAG, "uid: $uid")
             Log.d(TAG, "dataType: $dataType")
@@ -414,7 +447,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
 
         // result of client cmd
-        override fun onOperationStatus(operationType: Int, status: Int) { //            switch (operationType) {
+        override fun onOperationStatus(
+            operationType: Int,
+            status: Int
+        ) { //            switch (operationType) {
 //                case  MegaBleConfig.CMD_V2_MODE_SPO_MONITOR:
 //                    //
 //                break;
@@ -469,13 +505,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 //            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
             runOnUiThread {
                 tv_sync_progress.text =
-                        "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }
+                    "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }
             }
         }
 
 
         override fun onV2PeriodSettingReceived(setting: MegaV2PeriodSetting?) {
             Log.i(TAG, "onV2PeriodSettingReceived:$setting")
+        }
+
+        override fun onCrashLogReceived(bytes: ByteArray?) {
+            Log.i(TAG, "onCrashLogReceived:${bytes?.contentToString()}")
         }
 
     }
@@ -489,12 +529,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         initBle()
         // mock id, key，use yours
         megaBleClient = MegaBleBuilder()
-                .withSecretId("D4CE5DD515F81247")
-                .withSecretKey("uedQ2MgVEFlsGIWSgofHYHNdZSyHmmJ5")
-                .withContext(this)
-                .uploadData(true)
-                .withCallback(megaBleCallback)
-                .build()
+            .withSecretId("D4CE5DD515F81247")
+            .withSecretKey("uedQ2MgVEFlsGIWSgofHYHNdZSyHmmJ5")
+            .withContext(this)
+            .uploadData(true)
+            .withCallback(megaBleCallback)
+            .build()
         // 开发测试时，可以开启debug
         megaBleClient!!.setDebugEnable(true)
     }
@@ -522,18 +562,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         try {
             val versionName = packageManager.getPackageInfo(this.packageName, 0).versionName
             tv_version.text = "v$versionName"
-            var message = String.format(getString(R.string.info_content), versionName, MegaBleClient.megaParseVersion())
+            var message = String.format(
+                getString(R.string.info_content),
+                versionName,
+                MegaBleClient.megaParseVersion()
+            )
             infoDialog = AlertDialog.Builder(this)
-                    .setTitle(R.string.info_title)
-                    .setPositiveButton(R.string.ok, null)
-                    .setMessage(message)
-                    .create()
+                .setTitle(R.string.info_title)
+                .setPositiveButton(R.string.ok, null)
+                .setMessage(message)
+                .create()
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
         setSupportActionBar(toolbar)
         btn_scan.setOnClickListener(this)
-        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recycler_view.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         LinearSnapHelper().attachToRecyclerView(recycler_view)
         mScannedAdapter = ScannedAdapter(mScannedDevices)
         recycler_view.adapter = mScannedAdapter
@@ -561,7 +606,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 if (s != null) tv_clear.visibility = View.VISIBLE
             }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) { //                if (s == null) tv_clear.setVisibility(View.INVISIBLE);
+            override fun onTextChanged(
+                s: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) { //                if (s == null) tv_clear.setVisibility(View.INVISIBLE);
 //                else tv_clear.setVisibility(View.VISIBLE);
             }
 
@@ -573,8 +623,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             if (this@MainActivity.currentFocus != null) {
                 tv_clear.visibility = View.INVISIBLE
                 et_token.clearFocus()
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(this@MainActivity.currentFocus.windowToken, 0)
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(
+                    this@MainActivity.currentFocus.windowToken,
+                    0
+                )
             }
             false
         }
@@ -587,6 +641,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_turn_on_glu.setOnClickListener(this)
         btn_turn_off_glu.setOnClickListener(this)
         chooseTimeDialog = ChooseTimeDialog(this, this)
+        btn_get_crash_log.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -598,12 +653,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
     override fun onClick(v: View) {
         if (v.id != R.id.btn_choose_file
-                && v.id != R.id.btn_scan
-                && v.id != R.id.btn_parse
-                && v.id != R.id.btn_parse_sport
-                && v.id != R.id.btn_parse_daily
-                && v.id != R.id.iv_info
-                && R.id.tv_clear != v.id) {
+            && v.id != R.id.btn_scan
+            && v.id != R.id.btn_parse
+            && v.id != R.id.btn_parse_sport
+            && v.id != R.id.btn_parse_daily
+            && v.id != R.id.iv_info
+            && R.id.tv_clear != v.id
+        ) {
             if (megaBleDevice == null) {
                 Toast.makeText(this, "ble offline", Toast.LENGTH_SHORT).show()
                 return
@@ -611,20 +667,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
         when (v.id) {
             R.id.btn_scan -> {
-                if (PermissionChecker.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_ACCESS_COARSE_LOCATION)
+                if (PermissionChecker.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                        REQUEST_ACCESS_COARSE_LOCATION
+                    )
                     return
                 }
                 scanLeDevices()
             }
             R.id.btn_choose_file -> LFilePicker()
-                    .withActivity(this)
-                    .withTitle(resources.getString(R.string.choose_file))
-                    .withRequestCode(REQUESTCODE_CHOOSE_FILE)
-                    .withFileFilter(arrayOf(".zip"))
-                    .withMutilyMode(false)
-                    .withNotFoundBooks(resources.getString(R.string.not_choose))
-                    .start()
+                .withActivity(this)
+                .withTitle(resources.getString(R.string.choose_file))
+                .withRequestCode(REQUESTCODE_CHOOSE_FILE)
+                .withFileFilter(arrayOf(".zip"))
+                .withMutilyMode(false)
+                .withNotFoundBooks(resources.getString(R.string.not_choose))
+                .start()
             R.id.btn_start_dfu -> {
                 if (mDfuPath == null) {
                     Toast.makeText(this, R.string.not_choose_tip, Toast.LENGTH_SHORT).show()
@@ -684,7 +748,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                     Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
                     var result = megaBleClient!!.parseDailyEntry(bytes)
                     Log.d(TAG, "$result")
-                    runOnUiThread { Toast.makeText(this@MainActivity, R.string.parse_success, Toast.LENGTH_SHORT).show() }
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.parse_success,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -699,7 +769,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.iv_info -> infoDialog.show()
             R.id.btn_enable_period -> {
                 if (periodTime == 0L) {
-                    Toast.makeText(this, R.string.period_monitor_start_tip, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.period_monitor_start_tip, Toast.LENGTH_LONG)
+                        .show()
                     return
                 }
                 var selectDurationIndex = spinner_period_monitor_duration.selectedItemPosition
@@ -713,8 +784,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 if (periodTime < currentTime)
                     periodTime += 24 * 3600 * 1000
                 var timeLeft = ((periodTime - currentTime) / 1000).toInt()
-                Log.i(TAG, "monitorDuration:$monitorDuration isLoop:${sw_loop.isChecked} timeLeft:$timeLeft")
-                megaBleClient?.enableV2PeriodMonitor(true, sw_loop.isChecked, monitorDuration, timeLeft)
+                Log.i(
+                    TAG,
+                    "monitorDuration:$monitorDuration isLoop:${sw_loop.isChecked} timeLeft:$timeLeft"
+                )
+                megaBleClient?.enableV2PeriodMonitor(
+                    true,
+                    sw_loop.isChecked,
+                    monitorDuration,
+                    timeLeft
+                )
             }
             R.id.btn_disable_period -> {
                 megaBleClient?.enableV2PeriodMonitor(false, false, 0, 0)
@@ -726,6 +805,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_turn_on_glu -> megaBleClient?.setGLUMode(GLUMode.MINUTES_15)
             R.id.btn_turn_off_glu -> megaBleClient?.setGLUMode(GLUMode.OFF)
             R.id.btn_sync_glu_data -> megaBleClient?.syncGluData()
+            R.id.btn_get_crash_log->megaBleClient?.getCrashLog()
             else -> {
             }
         }
@@ -757,12 +837,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
         mBluetoothAdapter!!.startLeScan(mLeScanCallback)
         Observable.interval(1, TimeUnit.SECONDS)
-                .take(SCAN_PERIOD)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { aLong: Long ->
-                    Log.d(TAG, aLong.toString() + "scaning...")
-                    mScannedAdapter!!.notifyDataSetChanged()
-                }
+            .take(SCAN_PERIOD)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { aLong: Long ->
+                Log.d(TAG, aLong.toString() + "scaning...")
+                mScannedAdapter!!.notifyDataSetChanged()
+            }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -780,14 +860,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        mRequestPermissionHandler!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        mRequestPermissionHandler!!.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
     }
 
-    internal inner class ScannedAdapter(private val mList: List<ScannedDevice>) : RecyclerView.Adapter<ScannedViewHolder>() {
+    internal inner class ScannedAdapter(private val mList: List<ScannedDevice>) :
+        RecyclerView.Adapter<ScannedViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScannedViewHolder {
-            val view = LayoutInflater.from(this@MainActivity).inflate(R.layout.item_scan_result, parent, false)
+            val view = LayoutInflater.from(this@MainActivity)
+                .inflate(R.layout.item_scan_result, parent, false)
             return ScannedViewHolder(view)
         }
 
@@ -820,7 +910,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             tvRssi.text = device.rssi.toString()
             v.setOnClickListener { v: View? ->
                 Log.i(TAG, "Connecting -> " + device.name + " " + device.address)
-                Toast.makeText(this@MainActivity, "Connecting -> " + device.name + " " + device.address, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Connecting -> " + device.name + " " + device.address,
+                    Toast.LENGTH_SHORT
+                ).show()
                 megaBleClient!!.connect(device.address, device.name)
             }
         }
@@ -877,19 +971,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     }
 
     private fun checkAppPermission() {
-        mRequestPermissionHandler!!.requestPermission(this, arrayOf(
+        mRequestPermissionHandler!!.requestPermission(this,
+            arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, object : RequestPermissionHandler.RequestPermissionListener {
-            override fun onSuccess() {
-                // Toast.makeText(MainActivity.this, "request permission success", Toast.LENGTH_SHORT).show();
-            }
+            ),
+            REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS,
+            object : RequestPermissionHandler.RequestPermissionListener {
+                override fun onSuccess() {
+                    // Toast.makeText(MainActivity.this, "request permission success", Toast.LENGTH_SHORT).show();
+                }
 
-            override fun onFailed() {
-                Toast.makeText(this@MainActivity, "request permission failed", Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailed() {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "request permission failed",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
     }
 
     @Throws(IOException::class)
@@ -908,28 +1009,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     var parseSpoPrResult = object : MegaAuth.Callback<MegaSpoPrBean> {
         override fun onSuccess(p0: MegaSpoPrBean?) {
             Log.d(TAG, p0.toString())
-            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show()
+            }
         }
 
         override fun onFail(p0: String?) {
             Log.d(TAG, p0)
-            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     var parsePrResult = object : MegaAuth.Callback<MegaPrBean> {
         override fun onSuccess(p0: MegaPrBean?) {
             Log.d(TAG, p0.toString())
-            runOnUiThread { Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show()
+            }
         }
 
         override fun onFail(p0: String?) {
             Log.d(TAG, p0)
-            runOnUiThread { Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show() }
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    class ChooseTimeDialog(context: Context, listener: OnChooseTimeListener) : BottomSheetDialog(context) {
+    class ChooseTimeDialog(context: Context, listener: OnChooseTimeListener) :
+        BottomSheetDialog(context) {
         var timePicker: TimePicker? = null
         var calendar: Calendar = Calendar.getInstance()
 

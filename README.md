@@ -4,9 +4,16 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.11](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.11.aar)
+ - [arr v1.6.12](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.12.aar)
  - [.so v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.18](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
+
+## Changelog
+|Version|Description|Date|
+|:-:|:-:|:-:|
+|1.6.12|Add get crash log api|2021/06/18|
+|1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields |2021/06/09|
+
 
 ## Quick start
 1. Android studio import .arr and .so.
@@ -56,6 +63,7 @@ client.parseSport(bytes, callback) // parse Sport data
 client.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
 client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
 client.startDfu() // enter to dfu mode to upgrade firmware.
+client.getCrashLog() // get crash log, recommend to get crash log after sync data.
 ```
 
 - public abstract class MegaBleCallback
@@ -83,6 +91,7 @@ void onV2LiveSport(MegaV2LiveSport live); // Sport live data
 void onV2LiveSpoLive(MegaV2LiveSpoLive live); // Live SPO2 data
 void onV2ModeReceived(MegaV2Mode mode) // get current mode
 void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting
+void onCrashLogReceived(bytes: ByteArray?)// return crash log
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）

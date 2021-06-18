@@ -4,11 +4,17 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.11](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.11.aar)
+ - [arr库 v1.6.12](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.12.aar)
  - [.so库 v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.18](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
+
+## 更新日志
+|版本|说明|时间|
+|:-:|:-:|:-:|
+|1.6.12|增加获取crash log的API|2021/06/18|
+|1.6.11|1.更新后处理算法(V10974)<br/>2.MegaSpoPrBean新增解析字段 |2021/06/09|
 
 ## 作用
 提供与兆观公司智能指环蓝牙交互的功能
@@ -86,6 +92,7 @@ client.parseSport(bytes, callback) // 解析运动数据
 client.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSpoPr方法)
 client.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
 client.startDfu() // 进入DFU模式，onReadyToDfu()表示已进入升级模式，可向戒指发送升级包
+client.getCrashLog() //获取crash log, 推荐在监测数据收取完成以后获取crash log信息.
 ```
 
 - public abstract class MegaBleCallback // 指环操作回调
@@ -113,6 +120,7 @@ void onV2LiveSport(MegaV2LiveSport live); // 运动监测实时值
 void onV2LiveSpoLive(MegaV2LiveSpoLive live); // 实时血氧监测值
 void onV2ModeReceived(MegaV2Mode mode); // 返回当前模式
 void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // 返回当前定时信息
+void onCrashLogReceived(bytes: ByteArray?)//返回crash log
 // 参数：[[通道1value, 通道2value], [通道1value, 通道2value]]。长度不固定，可能1组或2组；
 // 血氧、脉诊都是此通道
 void onRawdataParsed([]);
