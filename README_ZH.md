@@ -4,15 +4,16 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.12](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.12.aar)
- - [.so库 v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [arr库 v1.6.13](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.13.aar)
+ - [.so库 v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
 ## 更新日志
 |版本|说明|时间|
-|:-:|:-:|:-:|
+|:-:|-|:-:|
+|1.6.13|1.支持ZG28<br/>2.MegaDailyBean增加温度字段(temp)<br/>(如果不是ZG28指环可忽略该字段)<br/>3.更新后处理算法(V11141)|2021/08/24|
 |1.6.12|增加获取crash log的API|2021/06/18|
 |1.6.11|1.更新后处理算法(V10974)<br/>2.MegaSpoPrBean新增解析字段 |2021/06/09|
 
@@ -93,6 +94,7 @@ client.parseSpoPrOld(bytes, callback) // 解析血氧数据(已弃用，请使�
 client.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使用parseSport方法)
 client.startDfu() // 进入DFU模式，onReadyToDfu()表示已进入升级模式，可向戒指发送升级包
 client.getCrashLog() //获取crash log, 推荐在监测数据收取完成以后获取crash log信息.
+client.parseDailyEntry(bytes) //解析日常数据
 ```
 
 - public abstract class MegaBleCallback // 指环操作回调
@@ -133,6 +135,14 @@ void onRawdataParsed([]);
 - public class ParsedPrBean（已废弃，替换为MegaPrBean）
 
     解析运动数据：脉率；其他统计信息
+
+- public class MegaDailyParsedResult
+
+   解析日常数据
+
+- public class MegaDailyBean
+
+   日常数据详情
 
 - native库 // 数据解析相关
   - jniLibs
@@ -326,6 +336,17 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |fwVer|固件版本|
 |blVer|BootLoader版本|
 
+|MegaDailyParsedResult|解析返回的日常数据集合 |
+|:-------------------:|:-------------------------------------------------------:|
+|dailyUnit|计算每一条日常数据的开始时间(单位是分钟) |
+|dailyBeans|日常数据集合|
+
+|MegaDailyBean|日常数据详情信息 |
+|:-----------:|:------------------------------------------:|
+|time|结束时间(单位是时间戳) |
+|stepsDiff|时间段内步数|
+|temp|时间段内温度|
+
 操作返回码
 
 |返回码|说明|
@@ -354,6 +375,11 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     1. 切换至实现血氧模式
     2. onV2LiveSpoLive()返回包含acc值的实时血氧对象
     3. 引导用户摆出指定手势，若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ = 0
+
+## 日常数据计算说明
+    1.日常数据的开始时间需要开发者自行计算. start = MegaDailyBean.time-dailyUnit*60
+    2.温度的单位是 ℃ ,temp/10 即可拿到温度.
+    3.日常数据的同步时间需要开发者自行控制.
  
 ## 数据说明
 - 每监测 82 秒产生 256 字节的数据;

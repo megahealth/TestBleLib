@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.12](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.12.aar)
- - [.so v10974](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [arr v1.6.13](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.13.aar)
+ - [.so v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
-|:-:|:-:|:-:|
+|:-:|-|:-:|
+|1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
 |1.6.12|Add get crash log api|2021/06/18|
 |1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields |2021/06/09|
 
@@ -64,6 +65,7 @@ client.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use 
 client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
 client.startDfu() // enter to dfu mode to upgrade firmware.
 client.getCrashLog() // get crash log, recommend to get crash log after sync data.
+client.parseDailyEntry(bytes) //pasre daily data
 ```
 
 - public abstract class MegaBleCallback
@@ -101,6 +103,15 @@ void onCrashLogReceived(bytes: ByteArray?)// return crash log
 - public class ParsedPrBean（Deprecated, use MegaPrBean）
 
     Parse sport data：PR etc.
+
+- public class MegaDailyParsedResult
+
+    Parse daily data
+
+- public class MegaDailyBean
+
+    daily data detail
+
 
 - native library
   - jniLibs
@@ -294,6 +305,17 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |fwVer|firmware version|
 |blVer|BootLoader version|
 
+|MegaDailyParsedResult|Result of parse daily data |
+|:-------------------:|:-------------------------------------------------------:|
+|dailyUnit|For calculate start of MegaDailyBean(Unit is minutes) |
+|dailyBeans|list of MegaDailyBean|
+
+|MegaDailyBean|Details of daily data |
+|:-----------:|:------------------------------------------:|
+|time|end of MegaDailyBean(The unit is timestamps) |
+|stepsDiff|steps in the time period|
+|temp|temperature in the time period|
+
 |Operation Code|Description|
 |:-:|:-:|
 |0x00|CMD_SUCCESS|
@@ -320,11 +342,14 @@ targetSdkVersion 28
 - It is recommended to refer to the demo source code and run the experience
 
 ## Wearing Test
- 1. Switch to liveSPO2 mode
+    1. Switch to liveSPO2 mode
+    2. onV2LiveSpoLive() will return MegaV2LiveSpoLive data
+    3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
 
- 2. onV2LiveSpoLive() will return MegaV2LiveSpoLive data
-
- 3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
+## Tips of calculate daily data
+    1. Start of MegaDailyBean need calculate by yourself. start = MegaDailyBean.time-dailyUnit*60
+    2.The unit of temp  is ℃ ,temp/10  to get  temperature .
+    3. Please control the timing of sync daily data by yourself.
 
 # Remarks
 - Please view the output information with the android studio console
