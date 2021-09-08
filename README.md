@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.13](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.13.aar)
+ - [arr v1.6.14](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.14.aar)
  - [.so v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
 |1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
 |1.6.12|Add get crash log api|2021/06/18|
 |1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields |2021/06/09|
@@ -245,6 +246,8 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |ODI4Less50sPercent||
 |ODI4Less60sPercent||
 |ODI4Longer60sPercent||
+|Spo2EvtVect3|Spo2 events array, data appears in pairs. [timestamp, duration(s), timestamp, duration(s), ...] ||
+|Spo2EvtVect4|Spo2 events array, data appears in pairs. [timestamp, duration(s), timestamp, duration(s), ...] ||
 
 |MegaPrBean|Description|
 | :-:|:-:|

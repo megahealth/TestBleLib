@@ -47,6 +47,7 @@ import io.mega.megablelib.enums.MegaBleBattery
 import io.mega.megablelib.model.MegaBleDevice
 import io.mega.megablelib.model.bean.*
 import io.mega.megableparse.MegaPrBean
+import io.mega.megableparse.MegaRawData
 import io.mega.megableparse.MegaSpoPrBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -518,6 +519,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.i(TAG, "onCrashLogReceived:${bytes?.contentToString()}")
         }
 
+        override fun onRawdataReceived(data: ByteArray?) {
+            Log.i(TAG, "onRawdataReceived() ${data?.contentToString()}")
+        }
+
+        override fun onRawdataParsed(data: MegaRawData?) {
+            data?.apply {
+                for (item in data.lightData) {
+                    println("--->${item.contentToString()}")
+                }
+            }
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -760,9 +773,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 }
             // 开rawdata，该功能只能在开启【脉诊模式】后才有用
             R.id.btn_rawdata_on -> {
-                val rawdataConfig = MegaRawdataConfig(false, false, "", 0)
-                megaBleClient!!.enableRawdataPulse(rawdataConfig)
-                megaBleClient!!.enableRawdataSpo(rawdataConfig)
+                val rawdataConfig = MegaRawdataConfig(true, false, "", 0)
+//                megaBleClient!!.enableRawdataPulse(rawdataConfig)
+//                megaBleClient!!.enableRawdataSpo(rawdataConfig)
+                megaBleClient!!.enableRawdata(rawdataConfig)
             }
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
@@ -805,7 +819,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_turn_on_glu -> megaBleClient?.setGLUMode(GLUMode.MINUTES_15)
             R.id.btn_turn_off_glu -> megaBleClient?.setGLUMode(GLUMode.OFF)
             R.id.btn_sync_glu_data -> megaBleClient?.syncGluData()
-            R.id.btn_get_crash_log->megaBleClient?.getCrashLog()
+            R.id.btn_get_crash_log -> megaBleClient?.getCrashLog()
             else -> {
             }
         }

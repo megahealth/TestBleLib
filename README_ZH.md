@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.13](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.13.aar)
+ - [arr库 v1.6.14](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.14.aar)
  - [.so库 v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.14|MegaSpoPrBean增加SPO2呼吸事件数据字段<br/>(请更新.so库)|2021/09/08|
 |1.6.13|1.支持ZG28<br/>2.MegaDailyBean增加温度字段(temp)<br/>(如果不是ZG28指环可忽略该字段)<br/>3.更新后处理算法(V11141)|2021/08/24|
 |1.6.12|增加获取crash log的API|2021/06/18|
 |1.6.11|1.更新后处理算法(V10974)<br/>2.MegaSpoPrBean新增解析字段 |2021/06/09|
@@ -276,6 +277,8 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |ODI4Less50sPercent||
 |ODI4Less60sPercent||
 |ODI4Longer60sPercent||
+|Spo2EvtVect3|Spo2呼吸事件数据, 数据成对出现. [时间戳, 时长(s), 时间戳, 时长(s), ...] ||
+|Spo2EvtVect4|Spo2呼吸事件数据, 数据成对出现. [时间戳, 时长(s), 时间戳, 时长(s), ...] ||
 
 |MegaPrBean|说明|
 | :-:|:-:|
