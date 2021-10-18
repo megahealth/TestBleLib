@@ -11,6 +11,7 @@ name: megablelibopen
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)|2021/10/18|
 |1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
 |1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
 |1.6.12|Add get crash log api|2021/06/18|
@@ -38,7 +39,7 @@ client = new MegaBleBuilder()
                 .withSecretId(id)
                 .withSecretKey(key)
                 .withContext(context)
-                .uploadData(true) //enable upload data to optimize algorithm.(default is false)
+                .uploadData(true) //enable upload data to optimize algorithm.(default is false), Pls store data by yourself, if disabled.
                 .withCallback(megaBleCallback)
                 .build();
 ```
