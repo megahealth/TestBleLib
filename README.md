@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.14](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.14.aar)
+ - [arr v1.6.15](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.15.aar)
  - [.so v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data|2021/10/26|
 |1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)|2021/10/18|
 |1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
 |1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
@@ -96,6 +97,9 @@ void onV2LiveSpoLive(MegaV2LiveSpoLive live); // Live SPO2 data
 void onV2ModeReceived(MegaV2Mode mode) // get current mode
 void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting
 void onCrashLogReceived(bytes: ByteArray?)// return crash log
+//Parse rawdata
+void onRawdataParsed(MegaRawData[]);
+void onRawdataParsed([]);//Deprecated
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -320,6 +324,12 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |stepsDiff|steps in the time period|
 |temp|temperature in the time period|
 
+|MegaRawData|Details of RawData |
+|:-----------:|:------------------------------------------:|
+|red|Red light|
+|infrared|Infrared light|
+|ambient|Ambient light|
+
 |Operation Code|Description|
 |:-:|:-:|
 |0x00|CMD_SUCCESS|
@@ -351,9 +361,16 @@ targetSdkVersion 28
     3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
 
 ## Tips of calculate daily data
-    1. Start of MegaDailyBean need calculate by yourself. start = MegaDailyBean.time-dailyUnit*60
+    1.Start of MegaDailyBean need calculate by yourself. start = MegaDailyBean.time-dailyUnit*60
     2.The unit of temp  is ℃ ,temp/10  to get  temperature .
-    3. Please control the timing of sync daily data by yourself.
+    3.Please control the timing of sync daily data by yourself.
+## How to get temperature in monitoring
+    1.Stop monitoring
+    2.Sync daily data
+    3.Parse daily data
+    4.Sync monitor data
+    5.Parse monitor data and combine with filter daily data that synced by step 2
+    (Daily data's start and end must between in monitor data's startAt and endAt.The developers can store timestamps and temperature by yourself)
 
 # Remarks
 - Please view the output information with the android studio console

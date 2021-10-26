@@ -503,11 +503,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         override fun onRawdataParsed(a: Array<out IntArray>?) {
             // [[red, infra], [red, infra]]
             // log -> onRawdataParsed: 48642, 49911; 48080, 49188
-//            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
-            runOnUiThread {
-                tv_sync_progress.text =
-                    "onRawdataParsed: \n" + a?.joinToString("; ") { i -> i.joinToString(", ") }
-            }
+            Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
         }
 
 
@@ -523,14 +519,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.i(TAG, "onRawdataReceived() ${data?.contentToString()}")
         }
 
-        override fun onRawdataParsed(data: MegaRawData?) {
+        override fun onRawdataParsed(data: Array<out MegaRawData>?) {
             data?.apply {
-                for (item in data.lightData) {
-                    println("--->${item.contentToString()}")
+                for (item in data) {
+                    println("--->${item}")
                 }
             }
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -771,12 +766,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-            // 开rawdata，该功能只能在开启【脉诊模式】后才有用
+            // 开rawdata
             R.id.btn_rawdata_on -> {
                 val rawdataConfig = MegaRawdataConfig(true, false, "", 0)
 //                megaBleClient!!.enableRawdataPulse(rawdataConfig)
-//                megaBleClient!!.enableRawdataSpo(rawdataConfig)
-                megaBleClient!!.enableRawdata(rawdataConfig)
+                megaBleClient!!.enableRawdataSpo(rawdataConfig)
+//                megaBleClient!!.enableRawdata(rawdataConfig)
             }
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()

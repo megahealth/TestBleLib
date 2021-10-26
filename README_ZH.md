@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.14](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.14.aar)
+ - [arr库 v1.6.15](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.15.aar)
  - [.so库 v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.15|1.MegaBleCallback增加解析rawdata的回调<br/>2.README新增如何获取温度的说明<br/>(该版本不牵扯算法更新，未使用请忽略该版本)|2021/10/26|
 |1.6.14|修复SPO2呼吸事件解析出现异常的问题<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/10/18|
 |1.6.14|MegaSpoPrBean增加SPO2呼吸事件数据字段<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/09/08|
 |1.6.13|1.支持ZG28<br/>2.MegaDailyBean增加温度字段(temp)<br/>(如果不是ZG28指环可忽略该字段)<br/>3.更新后处理算法(V11141)|2021/08/24|
@@ -125,9 +126,9 @@ void onV2LiveSpoLive(MegaV2LiveSpoLive live); // 实时血氧监测值
 void onV2ModeReceived(MegaV2Mode mode); // 返回当前模式
 void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // 返回当前定时信息
 void onCrashLogReceived(bytes: ByteArray?)//返回crash log
-// 参数：[[通道1value, 通道2value], [通道1value, 通道2value]]。长度不固定，可能1组或2组；
-// 血氧、脉诊都是此通道
-void onRawdataParsed([]);
+// rawdata数据解析
+void onRawdataParsed(MegaRawData[]);
+void onRawdataParsed([]);//已弃用
 ```
 
 - public class ParsedSpoPrBean（已废弃，替换为MegaSpoPrBean）
@@ -351,6 +352,12 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |stepsDiff|时间段内步数|
 |temp|时间段内温度|
 
+|MegaRawData|RawData解析结果 |
+|:-----------:|:------------------------------------------:|
+|red|红光|
+|infrared|红外|
+|ambient|环境光|
+
 操作返回码
 
 |返回码|说明|
@@ -384,7 +391,14 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     1.日常数据的开始时间需要开发者自行计算. start = MegaDailyBean.time-dailyUnit*60
     2.温度的单位是 ℃ ,temp/10 即可拿到温度.
     3.日常数据的同步时间需要开发者自行控制.
- 
+
+## 如何获取监测中的温度数据
+    1.结束监测
+    2.收取日常数据
+    3.解析日常数据
+    4.收取监测数据
+    5.解析监测数据,将第2步收取的包含温度的日常数据过滤后合入监测数据中（过滤条件：日常数据的开始时间、结束时间需落在监测数据解析后的startAt、endAt区间内，时间和温度如何存储请自行定义数据格式）
+
 ## 数据说明
 - 每监测 82 秒产生 256 字节的数据;
 - 结束监测时指环里会保存这次监测的数据, 其中不足 256 字节的部分会被舍去;
