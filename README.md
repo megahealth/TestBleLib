@@ -349,6 +349,9 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |0xC1|RECORDS_NO_STOP|
 |0xFF|DEVICE_UNKNOWN_ERR|
 
+## Recommend workflow
+[Workflow pdf](https://file-mhn.megahealth.cn/h565KP9NTOonfpcETStB1nmKzlFgXiKS/workflow.pdf)
+
 ## Permissions required
 bluetooth, write file, internet, GPS
 minSdkVersion 19
