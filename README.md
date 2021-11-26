@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.15](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.15.aar)
- - [.so v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
+ - [arr v1.6.16](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.16.aar)
+ - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.16|1.Upgrade parse algorithm(V11449)<br/>2.Support for collecting blood pressure data<br/>3.Add parsing blood pressure data function<br/>4.Support for syncing hrv data<br/>5.Add parsing HRV data function<br/>|2021/11/26|
 |1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data|2021/10/26|
 |1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)|2021/10/18|
 |1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
@@ -59,6 +60,7 @@ client.enableRawdataPulse // Turn on pulse rawdata(need turn on pulse mode)
 client.disableRawdata // Turn off rawdata
 client.syncData() // Sync monitor data
 client.syncDailyData() // Sync daily step data
+client.syncHrvData() // Sync HRV data
 client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // close period monitor
@@ -69,6 +71,9 @@ client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseS
 client.startDfu() // enter to dfu mode to upgrade firmware.
 client.getCrashLog() // get crash log, recommend to get crash log after sync data.
 client.parseDailyEntry(bytes) //pasre daily data
+client.enableV2ModeEcgBp(true/false, megaRawdataConfig) // turn on or turn off blood pressure
+client.parseBpData(bytes, timeHHmm, caliSBP, caliDBP) // parse blood pressure data. Params example:bytes=[], timeHHmm= 831, caliSBP=134.0, caliDBP=80.0
+client.parseHrvData(bytes, callback) //parse HRV data
 ```
 
 - public abstract class MegaBleCallback
@@ -89,6 +94,7 @@ void onSyncMonitorDataComplete(byte[] bytes, int dataStopType, int dataType, Str
 void onSyncDailyDataComplete(byte[] bytes)
 void onSyncNoDataOfMonitor()
 void onSyncNoDataOfDaily()
+void onSyncNoDataOfHrv()
 void onOperationStatus(int status)
 void onHeartBeatReceived(MegaBleHeartBeat heartBeat)
 void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live); // SPO2/Sleep live data
@@ -100,6 +106,7 @@ void onCrashLogReceived(bytes: ByteArray?)// return crash log
 //Parse rawdata
 void onRawdataParsed(MegaRawData[]);
 void onRawdataParsed([]);//Deprecated
+void onTotalBpDataReceived(data, duration) // return total blood pressure data and duration
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -118,6 +125,13 @@ void onRawdataParsed([]);//Deprecated
 
     daily data detail
 
+- public class ParsedBPBean
+
+   blood pressure data detail
+
+- public class ParsedHRVBean
+
+   HRV data detail
 
 - native library
   - jniLibs
@@ -330,6 +344,70 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |infrared|Infrared light|
 |ambient|Ambient light|
 
+|ParsedBPBean|Details of Blood Pressure|
+|:-:|:-:|
+|dataType|tpye of data|
+|protocol|protocol of data|
+|frameCount|count of frame|
+|dataBlockSize|dataBlockSize|
+|SBP|Systolic Blood Pressure|
+|DBP|Diastolic Blood Pressure|
+|pr|Pulse Rate|
+|status|state of data(0:valid 1:ECG data negative saturation)|
+|flag|result of calculate(0:invalid 1:valid 2:timeout)|
+|chEcg|data of ECG|
+|dataNum|length of ECG data|
+
+|ParsedHRVBean|Details of HRV|
+|:-:|:-:|
+|version|version of data|
+|dataType|type of data|
+|timeStart|start time(timestamp)|
+|duration|duration(second)|
+|cnt|number of heart beats analyzed|
+|meanBpm|average of HR|
+|SDNN||
+|SDANN||
+|RMSSD||
+|NN50||
+|pNN50||
+|triangleIdx|triangle index|
+|maxRR|maximum RR interval|
+|maxRRTimeStamp|occurrence time of maxRR(timestamp)|
+|minBpm|minimum HR|
+|minBpmTimeStamp|occurrence time of minBpm|
+|maxBpm|maximum HR|
+|maxBpmTimeStamp|occurrence time of maxBpm|
+|fastBpmCnt|tachycardia wave number|
+|fastBpmRate|proportion of tachycardia|
+|slowBpmCnt|bradycardia number|
+|slowBpmRate|proportion of bradycardia|
+|VLFP|proportion(%)|
+|LFP|proportion(%)|
+|HFP|proportion(%)|
+|LHFR||
+|SDNNCnt|count of SDNN|
+|SDNNVect|SDNN array|
+|HRcnt|count of HR|
+|HRVect|HR array|
+|histVCnt|length of Histogram data|
+|histVect|histogram data|
+|freqVCnt|length of Spectrogram data|
+|freqVect|spectrogram data|
+|timeT||
+|timeCnt||
+|SD1||
+|SD2||
+|SDRate||
+
+|MegaRawdataConfig|Details of rawdata config|
+|:-:|:-:|
+|isFileEnable|Is save data to file|
+|filename|file name of saving data|
+|isServerEnable|Is send data to tcp server|
+|ip|tcp ip(default is null)|
+|port|tcp port(default is 0)|
+
 |Operation Code|Description|
 |:-:|:-:|
 |0x00|CMD_SUCCESS|
@@ -374,6 +452,18 @@ targetSdkVersion 28
     4.Sync monitor data
     5.Parse monitor data and combine with filter daily data that synced by step 2
     (Daily data's start and end must between in monitor data's startAt and endAt.The developers can store timestamps and temperature by yourself)
+## How to get blood pressure data
+    1.Implement MegaBleCallback.onTotalBpDataReceived() //This function will return bp data and test duration.
+    2.client.enableV2ModeEcgBp(true, megaRawdataConfig) //start blood pressure test
+    3.Use data from onTotalBpDataReceived() and call client.parseBpData() to get blood pressure data
+    4.client.enableV2ModeEcgBp(false, megaRawdataConfig) //stop blood pressure if ParsedBPBean.flag = 1 or test duration greater than 60s
+    (Tips:Please tell user to set caliSBP and caliDBP before blood pressure test.caliSBP is user's history of Systolic Blood Pressure, caliDBP is user's history of Diastolic Blood Pressure.)
+
+## How to get HRV data
+    1.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
+    2.Call client.syncHrvData() to sync HRV data.
+    3.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
+    (Tips:HRV data is based on SPO2Monitor(Sleep SPO2Monitor).You can sync hrv data when monitor data synced.HRV data's type is 10.MegaBleCallback.onSyncMonitorDataComplete() will return hrv data)
 
 # Remarks
 - Please view the output information with the android studio console
@@ -384,3 +474,4 @@ After monitoring started, it's ok to disconnect.
 - Please check the returned fields carefully, If you change to new parse functions.
 - Data and Log path--->sdcard/megaBle (client.setDebugEnable(true))
 - Developers need to continuously collect 10s-20s real-time values to judge wearing.If the user wears the ring correctly:accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
+- Blood Pressure and HRV is only support for ring's sn start with C11E[7|8|9].Please control the calling time by yourself

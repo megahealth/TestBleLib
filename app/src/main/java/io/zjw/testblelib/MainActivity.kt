@@ -49,6 +49,7 @@ import io.mega.megablelib.model.bean.*
 import io.mega.megableparse.MegaPrBean
 import io.mega.megableparse.MegaRawData
 import io.mega.megableparse.MegaSpoPrBean
+import io.mega.megableparse.ParsedHRVBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.zjw.testblelib.dfu.DfuService
@@ -61,7 +62,6 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-
 class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeListener {
     companion object {
         private const val TAG = "MainActivity"
@@ -434,6 +434,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 MegaBleConst.MODE_SPORT -> {
                     megaBleClient!!.parseSport(bytes, parsePrResult)
                 }
+                MegaBleConst.TYPE_HRV -> {
+                    megaBleClient?.parseHrvData(bytes, parseHRVResult)
+                }
                 else -> {
                 }
             }
@@ -447,21 +450,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.d(TAG, "no glu data")
         }
 
+        override fun onSyncNoDataOfHrv() {
+            Log.d(TAG, "no hrv data")
+        }
+
         // result of client cmd
         override fun onOperationStatus(
             operationType: Int,
             status: Int
-        ) { //            switch (operationType) {
-//                case  MegaBleConfig.CMD_V2_MODE_SPO_MONITOR:
-//                    //
-//                break;
-//                case  MegaBleConfig.CMD_V2_MODE_LIVE_SPO:
-//                    //
-//                break;
-//                case  MegaBleConfig.CMD_V2_GET_MODE:
-//                    //
-//                break;
-//            }
+        ) {
             val msg: String = when (status) {
                 MegaBleConst.STATUS_OK -> {
                     when (operationType) {
@@ -526,7 +523,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 }
             }
         }
+
+        override fun onTotalBpDataReceived(data: ByteArray?, duration: Int) {
+            Log.i(TAG, "onTotalBpDataReceived() size:${data?.size} duration:$duration")
+            val calendar = Calendar.getInstance()
+            val timeHHmm = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE)
+            val result = megaBleClient?.parseBpData(data, timeHHmm, 134.0, 80.0)
+            Log.i(TAG, "onTotalBpDataReceived() $result")
+            if (duration >= 60 || result!!.flag == 1) {
+                megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
+                Log.i(TAG, "onTotalBpDataReceived() ecg bp off.")
+            }
+        }
     }
+
+    private var bpCfg: MegaRawdataConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -650,6 +661,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_turn_off_glu.setOnClickListener(this)
         chooseTimeDialog = ChooseTimeDialog(this, this)
         btn_get_crash_log.setOnClickListener(this)
+        btn_bp_on.setOnClickListener(this)
+        btn_bp_off.setOnClickListener(this)
+        btn_parse_hrv.setOnClickListener(this)
+        btn_sync_hrv.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -665,6 +680,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             && v.id != R.id.btn_parse
             && v.id != R.id.btn_parse_sport
             && v.id != R.id.btn_parse_daily
+            && v.id != R.id.btn_parse_hrv
             && v.id != R.id.iv_info
             && R.id.tv_clear != v.id
         ) {
@@ -769,8 +785,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             // 开rawdata
             R.id.btn_rawdata_on -> {
                 val rawdataConfig = MegaRawdataConfig(true, false, "", 0)
-//                megaBleClient!!.enableRawdataPulse(rawdataConfig)
-                megaBleClient!!.enableRawdataSpo(rawdataConfig)
+                megaBleClient!!.enableRawdataPulse(rawdataConfig)//rawdata for pulse
+//                megaBleClient!!.enableRawdataSpo(rawdataConfig)//rawdata for spo2
 //                megaBleClient!!.enableRawdata(rawdataConfig)
             }
             // 关rawdata
@@ -815,6 +831,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_turn_off_glu -> megaBleClient?.setGLUMode(GLUMode.OFF)
             R.id.btn_sync_glu_data -> megaBleClient?.syncGluData()
             R.id.btn_get_crash_log -> megaBleClient?.getCrashLog()
+            R.id.btn_bp_on -> {
+                if (bpCfg == null) bpCfg = MegaRawdataConfig(false, false, "", 0)
+                megaBleClient?.enableV2ModeEcgBp(true, bpCfg)
+            }
+            R.id.btn_bp_off -> {
+                if (bpCfg == null) bpCfg = MegaRawdataConfig(false, false, "", 0)
+                megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
+            }
+            R.id.btn_parse_hrv -> {
+                try {
+                    val bytes = readMockFromAsset("mock_hrv.bin")
+                    Log.d(TAG, "parseVersion:${MegaBleClient.megaParseVersion()}")
+                    megaBleClient!!.parseHrvData(bytes, parseHRVResult)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            R.id.btn_sync_hrv -> {
+                megaBleClient?.syncHrvData()
+            }
             else -> {
             }
         }
@@ -1033,6 +1069,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
     var parsePrResult = object : MegaAuth.Callback<MegaPrBean> {
         override fun onSuccess(p0: MegaPrBean?) {
+            Log.d(TAG, p0.toString())
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onFail(p0: String?) {
+            Log.d(TAG, p0)
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    var parseHRVResult = object : MegaAuth.Callback<ParsedHRVBean> {
+        override fun onSuccess(p0: ParsedHRVBean?) {
             Log.d(TAG, p0.toString())
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "parse success", Toast.LENGTH_SHORT).show()

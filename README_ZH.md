@@ -4,15 +4,16 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.15](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.15.aar)
- - [.so库 v11141](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.19](https://github.com/megahealth/TestBleLib)
+ - [arr库 v1.6.16](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.16.aar)
+ - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
+ - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.16|1.更新后处理算法(V11449)<br/>2.支持收取血压监测数据<br/>3.添加解析血压数据的api<br/>4.支持收取HRV数据<br/>5.添加支持解析HRV数据的api<br/>|2021/11/26|
 |1.6.15|1.MegaBleCallback增加解析rawdata的回调<br/>2.README新增如何获取温度的说明<br/>(该版本不牵扯算法更新，未使用请忽略该版本)|2021/10/26|
 |1.6.14|修复SPO2呼吸事件解析出现异常的问题<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/10/18|
 |1.6.14|MegaSpoPrBean增加SPO2呼吸事件数据字段<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/09/08|
@@ -88,6 +89,7 @@ client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
 client.disableRawdata // 关闭所有rawdata
 client.syncData() // 同步监测数据
 client.syncDailyData() // 同步日常计步数据
+client.syncHrvData() //同步HRV数据
 client.getV2PeriodSetting() // 获取定时监测的设置信息 (MegaBleCallback.onV2PeriodSettingReceived返回设置信息)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // 打开定时监测 参数释义：true、是否重复、监测时长(s)、距离监测开启的时长(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // 关闭定时监测
@@ -98,6 +100,9 @@ client.parseSportOld(bytes, callback) // 解析血氧数据(已弃用，请使�
 client.startDfu() // 进入DFU模式，onReadyToDfu()表示已进入升级模式，可向戒指发送升级包
 client.getCrashLog() //获取crash log, 推荐在监测数据收取完成以后获取crash log信息.
 client.parseDailyEntry(bytes) //解析日常数据
+client.enableV2ModeEcgBp(true/false, megaRawdataConfig) //开启或者关闭血压监测
+client.parseBpData(bytes, timeHHmm, caliSBP, caliDBP) //解析血压数据. 参数示例:bytes=[], timeHHmm= 831, caliSBP=134.0, caliDBP=80.0
+client.parseHrvData(bytes, callback) //解析HRV数据
 ```
 
 - public abstract class MegaBleCallback // 指环操作回调
@@ -118,6 +123,7 @@ void onSyncMonitorDataComplete(byte[] bytes, int dataStopType, int dataType, Str
 void onSyncDailyDataComplete(byte[] bytes); // 日常数据收取成功
 void onSyncNoDataOfMonitor(); // 暂无监测数据/监测数据收取完成
 void onSyncNoDataOfDaily(); // 暂无日常数据/日常数据收取完成
+void onSyncNoDataOfHrv(); // 暂无HRV数据/HRV数据收取完成
 void onOperationStatus(int status); // 指令发送结果
 void onHeartBeatReceived(MegaBleHeartBeat heartBeat); // 心跳包获取结果
 void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live); // 睡眠监测实时值
@@ -129,6 +135,7 @@ void onCrashLogReceived(bytes: ByteArray?)//返回crash log
 // rawdata数据解析
 void onRawdataParsed(MegaRawData[]);
 void onRawdataParsed([]);//已弃用
+void onTotalBpDataReceived(data, duration) //返回累计的血压数据和血压监测时长
 ```
 
 - public class ParsedSpoPrBean（已废弃，替换为MegaSpoPrBean）
@@ -146,6 +153,14 @@ void onRawdataParsed([]);//已弃用
 - public class MegaDailyBean
 
    日常数据详情
+
+- public class ParsedBPBean
+
+   血压数据详情
+
+- public class ParsedHRVBean
+
+   HRV数据详情
 
 - native库 // 数据解析相关
   - jniLibs
@@ -358,6 +373,70 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 |infrared|红外|
 |ambient|环境光|
 
+|ParsedBPBean|Details of Blood Pressure|
+|:-:|:-:|
+|dataType|数据类型|
+|protocol|协议号|
+|frameCount|包内数据帧数|
+|dataBlockSize|包长度(固定为244)|
+|SBP|收缩压(高压)|
+|DBP|舒张压(低压)|
+|pr|脉率|
+|status|当前数据状态(0：数据正常；1：ECG数据负饱和)|
+|flag|计算结果状态(0：无效结果；1：有效结果；2：数据超时)|
+|chEcg|ECG数据|
+|dataNum|ECG数据长度|
+
+|ParsedHRVBean|Details of HRV|
+|:-:|:-:|
+|version|数据版本|
+|dataType|数据类型|
+|timeStart|测试起始时间(时间戳)|
+|duration|持续时长(秒)|
+|cnt|分析的心搏数|
+|meanBpm|平均心率|
+|SDNN||
+|SDANN||
+|RMSSD||
+|NN50||
+|pNN50||
+|triangleIdx|三角指数|
+|maxRR|最大RR间隔|
+|maxRRTimeStamp|最大RR间隔发生时间(时间戳)|
+|minBpm|最慢心率|
+|minBpmTimeStamp|最慢心率发生时间|
+|maxBpm|最快心率|
+|maxBpmTimeStamp|最快心率发生时间|
+|fastBpmCnt|心动过速博数|
+|fastBpmRate|心动过速占比|
+|slowBpmCnt|心动过缓博数|
+|slowBpmRate|心动过缓占比|
+|VLFP|占比(%)|
+|LFP|占比(%)|
+|HFP|占比(%)|
+|LHFR||
+|SDNNCnt|SDNN数目|
+|SDNNVect|SDNN数组|
+|HRcnt|心率数目|
+|HRVect|心率数组|
+|histVCnt|直方图数组长度|
+|histVect|直方图数组|
+|freqVCnt|频率显示数组长度|
+|freqVect|频率显示数组|
+|timeT||
+|timeCnt||
+|SD1||
+|SD2||
+|SDRate||
+
+|MegaRawdataConfig|Details of rawdata config|
+|:-:|:-:|
+|isFileEnable|数据是否存入文件|
+|filename|文件名称|
+|isServerEnable|是否通过tcp传输数据|
+|ip|tcp ip(默认空)|
+|port|tcp port(默认0)|
+
 操作返回码
 
 |返回码|说明|
@@ -399,6 +478,19 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     4.收取监测数据
     5.解析监测数据,将第2步收取的包含温度的日常数据过滤后合入监测数据中（过滤条件：日常数据的开始时间、结束时间需落在监测数据解析后的startAt、endAt区间内，时间和温度如何存储请自行定义数据格式）
 
+## 如何获取血压数据
+    1.实现MegaBleCallback.onTotalBpDataReceived() //这个回调会返回累计的血压数据和监测时长.
+    2.client.enableV2ModeEcgBp(true, megaRawdataConfig) //开启血压监测
+    3.使用onTotalBpDataReceived()返回的数据，调用client.parseBpData()获取解析后的血压数据
+    4.client.enableV2ModeEcgBp(false, megaRawdataConfig) //如果ParsedBPBean.flag = 1 或者监测时长超过60s就结束血压监测
+    (说明:请在开启血压监测之前告知用户设置caliSBP和caliDBP。caliSBP表示用户历史的高压值, caliDBP表示用户历史的低压值。)
+
+## 如何获取HRV数据
+    1.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
+    2.调用client.syncHrvData()获取HRV数据.
+    3.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
+    (说明:HRV数据是依赖血氧监测的.请在血氧数据收取完毕以后收取HRV数据.HRV数据类型是10.MegaBleCallback.onSyncMonitorDataComplete()会返回hrv data)
+
 ## 数据说明
 - 每监测 82 秒产生 256 字节的数据;
 - 结束监测时指环里会保存这次监测的数据, 其中不足 256 字节的部分会被舍去;
@@ -422,7 +514,7 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
   蓝牙、写文件、网络、定位
   - minSdkVersion 19
 - 建议参考demo源码，并运行体验
-
+- 血压和HRV的相关api只支持sn是C11E[7|8|9]开始的指环.请自行控制相关api的调用时机
 
 
 # Demo使用说明

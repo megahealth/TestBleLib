@@ -347,6 +347,20 @@
                             android:textColor="@color/colorAccent" />
 
                         <Button
+                            android:id="@+id/btn_bp_on"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_enable_bp"
+                            android:textColor="@color/colorAccent" />
+
+                        <Button
+                            android:id="@+id/btn_bp_off"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_disable_bp"
+                            android:textColor="@color/colorAccent" />
+
+                        <Button
                             android:id="@+id/btn_pulse_on"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -365,6 +379,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/label_sync" />
+
+                        <Button
+                            android:id="@+id/btn_sync_hrv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_sync_hrv" />
 
                         <Button
                             android:id="@+id/btn_sync_daily_data"
@@ -389,6 +409,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/label_parse_sport" />
+
+                        <Button
+                            android:id="@+id/btn_parse_hrv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_parse_hrv" />
 
                         <Button
                             android:id="@+id/btn_parse_daily"

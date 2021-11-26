@@ -12,13 +12,17 @@
     <string name="label_close_live">关实时血氧</string>
     <string name="label_enable_monitor">开血氧</string>
     <string name="label_enable_sport">开运动</string>
+    <string name="label_enable_bp">开血压</string>
+    <string name="label_disable_bp">关血压</string>
     <string name="label_enable_pulse">开脉诊</string>
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>
+    <string name="label_sync_hrv">收HRV数据</string>
     <string name="label_sync_daily">收日常数据</string>
     <string name="label_sync_glu">收血糖</string>
     <string name="label_parse">解析血氧</string>
     <string name="label_parse_sport">解析运动</string>
+    <string name="label_parse_hrv">解析HRV</string>
     <string name="label_parse_daily">解析日常数据</string>
     <string name="dfu">固件升级(dfu)进度:</string>
     <string name="pulse_rawdata_on">开rawdata脉诊</string>

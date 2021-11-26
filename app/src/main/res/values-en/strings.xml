@@ -8,6 +8,7 @@
     <string name="label_start_dfu">start dfu</string>
     <string name="label_enable_monitor">monitor spo2 on</string>
     <string name="label_sync">sync data</string>
+    <string name="label_sync_hrv">sync hrv data</string>
     <string name="label_sync_daily">sync daily data</string>
     <string name="label_sync_glu">sync glu data</string>
     <string name="no_conn">offline</string>
@@ -18,8 +19,11 @@
     <string name="label_parse">parse</string>
     <string name="dfu">dfu progress:</string>
     <string name="label_parse_sport">parse sport</string>
+    <string name="label_parse_hrv">parse HRV</string>
     <string name="label_parse_daily">parse daily data</string>
     <string name="label_enable_sport">monitor sport on</string>
+    <string name="label_enable_bp">BP on</string>
+    <string name="label_disable_bp">BP off</string>
     <string name="label_enable_pulse">pulse on</string>
     <string name="pulse_rawdata_on">pulse rawdata on</string>
     <string name="close_rawdata">rawdata off</string>
