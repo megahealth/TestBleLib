@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.16](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.16.aar)
+ - [arr库 v1.6.17](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.17.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.17|1.修复短时间调用api无响应的问题(毫秒级)<br/>2.Demo更新mock_daily.bin|2021/12/02|
 |1.6.16|1.更新后处理算法(V11449)<br/>2.支持收取血压监测数据<br/>3.添加解析血压数据的api<br/>4.支持收取HRV数据<br/>5.添加支持解析HRV数据的api<br/>|2021/11/26|
 |1.6.15|1.MegaBleCallback增加解析rawdata的回调<br/>2.README新增如何获取温度的说明<br/>(该版本不牵扯算法更新，未使用请忽略该版本)|2021/10/26|
 |1.6.14|修复SPO2呼吸事件解析出现异常的问题<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/10/18|
