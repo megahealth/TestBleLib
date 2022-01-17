@@ -462,6 +462,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             val msg: String = when (status) {
                 MegaBleConst.STATUS_OK -> {
                     when (operationType) {
+                        MegaBleConfig.CMD_V2_MODE_DAILY-> "turn off monitor"
                         MegaBleConfig.CMD_V2_MODE_LIVE_SPO -> "Turn on live SPO2 mode success"
                         MegaBleConfig.CMD_V2_MODE_SPORT -> "Turn on sport mode success"
                         MegaBleConfig.CMD_V2_MODE_SPO_MONITOR -> "Turn on sleep mode success"

@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.17](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.17.aar)
+ - [arr库 v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.18|修复在Android Q或以上无法保存蓝牙交互日志的问题|2022/01/17|
 |1.6.17|1.修复短时间调用api无响应的问题(毫秒级)<br/>2.Demo更新mock_daily.bin|2021/12/02|
 |1.6.16|1.更新后处理算法(V11449)<br/>2.支持收取血压监测数据<br/>3.添加解析血压数据的api<br/>4.支持收取HRV数据<br/>5.添加支持解析HRV数据的api<br/>|2021/11/26|
 |1.6.15|1.MegaBleCallback增加解析rawdata的回调<br/>2.README新增如何获取温度的说明<br/>(该版本不牵扯算法更新，未使用请忽略该版本)|2021/10/26|
@@ -508,7 +509,9 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
 - 一般需要监测1小时以上数据才有效
 - MegaBleCallback.onOperationStatus回调会返回相关操作的结果
 - 当您切换至新的解析函数时，请仔细阅读返回的的字段信息。
-- 数据和日志的路径--->sdcard/megaBle (client.setDebugEnable(true))
+- 数据和日志的路径(client.setDebugEnable(true))。建议在正式环境也开启，方便分析蓝牙交互日志
+    * SDK版本<1.6.18：<br/>log--->sdcard/megaBle/log<br/>data--->sdcard/megaBle/data
+    * SDK版本>=1.6.18：<br/>log--->Android/data/{applicationId}/files/megaBle/log<br/>data--->Android/data/{applicationId}/files/megaBle/data
 - 开发者需要连续获取10秒-20秒的实时acc值来判断用户的佩戴方向,若用户正确佩戴指环：四指向下时，accY = 0；手心向上时，accZ= 0
 - 其他
   - 权限要求：

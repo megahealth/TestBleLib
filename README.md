@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.17](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.17.aar)
+ - [arr v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
 |1.6.17|1.Fix the problem of unresponsive API calls for a short time (in milliseconds)<br/>2.Demo update mock_daily.bin|2021/12/02|
 |1.6.16|1.Upgrade parse algorithm(V11449)<br/>2.Support for collecting blood pressure data<br/>3.Add parsing blood pressure data function<br/>4.Support for syncing hrv data<br/>5.Add parsing HRV data function<br/>|2021/11/26|
 |1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data|2021/10/26|
@@ -473,6 +474,8 @@ targetSdkVersion 28
 After monitoring started, it's ok to disconnect.
 - All data will be wiped out if TOKEN is changed.
 - Please check the returned fields carefully, If you change to new parse functions.
-- Data and Log path--->sdcard/megaBle (client.setDebugEnable(true))
+- Data and Log path (client.setDebugEnable(true)). Recommend always open both develop environment and official environment.
+    * version < 1.6.18：<br/>log--->sdcard/megaBle/log<br/>data--->sdcard/megaBle/data
+    * version >= 1.6.18：<br/>log--->Android/data/{applicationId}/files/megaBle/log<br/>data--->Android/data/{applicationId}/files/megaBle/data
 - Developers need to continuously collect 10s-20s real-time values to judge wearing.If the user wears the ring correctly:accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
 - Blood Pressure and HRV is only support for ring's sn start with C11E[7|8|9].Please control the calling time by yourself
