@@ -6,13 +6,14 @@
 ## sdk文件
  - [arr库 v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.20](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.21](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.18|修复demo在Android9及以上无法升级固件的问题|2022/03/04|
 |1.6.18|修复在Android Q或以上无法保存蓝牙交互日志的问题|2022/01/17|
 |1.6.17|1.修复短时间调用api无响应的问题(毫秒级)<br/>2.Demo更新mock_daily.bin|2021/12/02|
 |1.6.16|1.更新后处理算法(V11449)<br/>2.支持收取血压监测数据<br/>3.添加解析血压数据的api<br/>4.支持收取HRV数据<br/>5.添加支持解析HRV数据的api<br/>|2021/11/26|
@@ -492,6 +493,11 @@ implementation 'no.nordicsemi.android:dfu:1.8.1'
     2.调用client.syncHrvData()获取HRV数据.
     3.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
     (说明:HRV数据是依赖血氧监测的.请在血氧数据收取完毕以后收取HRV数据.HRV数据类型是10.MegaBleCallback.onSyncMonitorDataComplete()会返回hrv data)
+
+## 固件升级注意事项
+    1.电量需大于25%
+    2.电池状态需是正常/充电中/已充满
+    3.如果targetSdkVersion >= 28需在AndroidManifest.xml中添加权限(android.permission.FOREGROUND_SERVICE)
 
 ## 数据说明
 - 每监测 82 秒产生 256 字节的数据;
