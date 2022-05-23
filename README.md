@@ -6,11 +6,12 @@ name: megablelibopen
 ## Files
  - [arr v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.21](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.18|Add an example to show how to draw ECG diagram.|2022/05/23|
 |1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')|2022/03/04|
 |1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
 |1.6.17|1.Fix the problem of unresponsive API calls for a short time (in milliseconds)<br/>2.Demo update mock_daily.bin|2021/12/02|
@@ -144,7 +145,10 @@ void onTotalBpDataReceived(data, duration) // return total blood pressure data a
 // dfu lib. higher dfu lib may not work, use this one
 // href：https://github.com/NordicSemiconductor/Android-DFU-Library
 // If you use proguard, add the following line to your proguard rules: -keep class no.nordicsemi.android.dfu.** { *; }
+TargetSdk < 31
 implementation 'no.nordicsemi.android:dfu:1.8.1'
+TargetSdk >= 31
+implementation 'no.nordicsemi.android:dfu:2.0.2'
 ```
 
 - Parse MegaAdvertising

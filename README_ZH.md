@@ -6,13 +6,14 @@
 ## sdk文件
  - [arr库 v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.21](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.18|添加示例展示如何绘制ECG图|2022/05/23|
 |1.6.18|修复demo在Android9及以上无法升级固件的问题|2022/03/04|
 |1.6.18|修复在Android Q或以上无法保存蓝牙交互日志的问题|2022/01/17|
 |1.6.17|1.修复短时间调用api无响应的问题(毫秒级)<br/>2.Demo更新mock_daily.bin|2021/12/02|
@@ -173,7 +174,10 @@ void onTotalBpDataReceived(data, duration) //返回累计的血压数据和血�
 // dfu lib. higher dfu lib may not work, use this one
 // 官网地址：https://github.com/NordicSemiconductor/Android-DFU-Library
 // If you use proguard, add the following line to your proguard rules: -keep class no.nordicsemi.android.dfu.** { *; }
+TargetSdk < 31
 implementation 'no.nordicsemi.android:dfu:1.8.1'
+TargetSdk >= 31
+implementation 'no.nordicsemi.android:dfu:2.0.2'
 ```
 
 - 广播解析

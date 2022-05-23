@@ -5,37 +5,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:theme="@style/Toolbar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            <TextView
-                android:id="@+id/tv_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginRight="10dp"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/iv_info"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="right"
-                android:layout_marginRight="10dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:src="@mipmap/ic_info" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
         android:id="@+id/tv_device_status"
@@ -91,7 +72,7 @@
                     android:orientation="vertical"
                     android:visibility="invisible">
 
-                    <android.support.v7.widget.GridLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:columnCount="2"
@@ -137,7 +118,7 @@
                             android:id="@+id/tv_fw_version"
                             android:textSize="20sp"
                             app:layout_columnWeight="4" />
-                    </android.support.v7.widget.GridLayout>
+                    </androidx.gridlayout.widget.GridLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -149,7 +130,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <android.support.v7.widget.GridLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:columnCount="3"
@@ -201,9 +182,9 @@
                                 android:layout_height="wrap_content" />
                         </LinearLayout>
 
-                    </android.support.v7.widget.GridLayout>
+                    </androidx.gridlayout.widget.GridLayout>
 
-                    <android.support.v7.widget.GridLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:columnCount="3"
@@ -265,7 +246,7 @@
 
                         </LinearLayout>
 
-                    </android.support.v7.widget.GridLayout>
+                    </androidx.gridlayout.widget.GridLayout>
 
                     <TextView
                         android:id="@+id/tv_v2_live"
@@ -509,7 +490,7 @@
                             android:prompt="@string/period_monitor_duration"
                             android:spinnerMode="dialog" />
 
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/sw_loop"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -547,7 +528,7 @@
             android:layout_height="wrap_content"
             android:text="scan" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

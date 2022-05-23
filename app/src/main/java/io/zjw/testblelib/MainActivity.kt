@@ -16,29 +16,27 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.design.widget.BottomSheetDialog
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.PermissionChecker
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.LinearSnapHelper
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.leon.lfilepickerlibrary.LFilePicker
 import com.leon.lfilepickerlibrary.utils.Constant
 import io.mega.megablelib.*
@@ -52,7 +50,10 @@ import io.mega.megableparse.MegaSpoPrBean
 import io.mega.megableparse.ParsedHRVBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.zjw.testblelib.db.DBInstance
+import io.zjw.testblelib.db.DataEntity
 import io.zjw.testblelib.dfu.DfuService
+import io.zjw.testblelib.reports.ReportListActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import no.nordicsemi.android.dfu.DfuProgressListener
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
@@ -62,6 +63,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeListener {
     companion object {
         private const val TAG = "MainActivity"
@@ -462,7 +464,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             val msg: String = when (status) {
                 MegaBleConst.STATUS_OK -> {
                     when (operationType) {
-                        MegaBleConfig.CMD_V2_MODE_DAILY-> "turn off monitor"
+                        MegaBleConfig.CMD_V2_MODE_DAILY -> "turn off monitor"
                         MegaBleConfig.CMD_V2_MODE_LIVE_SPO -> "Turn on live SPO2 mode success"
                         MegaBleConfig.CMD_V2_MODE_SPORT -> "Turn on sport mode success"
                         MegaBleConfig.CMD_V2_MODE_SPO_MONITOR -> "Turn on sleep mode success"
@@ -528,12 +530,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         override fun onTotalBpDataReceived(data: ByteArray?, duration: Int) {
             Log.i(TAG, "onTotalBpDataReceived() size:${data?.size} duration:$duration")
             val calendar = Calendar.getInstance()
+            val timeInMillis = calendar.timeInMillis
             val timeHHmm = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE)
             val result = megaBleClient?.parseBpData(data, timeHHmm, 134.0, 80.0)
             Log.i(TAG, "onTotalBpDataReceived() $result")
-            if (duration >= 60 || result!!.flag == 1) {
+            if (duration >= 60) {
                 megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
                 Log.i(TAG, "onTotalBpDataReceived() ecg bp off.")
+                return
+            }
+            result?.let {
+                if (it.flag == 1) {
+                    megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
+                    Log.i(TAG, "onTotalBpDataReceived() ecg bp off.")
+                    val dataEntity = DataEntity()
+                    dataEntity.apply {
+                        this.dataType = 5
+                        this.configDBP = 80.0F
+                        this.configSBP = 134.0F
+                        this.SBP = it.SBP
+                        this.DBP = it.DBP
+                        this.data = data
+                        this.date = timeInMillis
+                        this.pr = it.pr
+                        this.chEcg = it.chEcg
+                    }
+                    DBInstance.INSTANCE.addDataEntity(dataEntity)
+                }
             }
         }
     }
@@ -581,7 +604,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     private fun initView() {
         try {
             val versionName = packageManager.getPackageInfo(this.packageName, 0).versionName
-            tv_version.text = "v$versionName"
             var message = String.format(
                 getString(R.string.info_content),
                 versionName,
@@ -618,7 +640,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_parse_daily.setOnClickListener(this)
         btn_rawdata_on.setOnClickListener(this)
         btn_rawdata_off.setOnClickListener(this)
-        iv_info.setOnClickListener(this)
         // get token form shardPreference
         et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
         et_token.addTextChangedListener(object : TextWatcher {
@@ -682,7 +703,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             && v.id != R.id.btn_parse_sport
             && v.id != R.id.btn_parse_daily
             && v.id != R.id.btn_parse_hrv
-            && v.id != R.id.iv_info
             && R.id.tv_clear != v.id
         ) {
             if (megaBleDevice == null) {
@@ -792,7 +812,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
             // 关rawdata
             R.id.btn_rawdata_off -> megaBleClient!!.disableRawdata()
-            R.id.iv_info -> infoDialog.show()
             R.id.btn_enable_period -> {
                 if (periodTime == 0L) {
                     Toast.makeText(this, R.string.period_monitor_start_tip, Toast.LENGTH_LONG)
@@ -855,6 +874,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             else -> {
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item!!.itemId == R.id.menu_info) {
+            infoDialog.show()
+        } else if (item.itemId == R.id.menu_chart) {
+            startActivity(Intent(this, ReportListActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     @SuppressLint("CheckResult")
