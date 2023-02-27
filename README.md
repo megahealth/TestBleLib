@@ -11,6 +11,7 @@ name: megablelibopen
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.19|Support rings of C11H, P11G, P11H
 |1.6.18|Add an example to show how to draw ECG diagram.|2022/05/23|
 |1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')|2022/03/04|
 |1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
