@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
+ - [arr库 v1.6.19](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.19.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
