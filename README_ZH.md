@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.19](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.19.aar)
+ - [arr库 v1.6.20](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.20.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
@@ -12,7 +12,7 @@
 
 ## 更新日志
 |版本|说明|时间|
-|:-:|-|:-:|
+|:-:|-|:-:|2023/03/15|
 |1.6.20|支持解析脉诊rawdata|
 |1.6.19|支持C11H、P11G、P11H戒指|2023/02/27|
 |1.6.18|添加示例展示如何绘制ECG图|2022/05/23|

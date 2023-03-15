@@ -520,6 +520,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
 
         override fun onRawdataParsed(data: Array<out MegaRawData>?) {
+            Log.i(TAG, "onRawdataParsed: ${data!!.size}")
             data?.apply {
                 for (item in data) {
                     println("--->${item}")
