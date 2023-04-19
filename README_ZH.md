@@ -59,7 +59,7 @@
 1. android studio项目引入此库
 2. 通过MegaBleBuilder构造客户端对象MegaBleClient，并传入MegaBleCallback实例，作为项目和库通信接口。
 3. 开发者自己负责扫描蓝牙设备(调用android系统蓝牙扫描方法)。若有必要解析广播，请调用适当的广播解析方法。
-4. 扫描到想要连接的设备(名字含有MegaRing的蓝牙外设)即可停止扫描，调用库方法connect(...)进行连接
+4. 扫描到想要连接的设备(名字含有MR、MegaRing、MRingV2的蓝牙外设)即可停止扫描，调用库方法connect(...)进行连接
 5. 由库接管连接后的蓝牙状态，并同时向用户反馈必要的蓝牙信息
 6. (强制)在库初始化完蓝牙后：
   1. 非绑定设备状态下需要传入用户的userId 和 mac，等待库返回token
