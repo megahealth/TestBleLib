@@ -66,6 +66,8 @@ client.enableV2ModePulse(true); // Turn on pulse mode
 client.enableRawdataSpo // Turn on SPO2 rawdata(need turn on liveSPO2/sport/SPO2Monitor/pulse)
 client.enableRawdataPulse // Turn on pulse rawdata(need turn on pulse mode)
 client.disableRawdata // Turn off rawdata
+client.enableV2HRV(true) //Turn on HRV
+client.enableV2HRV(false) //Turn off HRV
 client.syncData() // Sync monitor data
 client.syncDailyData() // Sync daily step data
 client.syncHrvData() // Sync HRV data
@@ -471,9 +473,10 @@ targetSdkVersion 28
     (Tips:Please tell user to set caliSBP and caliDBP before blood pressure test.caliSBP is user's history of Systolic Blood Pressure, caliDBP is user's history of Diastolic Blood Pressure.)
 
 ## How to get HRV data
-    1.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
-    2.Call client.syncHrvData() to sync HRV data.
-    3.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
+    1.If the ring firmware version is greater than 5.0.11804, you need to call client.enableV2HRV(true) to turn on the HRV switch after entering sleep monitoring.
+    2.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
+    3.Call client.syncHrvData() to sync HRV data.
+    4.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
     (Tips:HRV data is based on SPO2Monitor(Sleep SPO2Monitor).You can sync hrv data when monitor data synced.HRV data's type is 10.MegaBleCallback.onSyncMonitorDataComplete() will return hrv data)
 
 ## Tips of upgrading firmware

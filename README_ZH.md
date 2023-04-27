@@ -95,6 +95,8 @@ client.enableV2ModePulse(true); // 打开脉诊模式
 client.enableRawdataSpo // 打开血氧rawdata，需要打开血氧相关模式
 client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
 client.disableRawdata // 关闭所有rawdata
+client.enableV2HRV(true) //开启HRV
+client.enableV2HRV(false) //关闭HRV
 client.syncData() // 同步监测数据
 client.syncDailyData() // 同步日常计步数据
 client.syncHrvData() //同步HRV数据
@@ -497,9 +499,10 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
     (说明:请在开启血压监测之前告知用户设置caliSBP和caliDBP。caliSBP表示用户历史的高压值, caliDBP表示用户历史的低压值。)
 
 ## 如何获取HRV数据
-    1.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
-    2.调用client.syncHrvData()获取HRV数据.
-    3.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
+    1.如果指环版本大于5.0.11804，需要打开HRV开关，调用client.enableV2HRV(true)
+    2.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
+    3.调用client.syncHrvData()获取HRV数据.
+    4.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
     (说明:HRV数据是依赖血氧监测的.请在血氧数据收取完毕以后收取HRV数据.HRV数据类型是10.MegaBleCallback.onSyncMonitorDataComplete()会返回hrv data)
 
 ## 固件升级注意事项
