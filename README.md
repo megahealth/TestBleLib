@@ -11,6 +11,7 @@ name: megablelibopen
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.20|Add HRV switch|2023/04/27|
 |1.6.20|Add protection when parsing rawdata|2023/03/22|
 |1.6.20|Support parse rawdata for pulse|2023/03/15|
 |1.6.19|Support rings of C11H, P11G, P11H.|2023/02/27|
