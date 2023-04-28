@@ -450,6 +450,24 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |ip|tcp ip(默认空)|
 |port|tcp port(默认0)|
 
+操作类型
+
+所有操作类型保存在MegaBleConfig，可以通过名称获取操作码，例如：获取日常模式的操作类型为MegaBleConfig.CMD_V2_GET_MODE
+
+|操作码|名称|介绍|
+|:-:|:-:|:-:|
+|0xCD|CMD_V2_ENABLED_HRV|HRV开关|
+|0xD0|CMD_V2_MODE_SPO_MONITOR|切换到血氧监护模式|
+|0xD4|CMD_V2_MODE_ECG_BP|切换到血压模式|
+|0xD5|CMD_V2_MODE_SPORT|切换到运动监测模式|
+|0xD6|CMD_V2_MODE_DAILY|切换到日常模式(关闭监测)|
+|0xD7|CMD_V2_MODE_LIVE_SPO|切换到血氧实时模式|
+|0xD9|CMD_V2_PERIOD_MONITOR|设置定时监测|
+|0xDB|CMD_V2_MODE_PULSE|切换到脉诊模式|
+|0xEB|CMD_SYNCDATA|收取数据|
+|0xF6|CMD_V2_GET_MODE|获取当前模式|
+|0xF8|CMD_V2_GET_PERIOD_SETTING|获取定时监测信息|
+
 操作返回码
 
 |返回码|说明|
@@ -499,7 +517,7 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
     (说明:请在开启血压监测之前告知用户设置caliSBP和caliDBP。caliSBP表示用户历史的高压值, caliDBP表示用户历史的低压值。)
 
 ## 如何获取HRV数据
-    1.如果指环版本大于5.0.11804，需要打开HRV开关，调用client.enableV2HRV(true)
+    1.如果指环版本大于5.0.11804，开启睡眠监测模式后需要打开HRV开关，调用client.enableV2HRV(true)
     2.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
     3.调用client.syncHrvData()获取HRV数据.
     4.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
