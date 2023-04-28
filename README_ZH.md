@@ -452,7 +452,7 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 
 操作类型
 
-所有操作类型保存在MegaBleConfig，可以通过名称获取操作码，例如：获取日常模式的操作类型为MegaBleConfig.CMD_V2_GET_MODE
+所有操作类型保存在MegaBleConfig，可以通过名称获取操作码，例如：切换到日常模式(关闭监测)的操作类型为MegaBleConfig.CMD_V2_MODE_DAILY
 
 |操作码|名称|介绍|
 |:-:|:-:|:-:|
