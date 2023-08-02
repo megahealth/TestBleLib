@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.20](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.20.aar)
+ - [arr库 v1.6.21](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.21.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
@@ -13,7 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
-|1.6.20|监测模式的实时数据中增加输出acc值|
+|1.6.20|监测模式的实时数据中增加输出acc值|2023/08/02|
 |1.6.20|增加HRV开关|2023/04/27|
 |1.6.20|解析rawdata时添加保护|2023/03/22|
 |1.6.20|支持解析脉诊rawdata|2023/03/15|
