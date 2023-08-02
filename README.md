@@ -4,13 +4,17 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
+ - [arr v1.6.20](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.20.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.20|Add HRV switch|2023/04/27|
+|1.6.20|Add protection when parsing rawdata|2023/03/22|
+|1.6.20|Support parse rawdata for pulse|2023/03/15|
+|1.6.19|Support rings of C11H, P11G, P11H.|2023/02/27|
 |1.6.18|Add an example to show how to draw ECG diagram.|2022/05/23|
 |1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')|2022/03/04|
 |1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
@@ -62,6 +66,8 @@ client.enableV2ModePulse(true); // Turn on pulse mode
 client.enableRawdataSpo // Turn on SPO2 rawdata(need turn on liveSPO2/sport/SPO2Monitor/pulse)
 client.enableRawdataPulse // Turn on pulse rawdata(need turn on pulse mode)
 client.disableRawdata // Turn off rawdata
+client.enableV2HRV(true) //Turn on HRV
+client.enableV2HRV(false) //Turn off HRV
 client.syncData() // Sync monitor data
 client.syncDailyData() // Sync daily step data
 client.syncHrvData() // Sync HRV data
@@ -467,9 +473,10 @@ targetSdkVersion 28
     (Tips:Please tell user to set caliSBP and caliDBP before blood pressure test.caliSBP is user's history of Systolic Blood Pressure, caliDBP is user's history of Diastolic Blood Pressure.)
 
 ## How to get HRV data
-    1.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
-    2.Call client.syncHrvData() to sync HRV data.
-    3.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
+    1.If the ring firmware version is greater than 5.0.11804, you need to call client.enableV2HRV(true) to turn on the HRV switch after entering sleep monitoring.
+    2.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
+    3.Call client.syncHrvData() to sync HRV data.
+    4.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
     (Tips:HRV data is based on SPO2Monitor(Sleep SPO2Monitor).You can sync hrv data when monitor data synced.HRV data's type is 10.MegaBleCallback.onSyncMonitorDataComplete() will return hrv data)
 
 ## Tips of upgrading firmware

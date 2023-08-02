@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.18](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.18.aar)
+ - [arr库 v1.6.20](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.20.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,10 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.20|增加HRV开关|2023/04/27|
+|1.6.20|解析rawdata时添加保护|2023/03/22|
+|1.6.20|支持解析脉诊rawdata|2023/03/15|
+|1.6.19|支持C11H、P11G、P11H的戒指|2023/02/27|
 |1.6.18|添加示例展示如何绘制ECG图|2022/05/23|
 |1.6.18|修复demo在Android9及以上无法升级固件的问题|2022/03/04|
 |1.6.18|修复在Android Q或以上无法保存蓝牙交互日志的问题|2022/01/17|
@@ -56,7 +60,7 @@
 1. android studio项目引入此库
 2. 通过MegaBleBuilder构造客户端对象MegaBleClient，并传入MegaBleCallback实例，作为项目和库通信接口。
 3. 开发者自己负责扫描蓝牙设备(调用android系统蓝牙扫描方法)。若有必要解析广播，请调用适当的广播解析方法。
-4. 扫描到想要连接的设备(名字含有MegaRing的蓝牙外设)即可停止扫描，调用库方法connect(...)进行连接
+4. 扫描到想要连接的设备(名字含有MR、MegaRing、MRingV2的蓝牙外设)即可停止扫描，调用库方法connect(...)进行连接
 5. 由库接管连接后的蓝牙状态，并同时向用户反馈必要的蓝牙信息
 6. (强制)在库初始化完蓝牙后：
   1. 非绑定设备状态下需要传入用户的userId 和 mac，等待库返回token
@@ -91,6 +95,8 @@ client.enableV2ModePulse(true); // 打开脉诊模式
 client.enableRawdataSpo // 打开血氧rawdata，需要打开血氧相关模式
 client.enableRawdataPulse // 打开脉诊rawdata，需要打开脉诊模式
 client.disableRawdata // 关闭所有rawdata
+client.enableV2HRV(true) //开启HRV
+client.enableV2HRV(false) //关闭HRV
 client.syncData() // 同步监测数据
 client.syncDailyData() // 同步日常计步数据
 client.syncHrvData() //同步HRV数据
@@ -444,6 +450,24 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |ip|tcp ip(默认空)|
 |port|tcp port(默认0)|
 
+操作类型
+
+所有操作类型保存在MegaBleConfig，可以通过名称获取操作码，例如：切换到日常模式(关闭监测)的操作类型为MegaBleConfig.CMD_V2_MODE_DAILY
+
+|操作码|名称|介绍|
+|:-:|:-:|:-:|
+|0xCD|CMD_V2_ENABLED_HRV|HRV开关|
+|0xD0|CMD_V2_MODE_SPO_MONITOR|切换到血氧监护模式|
+|0xD4|CMD_V2_MODE_ECG_BP|切换到血压模式|
+|0xD5|CMD_V2_MODE_SPORT|切换到运动监测模式|
+|0xD6|CMD_V2_MODE_DAILY|切换到日常模式(关闭监测)|
+|0xD7|CMD_V2_MODE_LIVE_SPO|切换到血氧实时模式|
+|0xD9|CMD_V2_PERIOD_MONITOR|设置定时监测|
+|0xDB|CMD_V2_MODE_PULSE|切换到脉诊模式|
+|0xEB|CMD_SYNCDATA|收取数据|
+|0xF6|CMD_V2_GET_MODE|获取当前模式|
+|0xF8|CMD_V2_GET_PERIOD_SETTING|获取定时监测信息|
+
 操作返回码
 
 |返回码|说明|
@@ -493,9 +517,10 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
     (说明:请在开启血压监测之前告知用户设置caliSBP和caliDBP。caliSBP表示用户历史的高压值, caliDBP表示用户历史的低压值。)
 
 ## 如何获取HRV数据
-    1.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
-    2.调用client.syncHrvData()获取HRV数据.
-    3.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
+    1.如果指环版本大于5.0.11804，开启睡眠监测模式后需要打开HRV开关，调用client.enableV2HRV(true)
+    2.实现MegaBleCallback.onSyncNoDataOfHrv()// 收取HRV完成.
+    3.调用client.syncHrvData()获取HRV数据.
+    4.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
     (说明:HRV数据是依赖血氧监测的.请在血氧数据收取完毕以后收取HRV数据.HRV数据类型是10.MegaBleCallback.onSyncMonitorDataComplete()会返回hrv data)
 
 ## 固件升级注意事项

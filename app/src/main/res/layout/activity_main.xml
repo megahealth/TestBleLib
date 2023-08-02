@@ -342,6 +342,13 @@
                             android:textColor="@color/colorAccent" />
 
                         <Button
+                            android:id="@+id/btn_hrv_on"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_enable_hrv"
+                            android:textColor="@color/colorAccent" />
+
+                        <Button
                             android:id="@+id/btn_pulse_on"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

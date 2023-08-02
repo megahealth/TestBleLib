@@ -25,6 +25,7 @@
     <string name="label_enable_bp">BP on</string>
     <string name="label_disable_bp">BP off</string>
     <string name="label_enable_pulse">pulse on</string>
+    <string name="label_enable_hrv">hrv on</string>
     <string name="pulse_rawdata_on">pulse rawdata on</string>
     <string name="close_rawdata">rawdata off</string>
     <string name="info_title">About</string>

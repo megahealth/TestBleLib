@@ -520,6 +520,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
 
         override fun onRawdataParsed(data: Array<out MegaRawData>?) {
+            Log.i(TAG, "onRawdataParsed: ${data!!.size}")
             data?.apply {
                 for (item in data) {
                     println("--->${item}")
@@ -687,6 +688,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_bp_off.setOnClickListener(this)
         btn_parse_hrv.setOnClickListener(this)
         btn_sync_hrv.setOnClickListener(this)
+        btn_hrv_on.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -753,6 +755,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_sport_on -> megaBleClient!!.enableV2ModeSport(true)
             // 开脉诊
             R.id.btn_pulse_on -> megaBleClient!!.enableV2ModePulse(true)
+            // 开HRV，固件版本为5.*.*****且大于5.0.11804需要打开HRV开关，收取报告时才有HRV数据，关闭HRV为enableV2HRV(false)
+            R.id.btn_hrv_on -> megaBleClient!!.enableV2HRV(true)
             // 收数据
             R.id.btn_sync_data -> {
                 megaBleClient!!.syncData()
