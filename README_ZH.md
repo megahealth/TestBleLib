@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.20|监测模式的实时数据中增加输出acc值|
 |1.6.20|增加HRV开关|2023/04/27|
 |1.6.20|解析rawdata时添加保护|2023/03/22|
 |1.6.20|支持解析脉诊rawdata|2023/03/15|
@@ -344,6 +345,9 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |status|  0--->值有效 <br>1--->准备中 <br>2--->值无效|
 |hr|心率|
 |spo2|血氧(%)|
+|accX|acc|
+|accY|acc|
+|accZ|acc|
 
 |MegaBleBattery|说明|
 |:-:|:-:|

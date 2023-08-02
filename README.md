@@ -11,6 +11,7 @@ name: megablelibopen
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.21|Add acc value in live data of SPO2Monitor mode|
 |1.6.20|Add HRV switch|2023/04/27|
 |1.6.20|Add protection when parsing rawdata|2023/03/22|
 |1.6.20|Support parse rawdata for pulse|2023/03/15|
@@ -315,6 +316,9 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |status|  0--->valid value <br>1--->preparing <br>2--->invalid value|
 |hr|heart rate(bpm)|
 |spo2|spo2(%)|
+|accX|acc|
+|accY|acc|
+|accZ|acc|
 
 |MegaBleBattery|Description|
 |:-:|:-:|
