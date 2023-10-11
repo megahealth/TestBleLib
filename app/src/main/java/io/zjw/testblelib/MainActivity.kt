@@ -50,15 +50,18 @@ import io.mega.megableparse.MegaSpoPrBean
 import io.mega.megableparse.ParsedHRVBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.zjw.testblelib.bean.BpDataEvent
 import io.zjw.testblelib.db.DBInstance
 import io.zjw.testblelib.db.DataEntity
 import io.zjw.testblelib.dfu.DfuService
+import io.zjw.testblelib.reports.RealtimeBpActivity
 import io.zjw.testblelib.reports.ReportListActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import no.nordicsemi.android.dfu.DfuProgressListener
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
 import no.nordicsemi.android.dfu.DfuServiceInitiator
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper
+import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
@@ -142,6 +145,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     // ble
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mScannedDevices: MutableList<ScannedDevice> = ArrayList()
+    private var isParsing = false
 
     // sdk ble
     private var mDfuPath: String? = null
@@ -536,12 +540,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             val result = megaBleClient?.parseBpData(data, timeHHmm, 134.0, 80.0)
             Log.i(TAG, "onTotalBpDataReceived() $result")
             if (duration >= 60) {
+                isParsing = false
                 megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
                 Log.i(TAG, "onTotalBpDataReceived() ecg bp off.")
                 return
             }
-            result?.let {
+            result?.let { it ->
+                if(it.chEcg != null && it.dataNum >= 400 && isParsing){
+                    val ecgData = FloatArray(100)
+                    System.arraycopy(
+                            it.chEcg,
+                            it.dataNum - 100,
+                            ecgData,
+                            0,
+                            100
+                    )
+                    EventBus.getDefault().post(BpDataEvent(it.apply {
+                        this.chEcg = ecgData
+                    }, duration))
+                }
                 if (it.flag == 1) {
+                    isParsing = false
                     megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
                     Log.i(TAG, "onTotalBpDataReceived() ecg bp off.")
                     val dataEntity = DataEntity()
@@ -857,10 +876,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_get_crash_log -> megaBleClient?.getCrashLog()
             R.id.btn_bp_on -> {
                 if (bpCfg == null) bpCfg = MegaRawdataConfig(false, false, "", 0)
+                isParsing = true
                 megaBleClient?.enableV2ModeEcgBp(true, bpCfg)
+                startActivity(Intent(this, RealtimeBpActivity::class.java))
             }
             R.id.btn_bp_off -> {
                 if (bpCfg == null) bpCfg = MegaRawdataConfig(false, false, "", 0)
+                isParsing = false
                 megaBleClient?.enableV2ModeEcgBp(false, bpCfg)
             }
             R.id.btn_parse_hrv -> {

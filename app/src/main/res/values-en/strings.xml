@@ -55,4 +55,15 @@
     <string name="not_choose_tip">Please choose file</string>
     <string name="period_disable_tip">if period monitor has started, it will take effect after this monitor end</string>
     <string name="period_monitor_start_tip">Please choose start time.</string>
+    <string name="home_bp_title">Blood pressure</string>
+    <string name="bp_test_prepare_tip">Please touch the electrode on the lower surface of the finger ring closely with your fingers.</string>
+    <string name="bp_test_begin">It\'s about to start, please get ready.</string>
+    <string name="bp_test_done_tip">Measurement complete</string>
+    <string name="bp_test_tip">Please contact the electrode on the lower surface with your fingers until the measurement is finished.</string>
+    <string name="result_sbp">SBP(mmHg)</string>
+    <string name="result_dbp">DBP(mmHg)</string>
+    <string name="bp_test_pr_tag">Pulse rate (beats/minute)</string>
+    <string name="bp_test_done">Complete</string>
+    <string name="bp_test_start_time">Start Time:%s</string>
+
 </resources>

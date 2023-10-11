@@ -56,4 +56,15 @@
     <string name="not_choose_tip">未选择文件</string>
     <string name="period_disable_tip">如果定时监测已开启，定时结束将在本次定时监测结束后生效</string>
     <string name="period_monitor_start_tip">请选择开始时间</string>
+    <string name="home_bp_title">血压测量</string>
+    <string name="bp_test_prepare_tip">请用手指紧密接触下表面电极</string>
+    <string name="bp_test_begin">即将开始，请做好准备</string>
+    <string name="bp_test_done_tip">测量完成</string>
+    <string name="bp_test_tip">请用手指紧密接触下表面电极，直到测量结束</string>
+    <string name="result_sbp">收缩压(mmHg)</string>
+    <string name="result_dbp">舒张压(mmHg)</string>
+    <string name="bp_test_pr_tag">脉率(次/分钟)</string>
+    <string name="bp_test_done">完成</string>
+    <string name="bp_test_start_time">开始时间:%s</string>
+
 </resources>
