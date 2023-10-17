@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('megablelibopen-1.6.21.aar'))
+artifacts.add("default", file('megablelibopen-1.6.23.aar'))

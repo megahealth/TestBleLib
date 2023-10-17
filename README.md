@@ -4,13 +4,14 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.21](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.21.aar)
+ - [arr v1.6.23](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.23.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.23|Get reports faster.|2023/10/17|
 |1.6.21|Add an example to show how to draw Real-time ECG diagram.|2023/10/11|
 |1.6.21|Add acc value in live data of SPO2Monitor mode|2023/08/02|
 |1.6.20|Add HRV switch|2023/04/27|

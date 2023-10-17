@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.21](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.21.aar)
+ - [arr库 v1.6.23](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.23.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
@@ -13,6 +13,7 @@
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
+|1.6.23|加快收取报告速度|2023/10/17|
 |1.6.21|添加示例展示如何绘制实时ECG图|2023/10/11|
 |1.6.21|监测模式的实时数据中增加输出acc值|2023/08/02|
 |1.6.20|增加HRV开关|2023/04/27|
