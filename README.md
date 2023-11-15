@@ -11,8 +11,9 @@ name: megablelibopen
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
-|1.6.23|Get reports faster.|2023/10/17|
-|1.6.21|Add an example to show how to draw Real-time ECG diagram.|2023/10/11|
+|1.6.23|Fix the problem of collecting monitoring reports|2023/11/15|
+|1.6.23|Sync monitoring reports faster|2023/10/17|
+|1.6.21|Add an example to show how to draw Real-time ECG diagram|2023/10/11|
 |1.6.21|Add acc value in live data of SPO2Monitor mode|2023/08/02|
 |1.6.20|Add HRV switch|2023/04/27|
 |1.6.20|Add protection when parsing rawdata|2023/03/22|
