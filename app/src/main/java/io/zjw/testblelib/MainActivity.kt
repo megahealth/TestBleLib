@@ -510,6 +510,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             Log.d(TAG, "onRawdataParsed: " + a?.joinToString("; ") { i -> i.joinToString(", ") })
         }
 
+        override fun onRawDataComplete(path: String, length: Int) {
+            Log.d(TAG, "onRawDataComplete: $path")
+        }
 
         override fun onV2PeriodSettingReceived(setting: MegaV2PeriodSetting?) {
             Log.i(TAG, "onV2PeriodSettingReceived:$setting")
@@ -708,6 +711,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_parse_hrv.setOnClickListener(this)
         btn_sync_hrv.setOnClickListener(this)
         btn_hrv_on.setOnClickListener(this)
+        btn_get_rawdata.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -781,6 +785,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 megaBleClient!!.syncData()
             }
             R.id.btn_sync_daily_data -> megaBleClient!!.syncDailyData()
+            R.id.btn_get_rawdata -> megaBleClient!!.getRawData()
             R.id.tv_clear -> {
                 et_token!!.text = null
                 UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)

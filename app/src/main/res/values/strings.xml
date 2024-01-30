@@ -32,6 +32,7 @@
     <string name="info_content">App版本:v%s\n算法版本:%d</string>
     <string name="ok">确定</string>
     <string name="parse_success">解析成功</string>
+    <string name="label_get_raw_data">获取rawdata</string>
 
     <string-array name="spinner_items_period_monitor_duration">
         <item>10分钟</item>

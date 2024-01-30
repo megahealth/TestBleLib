@@ -65,5 +65,6 @@
     <string name="bp_test_pr_tag">Pulse rate (beats/minute)</string>
     <string name="bp_test_done">Complete</string>
     <string name="bp_test_start_time">Start Time:%s</string>
+    <string name="label_get_raw_data">get rawdata</string>
 
 </resources>

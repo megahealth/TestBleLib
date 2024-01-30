@@ -387,6 +387,12 @@
                             android:text="@string/label_sync_glu" />
 
                         <Button
+                            android:id="@+id/btn_get_rawdata"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_get_raw_data" />
+
+                        <Button
                             android:id="@+id/btn_parse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

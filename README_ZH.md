@@ -104,6 +104,7 @@ client.enableV2HRV(false) //关闭HRV
 client.syncData() // 同步监测数据
 client.syncDailyData() // 同步日常计步数据
 client.syncHrvData() //同步HRV数据
+client.getRawData() //获取RawData数据
 client.getV2PeriodSetting() // 获取定时监测的设置信息 (MegaBleCallback.onV2PeriodSettingReceived返回设置信息)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // 打开定时监测 参数释义：true、是否重复、监测时长(s)、距离监测开启的时长(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // 关闭定时监测
@@ -150,6 +151,7 @@ void onCrashLogReceived(bytes: ByteArray?)//返回crash log
 void onRawdataParsed(MegaRawData[]);
 void onRawdataParsed([]);//已弃用
 void onTotalBpDataReceived(data, duration) //返回累计的血压数据和血压监测时长
+void onRawDataComplete(String path, int length) //返回RawData数据
 ```
 
 - public class ParsedSpoPrBean（已废弃，替换为MegaSpoPrBean）
@@ -530,7 +532,13 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
     4.使用onSyncMonitorDataComplete()返回的数据，调用client.parseHrvData()解析HRV数据.
     (说明:HRV数据是依赖血氧监测的.请在血氧数据收取完毕以后收取HRV数据.HRV数据类型是10.MegaBleCallback.onSyncMonitorDataComplete()会返回hrv data)
 
+## 如何获取RawData数据
+	1. 调用getRawData()获取RawData数据
+	2. 使用onSyncingDataProgress()返回收取RawData的进度
+	3. 使用onRawDataComplete()返回的RawData数据的本地路径
+
 ## 固件升级注意事项
+
     1.电量需大于25%
     2.电池状态需是正常/充电中/已充满
     3.如果targetSdkVersion >= 28需在AndroidManifest.xml中添加权限(android.permission.FOREGROUND_SERVICE)

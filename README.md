@@ -75,6 +75,7 @@ client.enableV2HRV(false) //Turn off HRV
 client.syncData() // Sync monitor data
 client.syncDailyData() // Sync daily step data
 client.syncHrvData() // Sync HRV data
+client.getRawData() //Get rawdata
 client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
 client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
 client.enableV2PeriodMonitor(false, false, 0, 0) // close period monitor
@@ -121,6 +122,7 @@ void onCrashLogReceived(bytes: ByteArray?)// return crash log
 void onRawdataParsed(MegaRawData[]);
 void onRawdataParsed([]);//Deprecated
 void onTotalBpDataReceived(data, duration) // return total blood pressure data and duration
+void onRawDataComplete(String path, int length) //Called when getting rawdata is completed
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -486,7 +488,13 @@ targetSdkVersion 28
     4.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
     (Tips:HRV data is based on SPO2Monitor(Sleep SPO2Monitor).You can sync hrv data when monitor data synced.HRV data's type is 10.MegaBleCallback.onSyncMonitorDataComplete() will return hrv data)
 
+## How to get rawdata
+	1. Call getRawData() to get rawdata
+	2. Using onSyncingDataProgress() returns the progress of getting rawdata
+	3. Using onRawDataComplete() returns the local path of rawdata
+
 ## Tips of upgrading firmware
+
     1.Battery value should be greater than 25%
     2.Battery status should be normal/charging/full
     3.Add FOREGROUND_SERVICE permission(android.permission.FOREGROUND_SERVICE) to AndroidManifest.xml if targetSdkVersion >= 28
