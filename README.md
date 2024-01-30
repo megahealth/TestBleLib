@@ -491,7 +491,7 @@ targetSdkVersion 28
 ## How to get rawdata
 	1. Call getRawData() to get rawdata
 	2. Using onSyncingDataProgress() returns the progress of getting rawdata
-	3. Using onRawDataComplete() returns the local path of rawdata
+	3. Using onRawDataComplete() returns the local path of rawdata when getting rawdata is completed
 
 ## Tips of upgrading firmware
 
