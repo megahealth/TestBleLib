@@ -4,7 +4,7 @@ name: megablelibopen
 - EN | [中文](./README_ZH.md)
 
 ## Files
- - [arr v1.6.25](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.26.aar)
+ - [arr v1.6.26](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.26.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
