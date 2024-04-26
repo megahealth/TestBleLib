@@ -178,6 +178,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             } else {
                 mScannedDevices[i].rssi = rssi
             }
+            mScannedDevices.sortByDescending {
+                it.rssi
+            }
         }
     private val megaBleCallback: MegaBleCallback = object : MegaBleCallback() {
         override fun onConnectionStateChange(connected: Boolean, device: MegaBleDevice?) {
@@ -655,6 +658,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         btn_pulse_on.setOnClickListener(this)
         btn_monitor_off.setOnClickListener(this)
         btn_sync_data.setOnClickListener(this)
+        btn_sync_data_not_clean.setOnClickListener(this)
         btn_sync_daily_data.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
         btn_open_global_live.setOnClickListener(this)
@@ -780,6 +784,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_pulse_on -> megaBleClient!!.enableV2ModePulse(true)
             // 开HRV，固件版本为5.*.*****且大于5.0.11804需要打开HRV开关，收取报告时才有HRV数据，关闭HRV为enableV2HRV(false)
             R.id.btn_hrv_on -> megaBleClient!!.enableV2HRV(true)
+            R.id.btn_sync_data_not_clean -> {
+                megaBleClient!!.syncDataWithoutCleanData()
+            }
             // 收数据
             R.id.btn_sync_data -> {
                 megaBleClient!!.syncData()

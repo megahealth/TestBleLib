@@ -369,6 +369,12 @@
                             android:text="@string/label_sync" />
 
                         <Button
+                            android:id="@+id/btn_sync_data_not_clean"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_sync_without_clear" />
+
+                        <Button
                             android:id="@+id/btn_sync_hrv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

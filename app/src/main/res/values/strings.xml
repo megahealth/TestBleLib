@@ -18,6 +18,7 @@
     <string name="label_enable_hrv">开HRV</string>
     <string name="label_disable_monitor">关监控</string>
     <string name="label_sync">收数据</string>
+    <string name="label_sync_without_clear">收数据后不删除数据</string>
     <string name="label_sync_hrv">收HRV数据</string>
     <string name="label_sync_daily">收日常数据</string>
     <string name="label_sync_glu">收血糖</string>
