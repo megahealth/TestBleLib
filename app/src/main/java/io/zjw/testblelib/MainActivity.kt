@@ -785,7 +785,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             // 开HRV，固件版本为5.*.*****且大于5.0.11804需要打开HRV开关，收取报告时才有HRV数据，关闭HRV为enableV2HRV(false)
             R.id.btn_hrv_on -> megaBleClient!!.enableV2HRV(true)
             R.id.btn_sync_data_not_clean -> {
-                megaBleClient!!.syncDataWithoutCleanData()
+                megaBleClient!!.syncDataWithoutClearData()
             }
             // 收数据
             R.id.btn_sync_data -> {
