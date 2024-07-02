@@ -194,8 +194,8 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |deepMinutes|(minutes)|
 |wakeInSMinutes|(minutes)|
 |fallSMinutes|(minutes)|
-|downIndex|spo2 down index|
-|downTimes|spo2 down counts|
+|downIndex|Oxygen Desaturation Index|
+|downTimes|Oxygen Desaturation Event Count|
 |downIndexW|spo2 down index of whole night|
 |secondsUnder60|spo2 <60% seconds|
 |secondsUnder65|spo2 <65% seconds|
