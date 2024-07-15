@@ -187,16 +187,16 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |handOffArr|handOff timestamp pair|
 |o2Arr|spo2 array(second)|
 |stageArr|sleep stage array：0-w，2-r，3-l，4-d，6-offhand. (Awake, REM, Light, Deep)|
-|maxDownDuration|(second)|
+|maxDownDuration|The longest Oxygen Desaturation 3 Event|
 |wakeMinutes|(minutes)|
 |remMinutes|(minutes)|
 |lightMinutes|(minutes))|
 |deepMinutes|(minutes)|
 |wakeInSMinutes|(minutes)|
 |fallSMinutes|(minutes)|
-|downIndex|Oxygen Desaturation Index|
-|downTimes|Oxygen Desaturation Event Count|
-|downIndexW|spo2 down index of whole night|
+|downIndex|Oxygen Desaturation 3 Index|
+|downTimes|Oxygen Desaturation Event 3 Count|
+|downIndexW|spo2 Desaturation index 3 of whole night|
 |secondsUnder60|spo2 <60% seconds|
 |secondsUnder65|spo2 <65% seconds|
 |secondsUnder70|spo2 <70% seconds|
@@ -247,10 +247,10 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |ODI3Less50sPercent||
 |ODI3Less60sPercent||
 |ODI3Longer60sPercent||
-|downTimes4||
-|downIndex4||
-|downIndexW4||
-|maxDownDuration4||
+|downTimes4|Oxygen Desaturation Event 4  Count |
+|downIndex4|Oxygen Desaturation 4 Index|
+|downIndexW4|spo2 Desaturation index 4 of whole night|
+|maxDownDuration4|The longest Oxygen Desaturation 4 Event|
 |ODI4Less100Cnt||
 |ODI4Less95Cnt||
 |ODI4Less90Cnt||
