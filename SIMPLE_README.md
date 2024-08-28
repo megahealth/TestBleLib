@@ -1,50 +1,126 @@
 # Mega Ble SDK Document（Android）
 name: megablelibopen
 
-- EN | [中文](./README_ZH.md)
-- [Simple Document](./SIMPLE_README.md)
+- EN | [中文](./SIMPLE_README_ZH.md)
 
 ## Files
  - [arr v1.6.27](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.27.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
-
-## Changelog
-|Version|Description|Date|
-|:-:|-|:-:|
-|1.6.23|Fix the problem of collecting monitoring reports|2023/11/15|
-|1.6.23|Sync monitoring reports faster|2023/10/17|
-|1.6.21|Add an example to show how to draw Real-time ECG diagram|2023/10/11|
-|1.6.21|Add acc value in live data of SPO2Monitor mode|2023/08/02|
-|1.6.20|Add HRV switch|2023/04/27|
-|1.6.20|Add protection when parsing rawdata|2023/03/22|
-|1.6.20|Support parse rawdata for pulse|2023/03/15|
-|1.6.19|Support rings of C11H, P11G, P11H.|2023/02/27|
-|1.6.18|Add an example to show how to draw ECG diagram.|2022/05/23|
-|1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')|2022/03/04|
-|1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
-|1.6.17|1.Fix the problem of unresponsive API calls for a short time (in milliseconds)<br/>2.Demo update mock_daily.bin|2021/12/02|
-|1.6.16|1.Upgrade parse algorithm(V11449)<br/>2.Support for collecting blood pressure data<br/>3.Add parsing blood pressure data function<br/>4.Support for syncing hrv data<br/>5.Add parsing HRV data function<br/>|2021/11/26|
-|1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data|2021/10/26|
-|1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)|2021/10/18|
-|1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
-|1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
-|1.6.12|Add get crash log api|2021/06/18|
-|1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields |2021/06/09|
+ - [demo v1.0.27](https://github.com/megahealth/TestBleLib)
 
 
 ## Quick start
-1. Android studio import .arr and .so.
-2. Create MegaBleClient by MegaBleBuilder with context, megaBleCallback.
-3. Scan for a target by Android standard BLE api.
-4. client.connect(target) // client will take care of the interaction with target.
-5. Sdk will control BLE state and feedback BLE INFO to user
-6. (must)After sdk initialize BLE client：
-  1. If no token, use startWithoutToken(userId, mac), to wait for a token which ring will send after shaking.
-  2. if there is a token, use startWithToken(userId, token)
-7. (must) setUserInfo(...)。The CONNECTION will be stable after this step.
-8. Idle. // It's time to control the device, eg. enable/disable monitoring, syncing monitor data
-9. Parse data
+
+[SimpleMainActivity.kt](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/java/io/zjw/testblelib/ui/SimpleMainActivity.kt): Please refer to the MainActivity file to understand the following example's code.
+
+### 1. import SDK
+Android studio import .arr and .so.
+
+### 2. init MegaBleClient instance
+
+```
+megaBleClient = MegaBleBuilder()
+    .withSecretId("D4CE5DD515F81247")
+    .withSecretKey("uedQ2MgVEFlsGIWSgofHYHNdZSyHmmJ5")
+    .withContext(this)
+    .uploadData(true)
+    .withCallback(megaBleCallback)
+    .build()
+```
+
+### 3. scan and connect ring
+
+1. Scan the ring.
+```
+mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+```
+2. Select a ring from the scan list to connect the ring.The scan information contains the ring's bluetooth address and name.
+```
+megaBleClient!!.connect(device.address, device.name)
+```
+3. Use token to connect ring. The token is the credential for connecting to the ring, generated and returned by the ring.
+If no token, use startWithoutToken(userId, mac), the user shakes the ring to indicate approval for the connection,
+and the ring will generate and return a token. For the next to connect the ring, use this token to maintain the connection without requiring the user to shake the ring.
+
+​		If no token, when the user shakes the ring, new token will be returned:
+```
+megaBleClient!!.startWithToken(userId, "0,0,0,0,0,0")
+
+override fun onKnockDevice() {
+    //Remind the user to shake the ring.
+}
+
+override fun onTokenReceived(token: String) {
+   //save the token, for the next to connect the ring.
+  Log.d(TAG, "onTokenReceived: $token")
+}
+```
+
+​		If has token:
+```
+megaBleClient!!.startWithToken(userId, token)
+
+override fun onTokenReceived(token: String) {
+  Log.d(TAG, "onTokenReceived: $token")
+}
+```
+
+4. set user information.
+```
+megaBleClient!!.setUserInfo(
+    25.toByte(),
+    1.toByte(),
+    170.toByte(),
+    60.toByte(),
+    0.toByte()
+)
+```
+5. onIdle() is called, which indicates that the connection is completed. 
+
+### 3. set enso mode
+
+```
+megaBleClient?.enableEnsoMode(true)
+```
+
+### 4. start monitoring
+
+```
+client.enableV2ModeSpoMonitor(true);
+```
+
+### 5. stop monitoring
+
+```
+client.enableV2ModeDaily(true);
+```
+
+### 6. sync monitor data
+
+call syncData() to sync data
+
+```
+megaBleClient!!.syncData()
+```
+
+- onSyncingDataProgress returns the progress of sync data.
+- onSyncMonitorDataComplete indicates that the sync data has finished and returns the data.
+- onSyncNoDataOfMonitor indicates that the ring has no data, and you can processed with the next operation.
+
+### 7. parse monitor data
+
+```
+megaBleClient!!.parseSpoPr(bytes, parseSpoPrResult)
+```
+
+### 8. get raw data
+call getRawData to get raw data
+```
+megaBleClient!!.getRawData()
+```
+- onSyncingDataProgress returns the progress of sync raw data.
+- onRawDataComplete indicates that the raw data sync has finished and returns the path.
+
 
 ## API：
 
@@ -61,35 +137,13 @@ client = new MegaBleBuilder()
 
 - public class MegaBleClient
 ```
+client.enableV2ModeSpoMonitor(true); // Turn on SPO2Monitor(Sleep SPO2Monitor) mode
+client.enableV2ModeDaily(true); // Turn off liveSPO2/sport/SPO2Monitor
+client.syncData() // Sync monitor data
+client.parseSpoPr(bytes, callback) // parse SPO2Monitor data
 client.toggleLive(true); // Turn on/off the global real-time channel.Compatible：liveSPO2/sport/SPO2Monitor/pulse
 client.getV2Mode(); // Get current mode.
-client.enableV2ModeLiveSpo(true); // Turn on liveSPO2 mode
-client.enableV2ModeDaily(true); // Turn off liveSPO2/sport/SPO2Monitor
-client.enableV2ModeSpoMonitor(true); // Turn on SPO2Monitor(Sleep SPO2Monitor) mode
-client.enableV2ModeSport(true); // Turn on sport mode
-client.enableV2ModePulse(true); // Turn on pulse mode
-client.enableRawdataSpo // Turn on SPO2 rawdata(need turn on liveSPO2/sport/SPO2Monitor/pulse)
-client.enableRawdataPulse // Turn on pulse rawdata(need turn on pulse mode)
-client.disableRawdata // Turn off rawdata
-client.enableV2HRV(true) //Turn on HRV
-client.enableV2HRV(false) //Turn off HRV
-client.syncData() // Sync monitor data
-client.syncDailyData() // Sync daily step data
-client.syncHrvData() // Sync HRV data
 client.getRawData() //Get rawdata
-client.getV2PeriodSetting() // Get period monitor setting (MegaBleCallback.onV2PeriodSettingReceived show setting info)
-client.enableV2PeriodMonitor(true, boolean isLoop, int monitorDuration, int timeLeft) // open period monitor params：true、isLoop、duration(s)、timeLeft(s)
-client.enableV2PeriodMonitor(false, false, 0, 0) // close period monitor
-client.parseSpoPr(bytes, callback) // parse SPO2Monitor data
-client.parseSport(bytes, callback) // parse Sport data
-client.parseSpoPrOld(bytes, callback) // parse SPO2Monitor data(Deprecated, use parseSpoPr())
-client.parseSportOld(bytes, callback) // parse Sport data(Deprecated, use parseSport())
-client.startDfu() // enter to dfu mode to upgrade firmware.
-client.getCrashLog() // get crash log, recommend to get crash log after sync data.
-client.parseDailyEntry(bytes) //pasre daily data
-client.enableV2ModeEcgBp(true/false, megaRawdataConfig) // turn on or turn off blood pressure
-client.parseBpData(bytes, timeHHmm, caliSBP, caliDBP) // parse blood pressure data. Params example:bytes=[], timeHHmm= 831, caliSBP=134.0, caliDBP=80.0
-client.parseHrvData(bytes, callback) //parse HRV data
 ```
 
 - public abstract class MegaBleCallback
@@ -101,29 +155,15 @@ void onSetUserInfo() // call setUserInfo
 void onIdle() // ready to do work
 void onKnockDevice() // only happened when there is no token or token changed
 void onTokenReceived(String token) // user should save
-void onRssiReceived(int rssi)
 void onDeviceInfoReceived(MegaBleDevice device)
 void onBatteryChanged(int value, int status)
-void onReadyToDfu()
 void onSyncingDataProgress(int progress)
 void onSyncMonitorDataComplete(byte[] bytes, int dataStopType, int dataType, String uid, int steps)
-void onSyncDailyDataComplete(byte[] bytes)
 void onSyncNoDataOfMonitor()
-void onSyncNoDataOfDaily()
-void onSyncNoDataOfHrv()
 void onOperationStatus(int status)
 void onHeartBeatReceived(MegaBleHeartBeat heartBeat)
 void onV2LiveSpoMonitor(MegaV2LiveSpoMonitor live); // SPO2/Sleep live data
-void onV2LiveSport(MegaV2LiveSport live); // Sport live data
-void onV2LiveSpoLive(MegaV2LiveSpoLive live); // Live SPO2 data
 void onV2ModeReceived(MegaV2Mode mode) // get current mode
-void onV2PeriodSettingReceived(setting: MegaV2PeriodSetting) // get current periodic monitor setting
-void onCrashLogReceived(bytes: ByteArray?)// return crash log
-//Parse rawdata
-void onRawdataParsed(MegaRawData[]);
-void onRawdataParsed([]);//Deprecated
-void onTotalBpDataReceived(data, duration) // return total blood pressure data and duration
-void onRawDataComplete(String path, int length) //Called when getting rawdata is completed
 ```
 
 - public class ParsedSpoPrBean（Deprecated, use MegaSpoPrBean）
@@ -299,15 +339,6 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |prArr|Pr array(second))|
 |handOffArr|handOff timestamp pair|
 
-|MegaV2PeriodSetting|Description|
-|:-:|:-:|
-|status|period monitor status <0x00-disable，0x01-idle，0x02-working，0x04-suspend>|
-|periodType|1-loop;0-once|
-|h|hour|
-|m|minute|
-|s|second|
-|maxTime|duration(second)|
-
 |MegaV2LiveSpoLive|Description|
 |:-:|:-:|
 |status|  0--->valid value <br>1--->preparing <br>2--->invalid value|
@@ -350,79 +381,6 @@ implementation 'no.nordicsemi.android:dfu:2.0.2'
 |fwVer|firmware version|
 |blVer|BootLoader version|
 
-|MegaDailyParsedResult|Result of parse daily data |
-|:-------------------:|:-------------------------------------------------------:|
-|dailyUnit|For calculate start of MegaDailyBean(Unit is minutes) |
-|dailyBeans|list of MegaDailyBean|
-
-|MegaDailyBean|Details of daily data |
-|:-----------:|:------------------------------------------:|
-|time|end of MegaDailyBean(The unit is timestamps) |
-|stepsDiff|steps in the time period|
-|temp|temperature in the time period|
-
-|MegaRawData|Details of RawData |
-|:-----------:|:------------------------------------------:|
-|red|Red light|
-|infrared|Infrared light|
-|ambient|Ambient light|
-
-|ParsedBPBean|Details of Blood Pressure|
-|:-:|:-:|
-|dataType|tpye of data|
-|protocol|protocol of data|
-|frameCount|count of frame|
-|dataBlockSize|dataBlockSize|
-|SBP|Systolic Blood Pressure|
-|DBP|Diastolic Blood Pressure|
-|pr|Pulse Rate|
-|status|state of data(0:valid 1:ECG data negative saturation)|
-|flag|result of calculate(0:invalid 1:valid 2:timeout)|
-|chEcg|data of ECG|
-|dataNum|length of ECG data|
-
-|ParsedHRVBean|Details of HRV|
-|:-:|:-:|
-|version|version of data|
-|dataType|type of data|
-|timeStart|start time(timestamp)|
-|duration|duration(second)|
-|cnt|number of heart beats analyzed|
-|meanBpm|average of HR|
-|SDNN||
-|SDANN||
-|RMSSD||
-|NN50||
-|pNN50||
-|triangleIdx|triangle index|
-|maxRR|maximum RR interval|
-|maxRRTimeStamp|occurrence time of maxRR(timestamp)|
-|minBpm|minimum HR|
-|minBpmTimeStamp|occurrence time of minBpm|
-|maxBpm|maximum HR|
-|maxBpmTimeStamp|occurrence time of maxBpm|
-|fastBpmCnt|tachycardia wave number|
-|fastBpmRate|proportion of tachycardia|
-|slowBpmCnt|bradycardia number|
-|slowBpmRate|proportion of bradycardia|
-|VLFP|proportion(%)|
-|LFP|proportion(%)|
-|HFP|proportion(%)|
-|LHFR||
-|SDNNCnt|count of SDNN|
-|SDNNVect|SDNN array|
-|HRcnt|count of HR|
-|HRVect|HR array|
-|histVCnt|length of Histogram data|
-|histVect|histogram data|
-|freqVCnt|length of Spectrogram data|
-|freqVect|spectrogram data|
-|timeT||
-|timeCnt||
-|SD1||
-|SD2||
-|SDRate||
-
 |MegaRawdataConfig|Details of rawdata config|
 |:-:|:-:|
 |isFileEnable|Is save data to file|
@@ -458,41 +416,6 @@ bluetooth, write file, internet, GPS
 minSdkVersion 19
 targetSdkVersion 28
 - It is recommended to refer to the demo source code and run the experience
-
-## Wearing Test
-    1. Switch to liveSPO2 mode
-    2. onV2LiveSpoLive() will return MegaV2LiveSpoLive data
-    3. Guide user to pose the specified gestures. If the user wears the ring correctly: accY = 0 when fingers point to the ground; accZ = 0 when Palms up.
-
-## Tips of calculate daily data
-    1.Start of MegaDailyBean need calculate by yourself. start = MegaDailyBean.time-dailyUnit*60
-    2.The unit of temp  is ℃ ,temp/10  to get  temperature .
-    3.Please control the timing of sync daily data by yourself.
-## How to get temperature in monitoring
-    1.Stop monitoring
-    2.Sync daily data
-    3.Parse daily data
-    4.Sync monitor data
-    5.Parse monitor data and combine with filter daily data that synced by step 2
-    (Daily data's start and end must between in monitor data's startAt and endAt.The developers can store timestamps and temperature by yourself)
-## How to get blood pressure data
-    1.Implement MegaBleCallback.onTotalBpDataReceived() //This function will return bp data and test duration.
-    2.client.enableV2ModeEcgBp(true, megaRawdataConfig) //start blood pressure test
-    3.Use data from onTotalBpDataReceived() and call client.parseBpData() to get blood pressure data
-    4.client.enableV2ModeEcgBp(false, megaRawdataConfig) //stop blood pressure if ParsedBPBean.flag = 1 or test duration greater than 60s
-    (Tips:Please tell user to set caliSBP and caliDBP before blood pressure test.caliSBP is user's history of Systolic Blood Pressure, caliDBP is user's history of Diastolic Blood Pressure.)
-
-## How to get HRV data
-    1.If the ring firmware version is greater than 5.0.11804, you need to call client.enableV2HRV(true) to turn on the HRV switch after entering sleep monitoring.
-    2.Implement MegaBleCallback.onSyncNoDataOfHrv()// Sync HRV data done.
-    3.Call client.syncHrvData() to sync HRV data.
-    4.Use data from onSyncMonitorDataComplete() and call client.parseHrvData() to get HRV data after HRV data synced.
-    (Tips:HRV data is based on SPO2Monitor(Sleep SPO2Monitor).You can sync hrv data when monitor data synced.HRV data's type is 10.MegaBleCallback.onSyncMonitorDataComplete() will return hrv data)
-
-## How to get rawdata
-	1. Call getRawData() to get rawdata
-	2. Using onSyncingDataProgress() returns the progress of getting rawdata
-	3. Using onRawDataComplete() returns the local path of rawdata when getting rawdata is completed
 
 ## Tips of upgrading firmware
 

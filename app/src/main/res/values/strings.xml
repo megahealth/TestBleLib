@@ -68,5 +68,6 @@
     <string name="bp_test_pr_tag">脉率(次/分钟)</string>
     <string name="bp_test_done">完成</string>
     <string name="bp_test_start_time">开始时间:%s</string>
+    <string name="get_enso_mode">获取enso模式</string>
 
 </resources>

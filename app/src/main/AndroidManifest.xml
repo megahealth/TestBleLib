@@ -27,7 +27,7 @@
         </activity>
 
         <service android:name=".dfu.DfuService" />
-
+        <activity android:name=".ui.SimpleMainActivity"/>
         <activity android:name=".dfu.DfuNotificationActivity" />
         <activity android:name=".reports.ReportListActivity" />
         <activity android:name=".reports.ReportDetailBpActivity" />

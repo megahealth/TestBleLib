@@ -284,36 +284,6 @@
                         android:layout_height="wrap_content">
 
                         <Button
-                            android:id="@+id/btn_choose_file"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_choose_file" />
-
-                        <Button
-                            android:id="@+id/btn_start_dfu"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_start_dfu" />
-
-                        <Button
-                            android:id="@+id/btn_open_global_live"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_open_global_live_pipe" />
-
-                        <Button
-                            android:id="@+id/btn_live_on"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_open_live" />
-                        <!--                        <Button-->
-                        <!--                            android:text="@string/label_close_live"-->
-                        <!--                            android:id="@+id/btn_live_off"-->
-                        <!--                            android:textColor="@color/colorPrimary"-->
-                        <!--                            android:layout_width="wrap_content"-->
-                        <!--                            android:layout_height="wrap_content" />-->
-
-                        <Button
                             android:id="@+id/btn_monitor_on"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -321,38 +291,10 @@
                             android:textColor="@color/colorAccent" />
 
                         <Button
-                            android:id="@+id/btn_sport_on"
+                            android:id="@+id/btn_enable_enso_mode"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/label_enable_sport"
-                            android:textColor="@color/colorAccent" />
-
-                        <Button
-                            android:id="@+id/btn_bp_on"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_enable_bp"
-                            android:textColor="@color/colorAccent" />
-
-                        <Button
-                            android:id="@+id/btn_bp_off"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_disable_bp"
-                            android:textColor="@color/colorAccent" />
-
-                        <Button
-                            android:id="@+id/btn_hrv_on"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_enable_hrv"
-                            android:textColor="@color/colorAccent" />
-
-                        <Button
-                            android:id="@+id/btn_pulse_on"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_enable_pulse"
+                            android:text="enable enso mode"
                             android:textColor="@color/colorAccent" />
 
                         <Button
@@ -369,30 +311,6 @@
                             android:text="@string/label_sync" />
 
                         <Button
-                            android:id="@+id/btn_sync_data_not_clean"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_sync_without_clear" />
-
-                        <Button
-                            android:id="@+id/btn_sync_hrv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_sync_hrv" />
-
-                        <Button
-                            android:id="@+id/btn_sync_daily_data"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_sync_daily" />
-
-                        <Button
-                            android:id="@+id/btn_sync_glu_data"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_sync_glu" />
-
-                        <Button
                             android:id="@+id/btn_get_rawdata"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -405,47 +323,17 @@
                             android:text="@string/label_parse" />
 
                         <Button
-                            android:id="@+id/btn_parse_sport"
+                            android:id="@+id/btn_open_global_live"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/label_parse_sport" />
+                            android:text="@string/label_open_global_live_pipe" />
 
                         <Button
-                            android:id="@+id/btn_parse_hrv"
+                            android:id="@+id/btn_get_enso_mode"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/label_parse_hrv" />
-
-                        <Button
-                            android:id="@+id/btn_parse_daily"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/label_parse_daily" />
-
-                        <Button
-                            android:id="@+id/btn_rawdata_on"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pulse_rawdata_on" />
-
-                        <Button
-                            android:id="@+id/btn_rawdata_off"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/close_rawdata" />
-
-                    </LinearLayout>
-
-                </HorizontalScrollView>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                            android:text="@string/get_enso_mode"
+                            android:textColor="@color/colorAccent" />
 
                         <Button
                             android:id="@+id/btn_get_mode"
@@ -453,92 +341,14 @@
                             android:layout_height="wrap_content"
                             android:text="@string/get_mode" />
 
-                        <Button
-                            android:id="@+id/btn_get_crash_log"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="CrashLog" />
-
-                        <Button
-                            android:id="@+id/btn_turn_on_glu"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/turn_on_glu" />
-
-                        <Button
-                            android:id="@+id/btn_turn_off_glu"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/turn_off_glu" />
-
-                        <Button
-                            android:id="@+id/btn_period_setting"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/period_monitor_setting" />
-
-                        <Button
-                            android:id="@+id/btn_period_start_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/period_monitor_start_time" />
-
-                        <TextView
-                            android:id="@+id/tv_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--:--" />
-
-                        <Button
-                            android:id="@+id/btn_enable_period"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/enable_period_monitor" />
-
-                        <Button
-                            android:id="@+id/btn_disable_period"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/disable_period_monitor" />
-
-                        <Spinner
-                            android:id="@+id/spinner_period_monitor_duration"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:entries="@array/spinner_items_period_monitor_duration"
-                            android:prompt="@string/period_monitor_duration"
-                            android:spinnerMode="dialog" />
-
-                        <androidx.appcompat.widget.SwitchCompat
-                            android:id="@+id/sw_loop"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:text="@string/period_monitor_loop" />
                     </LinearLayout>
+
                 </HorizontalScrollView>
-
-                <TextView
-                    android:id="@+id/tv_dfu_path"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/tv_dfu_progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dfu" />
 
             </LinearLayout>
         </LinearLayout>
 
     </io.zjw.testblelib.MyScrollView>
-
-    <Button
-        android:id="@+id/btn_sample_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Simple Activity" />
 
 
     <LinearLayout

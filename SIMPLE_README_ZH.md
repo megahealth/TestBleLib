@@ -4,7 +4,7 @@
 - [EN](./README.md) | 中文
 
 ## sdk文件
- - [arr库 v1.6.27](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.27.aar)
+ - [arr库 v1.6.26](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.26.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
@@ -16,22 +16,6 @@
 |1.6.23|修复收取监测报告的问题|2023/11/15|
 |1.6.23|加快收取监测报告速度|2023/10/17|
 |1.6.21|添加示例展示如何绘制实时ECG图|2023/10/11|
-|1.6.21|监测模式的实时数据中增加输出acc值|2023/08/02|
-|1.6.20|增加HRV开关|2023/04/27|
-|1.6.20|解析rawdata时添加保护|2023/03/22|
-|1.6.20|支持解析脉诊rawdata|2023/03/15|
-|1.6.19|支持C11H、P11G、P11H的戒指|2023/02/27|
-|1.6.18|添加示例展示如何绘制ECG图|2022/05/23|
-|1.6.18|修复demo在Android9及以上无法升级固件的问题|2022/03/04|
-|1.6.18|修复在Android Q或以上无法保存蓝牙交互日志的问题|2022/01/17|
-|1.6.17|1.修复短时间调用api无响应的问题(毫秒级)<br/>2.Demo更新mock_daily.bin|2021/12/02|
-|1.6.16|1.更新后处理算法(V11449)<br/>2.支持收取血压监测数据<br/>3.添加解析血压数据的api<br/>4.支持收取HRV数据<br/>5.添加支持解析HRV数据的api<br/>|2021/11/26|
-|1.6.15|1.MegaBleCallback增加解析rawdata的回调<br/>2.README新增如何获取温度的说明<br/>(该版本不牵扯算法更新，未使用请忽略该版本)|2021/10/26|
-|1.6.14|修复SPO2呼吸事件解析出现异常的问题<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/10/18|
-|1.6.14|MegaSpoPrBean增加SPO2呼吸事件数据字段<br/>(请更新.so库，如果未使用该字段请忽略该版本)|2021/09/08|
-|1.6.13|1.支持ZG28<br/>2.MegaDailyBean增加温度字段(temp)<br/>(如果不是ZG28指环可忽略该字段)<br/>3.更新后处理算法(V11141)|2021/08/24|
-|1.6.12|增加获取crash log的API|2021/06/18|
-|1.6.11|1.更新后处理算法(V10974)<br/>2.MegaSpoPrBean新增解析字段 |2021/06/09|
 
 ## 作用
 提供与兆观公司智能指环蓝牙交互的功能
