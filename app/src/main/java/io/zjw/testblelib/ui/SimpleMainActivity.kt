@@ -449,7 +449,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(
-                    this@SimpleMainActivity.currentFocus.windowToken,
+                    this@SimpleMainActivity.currentFocus!!.windowToken,
                     0
                 )
             }
@@ -717,7 +717,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
-        override fun onFail(p0: String?) {
+        override fun onFail(p0: String) {
             Log.d(TAG, p0)
             runOnUiThread {
                 Toast.makeText(this@SimpleMainActivity, "auth failed", Toast.LENGTH_SHORT).show()

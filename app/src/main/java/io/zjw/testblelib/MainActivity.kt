@@ -696,7 +696,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(
-                    this@MainActivity.currentFocus.windowToken,
+                    this@MainActivity.currentFocus!!.windowToken,
                     0
                 )
             }
@@ -928,7 +928,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item!!.itemId == R.id.menu_info) {
             infoDialog.show()
         } else if (item.itemId == R.id.menu_chart) {
@@ -975,7 +975,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUESTCODE_CHOOSE_FILE) {
-                val list = data!!.getStringArrayListExtra(Constant.RESULT_INFO)
+                val list = data!!.getStringArrayListExtra(Constant.RESULT_INFO) ?: return
                 tv_dfu_path!!.text = list[0]
                 mDfuPath = list[0]
             }
@@ -1098,11 +1098,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
     private fun checkAppPermission() {
         mRequestPermissionHandler!!.requestPermission(this,
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ),
+            if (android.os.Build.VERSION.SDK_INT >= 31) {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                )
+            } else {
+                arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            },
             REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS,
             object : RequestPermissionHandler.RequestPermissionListener {
                 override fun onSuccess() {
@@ -1140,7 +1150,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
         }
 
-        override fun onFail(p0: String?) {
+        override fun onFail(p0: String) {
             Log.d(TAG, p0)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()
@@ -1156,7 +1166,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
         }
 
-        override fun onFail(p0: String?) {
+        override fun onFail(p0: String) {
             Log.d(TAG, p0)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()
@@ -1172,7 +1182,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
         }
 
-        override fun onFail(p0: String?) {
+        override fun onFail(p0: String) {
             Log.d(TAG, p0)
             runOnUiThread {
                 Toast.makeText(this@MainActivity, "auth failed", Toast.LENGTH_SHORT).show()

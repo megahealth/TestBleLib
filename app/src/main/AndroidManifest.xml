@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -17,8 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".reports.RealtimeBpActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".reports.RealtimeBpActivity" android:exported="false"></activity>
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,11 +28,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".dfu.DfuService" />
-        <activity android:name=".ui.SimpleMainActivity"/>
-        <activity android:name=".dfu.DfuNotificationActivity" />
-        <activity android:name=".reports.ReportListActivity" />
-        <activity android:name=".reports.ReportDetailBpActivity" />
+        <service android:name=".dfu.DfuService" android:exported="true"/>
+        <activity android:name=".ui.SimpleMainActivity" android:exported="false"/>
+        <activity android:name=".dfu.DfuNotificationActivity" android:exported="false"/>
+        <activity android:name=".reports.ReportListActivity" android:exported="false"/>
+        <activity android:name=".reports.ReportDetailBpActivity" android:exported="false"/>
     </application>
 
 </manifest>
