@@ -12,10 +12,12 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -37,8 +39,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.leon.lfilepickerlibrary.LFilePicker
-import com.leon.lfilepickerlibrary.utils.Constant
 import io.mega.megablelib.*
 import io.mega.megablelib.enums.GLUMode
 import io.mega.megablelib.enums.MegaBleBattery
@@ -64,6 +64,7 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper
 import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -148,8 +149,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     private val mScannedDevices: MutableList<ScannedDevice> = ArrayList()
     private var isParsing = false
 
+
     // sdk ble
-    private var mDfuPath: String? = null
+    private var mUri: Uri? = null
     private var megaBleClient: MegaBleClient? = null
     private var megaBleDevice: MegaBleDevice? = null
     private lateinit var infoDialog: AlertDialog
@@ -403,7 +405,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             val starter = DfuServiceInitiator(megaBleDevice!!.mac)
                 .setDeviceName(megaBleDevice!!.name) // onDfuBleConnectionChange里device赋值的原因，这里要用
                 .setKeepBond(false)
-                .setZip(mDfuPath!!)
+                .setZip(mUri!!)
             starter.setDisableNotification(true) // 禁止notification的交互
             starter.start(this@MainActivity, DfuService::class.java)
         }
@@ -758,16 +760,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 }
                 scanLeDevices()
             }
-            R.id.btn_choose_file -> LFilePicker()
-                .withActivity(this)
-                .withTitle(resources.getString(R.string.choose_file))
-                .withRequestCode(REQUESTCODE_CHOOSE_FILE)
-                .withFileFilter(arrayOf(".zip"))
-                .withMutilyMode(false)
-                .withNotFoundBooks(resources.getString(R.string.not_choose))
-                .start()
+            R.id.btn_choose_file -> {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent.type = "application/zip" // 选择 .zip 文件
+
+                startActivityForResult(intent, REQUESTCODE_CHOOSE_FILE)
+            }
             R.id.btn_start_dfu -> {
-                if (mDfuPath == null) {
+                if (mUri == null) {
                     Toast.makeText(this, R.string.not_choose_tip, Toast.LENGTH_SHORT).show()
                     return
                 }
@@ -974,16 +975,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUESTCODE_CHOOSE_FILE) {
-                val list = data!!.getStringArrayListExtra(Constant.RESULT_INFO) ?: return
-                tv_dfu_path!!.text = list[0]
-                mDfuPath = list[0]
+            if (requestCode == REQUESTCODE_CHOOSE_FILE){
+                mUri = data?.data
+                mUri?.run {
+                    tv_dfu_path!!.text = "${getFileName(this)}"
+                }
             }
         } else if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 scanLeDevices()
             }
         }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var fileName: String? = null
+        if (uri.scheme == "content") {
+            // 查询内容提供者，获取文件名
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    fileName = cursor.getString(nameIndex)
+                }
+            }
+        } else if (uri.scheme == "file") {
+            // 如果是 file:// URI，直接获取文件名
+            fileName = File(uri.path!!).name
+        }
+        return fileName
     }
 
     override fun onRequestPermissionsResult(
