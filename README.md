@@ -5,7 +5,7 @@ name: megablelibopen
 - [Simple Document](./SIMPLE_README.md)
 
 ## Files
- - [arr v1.6.27](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.27.aar)
+ - [arr v1.6.28](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.28.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
  - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
 
