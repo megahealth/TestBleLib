@@ -74,6 +74,7 @@ client.disableRawdata // Turn off rawdata
 client.enableV2HRV(true) //Turn on HRV
 client.enableV2HRV(false) //Turn off HRV
 client.syncData() // Sync monitor data
+client.syncDataWithoutClearData() //Sync monitor data without clearing ring data.
 client.syncDailyData() // Sync daily step data
 client.syncHrvData() // Sync HRV data
 client.getRawData() //Get rawdata
