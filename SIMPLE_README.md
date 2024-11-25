@@ -140,6 +140,7 @@ client = new MegaBleBuilder()
 client.enableV2ModeSpoMonitor(true); // Turn on SPO2Monitor(Sleep SPO2Monitor) mode
 client.enableV2ModeDaily(true); // Turn off liveSPO2/sport/SPO2Monitor
 client.syncData() // Sync monitor data
+client.syncDataWithoutClearData() //Sync monitor data without clearing ring data.
 client.parseSpoPr(bytes, callback) // parse SPO2Monitor data
 client.toggleLive(true); // Turn on/off the global real-time channel.Compatible：liveSPO2/sport/SPO2Monitor/pulse
 client.getV2Mode(); // Get current mode.
