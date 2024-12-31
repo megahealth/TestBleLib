@@ -237,6 +237,9 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         override fun onEnsoModeReceived(enable: Boolean) {
             super.onEnsoModeReceived(enable)
             Log.d(TAG, "onEnsoModeReceived:$enable")
+            runOnUiThread{
+                Toast.makeText(this@SimpleMainActivity, "Enso Mode:${if(enable) "on" else "off"}", Toast.LENGTH_LONG).show()
+            }
         }
 
         // 重要

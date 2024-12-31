@@ -7,11 +7,16 @@ name: megablelibopen
 ## Files
  - [arr v1.6.28](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.28.aar)
  - [.so v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.28](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
 |Version|Description|Date|
 |:-:|-|:-:|
+|1.6.28|Support 6.0 ring real-time rawdata and update SDK authorization matching rules|2024/11/18|
+|1.6.27|Set and get Enso mode, update DFU library version, add protection for the scheduled tasks, and add a simplified page|2024/09/11|
+|1.6.26|Optimize getting rawdata records and add a function to sync data without deleting it|2024/04/26|
+|1.6.25|Cache SDK authorization credentials|2024/02/05|
+|1.6.24|Add a function to get rawdata records|2024/01/30|
 |1.6.23|Fix the problem of collecting monitoring reports|2023/11/15|
 |1.6.23|Sync monitoring reports faster|2023/10/17|
 |1.6.21|Add an example to show how to draw Real-time ECG diagram|2023/10/11|

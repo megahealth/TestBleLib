@@ -6,14 +6,18 @@
 ## sdk文件
  - [arr库 v1.6.28](https://github.com/megahealth/TestBleLib/blob/master/megablelibopen/megablelibopen-1.6.28.aar)
  - [.so库 v11449](https://github.com/megahealth/TestBleLib/tree/master/app/src/main/jniLibs)
- - [demo v1.0.22](https://github.com/megahealth/TestBleLib)
+ - [demo v1.0.28](https://github.com/megahealth/TestBleLib)
 
 建议克隆demo后，arr库和.so库从demo中取出使用
 
 ## 更新日志
 |版本|说明|时间|
 |:-:|-|:-:|
-|1.6.23|修复收取监测报告的问题|2023/11/15|
+|1.6.28|支持6.0指环实时rawdata，更新SDK授权匹配规则|2024/11/18|
+|1.6.27|设置和获取enso模式，更新DFU库版本，给周期任务增加保护，增加简版页面|2024/09/11|
+|1.6.26|优化获取rawdata数据，新增同步监测数据后不删除数据方法|2024/04/26|
+|1.6.25|缓存SDK授权凭证|2024/02/05|
+|1.6.24|新增获取rawdata记录|2024/01/30|
 |1.6.23|加快收取监测报告速度|2023/10/17|
 |1.6.21|添加示例展示如何绘制实时ECG图|2023/10/11|
 |1.6.21|监测模式的实时数据中增加输出acc值|2023/08/02|
