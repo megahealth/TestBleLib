@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-android-extensions'
+//    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
 }
 
@@ -28,6 +28,10 @@ android {
     lintOptions {
         abortOnError false
     }
+    buildFeatures {
+        viewBinding true  // 确保这里是 true
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -45,8 +49,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     // dfu lib. higher dfu lib may not work, use this one
 //    implementation 'no.nordicsemi.android:dfu:1.8.1'
-    implementation 'no.nordicsemi.android:dfu:2.0.2'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.30"
+    implementation 'no.nordicsemi.android:dfu:2.4.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"
     implementation project(path: ':megablelibopen')
     // MPAndroidChart for draw charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'

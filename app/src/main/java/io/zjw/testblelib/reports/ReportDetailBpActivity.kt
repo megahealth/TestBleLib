@@ -9,9 +9,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import io.zjw.testblelib.R
+import io.zjw.testblelib.databinding.ActivityReportDetailBpBinding
 import io.zjw.testblelib.db.DBInstance
-import kotlinx.android.synthetic.main.activity_report_detail_bp.*
 import java.util.*
 
 /**
@@ -24,27 +23,30 @@ class ReportDetailBpActivity : AppCompatActivity() {
     private lateinit var yAxis: YAxis
     private lateinit var xAxis: XAxis
 
+    private lateinit var binding: ActivityReportDetailBpBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_report_detail_bp)
-        setSupportActionBar(toolbar)
+        binding = ActivityReportDetailBpBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             finish()
         }
 
         val _id = intent.getIntExtra("_id", -1)
         Log.i("ReportDetailBpActivity", "_id:--->$_id")
         val entity = DBInstance.INSTANCE.loadReportById(_id)
-        bp_chart.apply {
+        binding.bpChart.apply {
             setTouchEnabled(false)
             axisRight.setDrawLabels(false)
             axisRight.setDrawGridLines(false)
             legend.isEnabled = false
             description.isEnabled = false
         }
-        yAxis = bp_chart.axisLeft
-        xAxis = bp_chart.xAxis
+        yAxis = binding.bpChart.axisLeft
+        xAxis = binding.bpChart.xAxis
         yAxis.apply {
             setDrawLabels(false)
             setLabelCount(7, true)
@@ -70,11 +72,11 @@ class ReportDetailBpActivity : AppCompatActivity() {
             }
         }
         entity?.let {
-            tv_sbp_value.text = String.format("%.1f", it.SBP)
-            tv_dbp_value.text = String.format("%.1f", it.DBP)
-            tv_pr_value.text = "${it.pr}"
+            binding.tvSbpValue.text = String.format("%.1f", it.SBP)
+            binding.tvDbpValue.text = String.format("%.1f", it.DBP)
+            binding.tvPrValue.text = "${it.pr}"
         }
         val lineData = LineData(lineDataSet)
-        bp_chart.data = lineData
+        binding.bpChart.data = lineData
     }
 }

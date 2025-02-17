@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.zjw.testblelib.R
+import io.zjw.testblelib.databinding.ActivityReportListBinding
 import io.zjw.testblelib.db.DBInstance
 import io.zjw.testblelib.db.DataEntity
-import kotlinx.android.synthetic.main.activity_report_list.*
 
 /**
  * Copyright © 2019 All Rights Reserved By MegaHealth.
@@ -22,18 +22,21 @@ import kotlinx.android.synthetic.main.activity_report_list.*
  * Description:
  */
 class ReportListActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityReportListBinding
     private lateinit var adapter: ReportAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_report_list)
-        setSupportActionBar(toolbar)
+        binding = ActivityReportListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             finish()
         }
         adapter = ReportAdapter()
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = adapter
+        binding.list.layoutManager = LinearLayoutManager(this)
+        binding.list.adapter = adapter
         val d = DBInstance.INSTANCE.getLatestReport()
         if (d.isNullOrEmpty()) {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show()

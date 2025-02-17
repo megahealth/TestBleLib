@@ -51,13 +51,13 @@ import io.mega.megableparse.ParsedHRVBean
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.zjw.testblelib.bean.BpDataEvent
+import io.zjw.testblelib.databinding.ActivityMainBinding
 import io.zjw.testblelib.db.DBInstance
 import io.zjw.testblelib.db.DataEntity
 import io.zjw.testblelib.dfu.DfuService
 import io.zjw.testblelib.reports.RealtimeBpActivity
 import io.zjw.testblelib.reports.ReportListActivity
 import io.zjw.testblelib.ui.SimpleMainActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import no.nordicsemi.android.dfu.DfuProgressListener
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
 import no.nordicsemi.android.dfu.DfuServiceInitiator
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 currentPart,
                 partsTotal
             )
-            tv_dfu_progress!!.text = percent.toString()
+            binding.tvDfuProgress!!.text = percent.toString()
         }
 
         override fun onDfuCompleted(deviceAddress: String) {
@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
             val token =
                 UtilsSharedPreference.get(this@MainActivity, UtilsSharedPreference.KEY_TOKEN)
-            runOnUiThread { et_token!!.setText(token) }
+            runOnUiThread { binding.etToken!!.setText(token) }
             if (TextUtils.isEmpty(token)) {
 //                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
                 // 下面的方法更易用
@@ -328,13 +328,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         // get token when bind success, next time start with this token
         override fun onTokenReceived(token: String) {
             Log.d(TAG, "onTokenReceived: $token")
-            runOnUiThread { et_token!!.setText(token) }
+            runOnUiThread { binding.etToken!!.setText(token) }
             UtilsSharedPreference.put(this@MainActivity, UtilsSharedPreference.KEY_TOKEN, token)
         }
 
         override fun onRssiReceived(rssi: Int) {
             Log.d(TAG, "onRssiReceived: $rssi")
-            runOnUiThread { tv_rssi!!.text = rssi.toString() }
+            runOnUiThread { binding.tvRssi!!.text = rssi.toString() }
         }
 
         // 重要
@@ -348,8 +348,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 // lowPower(3, "lowPower");
                 // error(4, "error");
                 // shutdown(5, "shutdown");
-                tv_batt!!.text = value.toString()
-                tv_batt_status!!.text = MegaBleBattery.getDescription(status)
+                binding.tvBatt!!.text = value.toString()
+                binding.tvBattStatus!!.text = MegaBleBattery.getDescription(status)
                 when (status) {
                     MegaBleBattery.charging.ordinal -> { /* todo */
                     }
@@ -425,7 +425,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
         override fun onSyncingDataProgress(progress: Int) {
             Log.d(TAG, "onSyncingDataProgress: $progress")
-            runOnUiThread { tv_sync_progress.text = progress.toString() }
+            runOnUiThread { binding.tvSyncProgress.text = progress.toString() }
         }
 
         override fun onSyncMonitorDataComplete(
@@ -591,10 +591,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
     }
 
     private var bpCfg: MegaRawdataConfig? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         mRequestPermissionHandler = RequestPermissionHandler()
         checkAppPermission()
         initView()
@@ -646,36 +648,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        setSupportActionBar(toolbar)
-        btn_scan.setOnClickListener(this)
-        recycler_view.layoutManager =
+        setSupportActionBar(binding.toolbar)
+        binding.btnScan.setOnClickListener(this)
+        binding.recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        LinearSnapHelper().attachToRecyclerView(recycler_view)
+        LinearSnapHelper().attachToRecyclerView(binding.recyclerView)
         mScannedAdapter = ScannedAdapter(mScannedDevices)
-        recycler_view.adapter = mScannedAdapter
-        btn_choose_file.setOnClickListener(this)
-        btn_start_dfu.setOnClickListener(this)
-        btn_live_on.setOnClickListener(this)
-        btn_monitor_on.setOnClickListener(this)
-        btn_sport_on.setOnClickListener(this)
-        btn_pulse_on.setOnClickListener(this)
-        btn_monitor_off.setOnClickListener(this)
-        btn_sync_data.setOnClickListener(this)
-        btn_sync_data_not_clean.setOnClickListener(this)
-        btn_sync_daily_data.setOnClickListener(this)
-        tv_clear.setOnClickListener(this)
-        btn_open_global_live.setOnClickListener(this)
-        btn_parse.setOnClickListener(this)
-        btn_parse_sport.setOnClickListener(this)
-        btn_parse_daily.setOnClickListener(this)
-        btn_rawdata_on.setOnClickListener(this)
-        btn_rawdata_off.setOnClickListener(this)
-        btn_sample_view.setOnClickListener(this)
+        binding.recyclerView.adapter = mScannedAdapter
+        binding.btnChooseFile.setOnClickListener(this)
+        binding.btnStartDfu.setOnClickListener(this)
+        binding.btnLiveOn.setOnClickListener(this)
+        binding.btnMonitorOn.setOnClickListener(this)
+        binding.btnSportOn.setOnClickListener(this)
+        binding.btnPulseOn.setOnClickListener(this)
+        binding.btnMonitorOff.setOnClickListener(this)
+        binding.btnSyncData.setOnClickListener(this)
+        binding.btnSyncDataNotClean.setOnClickListener(this)
+        binding.btnSyncDailyData.setOnClickListener(this)
+        binding.tvClear.setOnClickListener(this)
+        binding.btnOpenGlobalLive.setOnClickListener(this)
+        binding.btnParse.setOnClickListener(this)
+        binding.btnParseSport.setOnClickListener(this)
+        binding.btnParseDaily.setOnClickListener(this)
+        binding.btnRawdataOn.setOnClickListener(this)
+        binding.btnRawdataOff.setOnClickListener(this)
+        binding.btnSampleView.setOnClickListener(this)
         // get token form shardPreference
-        et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
-        et_token.addTextChangedListener(object : TextWatcher {
+        binding.etToken.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
+        binding.etToken.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                if (s != null) tv_clear.visibility = View.VISIBLE
+                if (s != null) binding.tvClear.visibility = View.VISIBLE
             }
 
             override fun onTextChanged(
@@ -688,13 +690,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
 
             override fun afterTextChanged(s: Editable) {
-                if (s.isEmpty()) tv_clear.visibility = View.INVISIBLE
+                if (s.isEmpty()) binding.tvClear.visibility = View.INVISIBLE
             }
         })
         findViewById<View>(android.R.id.content).setOnTouchListener { _, _ ->
             if (this@MainActivity.currentFocus != null) {
-                tv_clear.visibility = View.INVISIBLE
-                et_token.clearFocus()
+                binding.tvClear.visibility = View.INVISIBLE
+                binding.etToken.clearFocus()
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(
@@ -704,22 +706,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             }
             false
         }
-        btn_enable_period.setOnClickListener(this)
-        btn_disable_period.setOnClickListener(this)
-        btn_period_start_time.setOnClickListener(this)
-        btn_period_setting.setOnClickListener(this)
-        btn_sync_glu_data.setOnClickListener(this)
-        btn_get_mode.setOnClickListener(this)
-        btn_turn_on_glu.setOnClickListener(this)
-        btn_turn_off_glu.setOnClickListener(this)
+        binding.btnEnablePeriod.setOnClickListener(this)
+        binding.btnDisablePeriod.setOnClickListener(this)
+        binding.btnPeriodStartTime.setOnClickListener(this)
+        binding.btnPeriodSetting.setOnClickListener(this)
+        binding.btnSyncGluData.setOnClickListener(this)
+        binding.btnGetMode.setOnClickListener(this)
+        binding.btnTurnOnGlu.setOnClickListener(this)
+        binding.btnTurnOffGlu.setOnClickListener(this)
         chooseTimeDialog = ChooseTimeDialog(this, this)
-        btn_get_crash_log.setOnClickListener(this)
-        btn_bp_on.setOnClickListener(this)
-        btn_bp_off.setOnClickListener(this)
-        btn_parse_hrv.setOnClickListener(this)
-        btn_sync_hrv.setOnClickListener(this)
-        btn_hrv_on.setOnClickListener(this)
-        btn_get_rawdata.setOnClickListener(this)
+        binding.btnGetCrashLog.setOnClickListener(this)
+        binding.btnBpOn.setOnClickListener(this)
+        binding.btnBpOff.setOnClickListener(this)
+        binding.btnParseHrv.setOnClickListener(this)
+        binding.btnSyncHrv.setOnClickListener(this)
+        binding.btnHrvOn.setOnClickListener(this)
+        binding.btnGetRawdata.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -798,7 +800,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             R.id.btn_sync_daily_data -> megaBleClient!!.syncDailyData()
             R.id.btn_get_rawdata -> megaBleClient!!.getRawData()
             R.id.tv_clear -> {
-                et_token!!.text = null
+                binding.etToken!!.text = null
                 UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)
             }
             // 解析血氧
@@ -857,7 +859,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                         .show()
                     return
                 }
-                var selectDurationIndex = spinner_period_monitor_duration.selectedItemPosition
+                var selectDurationIndex = binding.spinnerPeriodMonitorDuration.selectedItemPosition
                 var monitorDuration = when (selectDurationIndex) {
                     1 -> 3600
                     2 -> 3600 * 5
@@ -870,11 +872,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
                 var timeLeft = ((periodTime - currentTime) / 1000).toInt()
                 Log.i(
                     TAG,
-                    "monitorDuration:$monitorDuration isLoop:${sw_loop.isChecked} timeLeft:$timeLeft"
+                    "monitorDuration:$monitorDuration isLoop:${binding.swLoop.isChecked} timeLeft:$timeLeft"
                 )
                 megaBleClient?.enableV2PeriodMonitor(
                     true,
-                    sw_loop.isChecked,
+                    binding.swLoop.isChecked,
                     monitorDuration,
                     timeLeft
                 )
@@ -957,10 +959,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
         }
         mScannedDevices.clear()
         mScannedAdapter!!.notifyDataSetChanged()
-        btn_scan!!.isClickable = false
+        binding.btnScan!!.isClickable = false
         Observable.timer(SCAN_PERIOD, TimeUnit.SECONDS).subscribe { aLong: Long? ->
             mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
-            btn_scan!!.isClickable = true
+            binding.btnScan!!.isClickable = true
         }
         mBluetoothAdapter!!.startLeScan(mLeScanCallback)
         Observable.interval(1, TimeUnit.SECONDS)
@@ -978,7 +980,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
             if (requestCode == REQUESTCODE_CHOOSE_FILE){
                 mUri = data?.data
                 mUri?.run {
-                    tv_dfu_path!!.text = "${getFileName(this)}"
+                    binding.tvDfuPath!!.text = "${getFileName(this)}"
                 }
             }
         } else if (requestCode == REQUEST_ENABLE_BT) {
@@ -1069,30 +1071,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
      * set UI
      */
     private fun setMegaDeviceInfo(device: MegaBleDevice) {
-        main_content.visibility = View.VISIBLE
-        tv_name.text = device.name
-        tv_mac.text = device.mac
-        tv_fw_version.text = device.fwVer
-        tv_sn.text = device.sn
-        tv_other_info.text = device.otherInfo
-        tv_device_status.text = "already connected"
+        binding.mainContent.visibility = View.VISIBLE
+        binding.tvName.text = device.name
+        binding.tvMac.text = device.mac
+        binding.tvFwVersion.text = device.fwVer
+        binding.tvSn.text = device.sn
+        binding.tvOtherInfo.text = device.otherInfo
+        binding.tvDeviceStatus.text = "already connected"
     }
 
     private fun clearMegaDeviceInfo() {
-        tv_name.text = null
-        tv_mac.text = null
-        tv_fw_version.text = null
-        tv_sn.text = null
-        tv_device_status.text = "offline"
-        tv_other_info.text = null
-        tv_batt.text = null
-        tv_batt_status.text = null
-        tv_rssi.text = null
-        tv_spo.text = null
-        tv_hr.text = null
-        tv_live_desc.text = null
-        tv_sync_progress.text = null
-        et_token.text = null
+        binding.tvName.text = null
+        binding.tvMac.text = null
+        binding.tvFwVersion.text = null
+        binding.tvSn.text = null
+        binding.tvDeviceStatus.text = "offline"
+        binding.tvOtherInfo.text = null
+        binding.tvBatt.text = null
+        binding.tvBattStatus.text = null
+        binding.tvRssi.text = null
+        binding.tvSpo.text = null
+        binding.tvHr.text = null
+        binding.tvLiveDesc.text = null
+        binding.tvSyncProgress.text = null
+        binding.etToken.text = null
         megaBleDevice = null
     }
 
@@ -1107,11 +1109,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
     private fun <T> updateV2Live(live: T) {
         runOnUiThread {
-            tv_v2_live!!.text = live.toString()
+            binding.tvV2Live!!.text = live.toString()
             // 使用AnimationUtils装载动画配置文件
             val animation = AnimationUtils.loadAnimation(this@MainActivity, R.anim.alpha)
             // 启动动画
-            tv_smile!!.startAnimation(animation)
+            binding.tvSmile!!.startAnimation(animation)
         }
     }
 
@@ -1239,7 +1241,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnChooseTimeList
 
     override fun chooseTime(hour: Int, minute: Int) {
         Log.i(TAG, "$hour:$minute")
-        tv_time.text = "$hour:$minute"
+        binding.tvTime.text = "$hour:$minute"
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.HOUR_OF_DAY, hour)

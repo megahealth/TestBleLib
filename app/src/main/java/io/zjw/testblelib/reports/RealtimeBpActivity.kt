@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import io.mega.megableparse.ParsedBPBean
 import io.zjw.testblelib.R
 import io.zjw.testblelib.bean.BpDataEvent
+import io.zjw.testblelib.databinding.ActivityRealtimeBpBinding
 import io.zjw.testblelib.utils.EcgChatManager
-import kotlinx.android.synthetic.main.activity_realtime_bp.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,45 +31,48 @@ class RealtimeBpActivity : AppCompatActivity() {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 0x01 -> {
-                    tv_start_time.text = String.format(
+                    binding.tvStartTime.text = String.format(
                             getString(R.string.bp_test_start_time),
                             formatTimestampToEnHm(System.currentTimeMillis())
                     )
-                    tv_start_time.visibility = View.VISIBLE
-                    ll_prepare.visibility = View.GONE
-                    tv_finish.visibility = View.GONE
-                    ll_res.visibility = View.GONE
-                    ll_live_data.visibility = View.VISIBLE
-                    chart_view.visibility = View.VISIBLE
-                    tv_duration.text = "00:00"
-                    tv_duration.visibility = View.VISIBLE
-                    tv_test_tip.visibility = View.VISIBLE
+                    binding.tvStartTime.visibility = View.VISIBLE
+                    binding.llPrepare.visibility = View.GONE
+                    binding.tvFinish.visibility = View.GONE
+                    binding.llRes.visibility = View.GONE
+                    binding.llLiveData.visibility = View.VISIBLE
+                    binding.chartView.visibility = View.VISIBLE
+                    binding.tvDuration.text = "00:00"
+                    binding.tvDuration.visibility = View.VISIBLE
+                    binding.tvTestTip.visibility = View.VISIBLE
                 }
                 0x02 -> {
-                    ll_live_data.visibility = View.GONE
-                    tv_duration.visibility = View.GONE
-                    tv_test_tip.visibility = View.GONE
-                    tv_finish.visibility = View.VISIBLE
-                    ll_res.visibility = View.VISIBLE
+                    binding.llLiveData.visibility = View.GONE
+                    binding.tvDuration.visibility = View.GONE
+                    binding.tvTestTip.visibility = View.GONE
+                    binding.tvFinish.visibility = View.VISIBLE
+                    binding.llRes.visibility = View.VISIBLE
                     if (parsedBPBean != null && parsedBPBean!!.flag == 1) {
-                        tv_sbp_value.text =
+                        binding.tvSbpValue.text =
                                 String.format(Locale.getDefault(), "%.1f", parsedBPBean!!.SBP)
-                        tv_dbp_value.text =
+                        binding.tvDbpValue.text =
                                 String.format(Locale.getDefault(), "%.1f", parsedBPBean!!.DBP)
-                        tv_res_pr_value.text = "${parsedBPBean?.pr}"
+                        binding.tvResPrValue.text = "${parsedBPBean?.pr}"
                     } else {
-                        tv_sbp_value.text = "--"
-                        tv_dbp_value.text = "--"
-                        tv_res_pr_value.text = "--"
+                        binding.tvSbpValue.text = "--"
+                        binding.tvDbpValue.text = "--"
+                        binding.tvResPrValue.text = "--"
                     }
                 }
             }
         }
     }
 
+    private lateinit var binding: ActivityRealtimeBpBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_realtime_bp)
+        binding = ActivityRealtimeBpBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViews()
         setListener()
         startTest()
@@ -79,11 +82,11 @@ class RealtimeBpActivity : AppCompatActivity() {
         if (!EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().register(this)
         }
-        EcgChatManager.instance.bindView(chart_view)
+        EcgChatManager.instance.bindView(binding.chartView)
     }
 
     private fun setListener() {
-        tv_next.setOnClickListener {
+        binding.tvNext.setOnClickListener {
             finish()
         }
     }
@@ -93,18 +96,18 @@ class RealtimeBpActivity : AppCompatActivity() {
     }
 
     private fun startTest() {
-        tv_sbp_value.text = ""
-        tv_dbp_value.text = ""
-        tv_pr_value.text = ""
-        tv_duration.text = ""
-        tv_start_time.visibility = View.INVISIBLE
-        tv_finish.visibility = View.GONE
-        chart_view.visibility = View.GONE
-        ll_res.visibility = View.GONE
-        ll_live_data.visibility = View.GONE
-        tv_duration.visibility = View.GONE
-        tv_test_tip.visibility = View.GONE
-        ll_prepare.visibility = View.VISIBLE
+        binding.tvSbpValue.text = ""
+        binding.tvDbpValue.text = ""
+        binding.tvPrValue.text = ""
+        binding.tvDuration.text = ""
+        binding.tvStartTime.visibility = View.INVISIBLE
+        binding.tvFinish.visibility = View.GONE
+        binding.chartView.visibility = View.GONE
+        binding.llRes.visibility = View.GONE
+        binding.llLiveData.visibility = View.GONE
+        binding.tvDuration.visibility = View.GONE
+        binding.tvTestTip.visibility = View.GONE
+        binding.llPrepare.visibility = View.VISIBLE
         EcgChatManager.instance.resetData()
         handler.sendEmptyMessageDelayed(0x01, 10000)
         isParsing = true
@@ -114,8 +117,8 @@ class RealtimeBpActivity : AppCompatActivity() {
     fun onBpDataEventReceived(bpDataEvent: BpDataEvent){
         Log.i("RealtimeBpActivity", bpDataEvent.parsedBPBean.toString())
         parsedBPBean = bpDataEvent.parsedBPBean
-        tv_duration.text = formatDurationToMmSs(bpDataEvent.duration.toLong())
-        if (chart_view.visibility == View.VISIBLE){
+        binding.tvDuration.text = formatDurationToMmSs(bpDataEvent.duration.toLong())
+        if (binding.chartView.visibility == View.VISIBLE){
             EcgChatManager.instance.addDataToList(parsedBPBean!!.chEcg)
         }
         if(parsedBPBean!!.flag == 1){

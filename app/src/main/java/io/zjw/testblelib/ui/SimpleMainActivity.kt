@@ -43,34 +43,7 @@ import io.zjw.testblelib.R
 import io.zjw.testblelib.RequestPermissionHandler
 import io.zjw.testblelib.ScannedDevice
 import io.zjw.testblelib.UtilsSharedPreference
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main_simple.*
-import kotlinx.android.synthetic.main.activity_main_simple.btn_get_mode
-import kotlinx.android.synthetic.main.activity_main_simple.btn_get_rawdata
-import kotlinx.android.synthetic.main.activity_main_simple.btn_monitor_off
-import kotlinx.android.synthetic.main.activity_main_simple.btn_monitor_on
-import kotlinx.android.synthetic.main.activity_main_simple.btn_open_global_live
-import kotlinx.android.synthetic.main.activity_main_simple.btn_parse
-import kotlinx.android.synthetic.main.activity_main_simple.btn_scan
-import kotlinx.android.synthetic.main.activity_main_simple.btn_sync_data
-import kotlinx.android.synthetic.main.activity_main_simple.et_token
-import kotlinx.android.synthetic.main.activity_main_simple.main_content
-import kotlinx.android.synthetic.main.activity_main_simple.recycler_view
-import kotlinx.android.synthetic.main.activity_main_simple.toolbar
-import kotlinx.android.synthetic.main.activity_main_simple.tv_batt
-import kotlinx.android.synthetic.main.activity_main_simple.tv_batt_status
-import kotlinx.android.synthetic.main.activity_main_simple.tv_clear
-import kotlinx.android.synthetic.main.activity_main_simple.tv_device_status
-import kotlinx.android.synthetic.main.activity_main_simple.tv_fw_version
-import kotlinx.android.synthetic.main.activity_main_simple.tv_hr
-import kotlinx.android.synthetic.main.activity_main_simple.tv_live_desc
-import kotlinx.android.synthetic.main.activity_main_simple.tv_mac
-import kotlinx.android.synthetic.main.activity_main_simple.tv_name
-import kotlinx.android.synthetic.main.activity_main_simple.tv_other_info
-import kotlinx.android.synthetic.main.activity_main_simple.tv_rssi
-import kotlinx.android.synthetic.main.activity_main_simple.tv_sn
-import kotlinx.android.synthetic.main.activity_main_simple.tv_spo
-import kotlinx.android.synthetic.main.activity_main_simple.tv_sync_progress
+import io.zjw.testblelib.databinding.ActivityMainSimpleBinding
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
@@ -164,7 +137,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
 
             val token =
                 UtilsSharedPreference.get(this@SimpleMainActivity, UtilsSharedPreference.KEY_TOKEN)
-            runOnUiThread { et_token!!.setText(token) }
+            runOnUiThread { binding.etToken!!.setText(token) }
             if (TextUtils.isEmpty(token)) {
 //                megaBleClient!!.startWithoutToken(userId, megaBleDevice!!.mac)
                 // 下面的方法更易用
@@ -230,7 +203,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         // get token when bind success, next time start with this token
         override fun onTokenReceived(token: String) {
             Log.d(TAG, "onTokenReceived: $token")
-            runOnUiThread { et_token!!.setText(token) }
+            runOnUiThread { binding.etToken!!.setText(token) }
             UtilsSharedPreference.put(this@SimpleMainActivity, UtilsSharedPreference.KEY_TOKEN, token)
         }
 
@@ -253,8 +226,8 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
                 // lowPower(3, "lowPower");
                 // error(4, "error");
                 // shutdown(5, "shutdown");
-                tv_batt!!.text = value.toString()
-                tv_batt_status!!.text = MegaBleBattery.getDescription(status)
+                binding.tvBatt!!.text = value.toString()
+                binding.tvBattStatus!!.text = MegaBleBattery.getDescription(status)
                 when (status) {
                     MegaBleBattery.charging.ordinal -> { /* todo */
                     }
@@ -287,7 +260,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         //progress's range is [1-100].
         override fun onSyncingDataProgress(progress: Int) {
             Log.d(TAG, "onSyncingDataProgress: $progress")
-            runOnUiThread { tv_sync_progress.text = progress.toString() }
+            runOnUiThread { binding.tvSyncProgress.text = progress.toString() }
         }
 
         override fun onSyncMonitorDataComplete(
@@ -362,9 +335,12 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private lateinit var binding: ActivityMainSimpleBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_simple)
+        binding = ActivityMainSimpleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         mRequestPermissionHandler = RequestPermissionHandler()
         checkAppPermission()
         initView()
@@ -412,24 +388,24 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        setSupportActionBar(toolbar)
-        btn_scan.setOnClickListener(this)
-        recycler_view.layoutManager =
+        setSupportActionBar(binding.toolbar)
+        binding.btnScan.setOnClickListener(this)
+        binding.recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        LinearSnapHelper().attachToRecyclerView(recycler_view)
+        LinearSnapHelper().attachToRecyclerView(binding.recyclerView)
         mScannedAdapter = ScannedAdapter(mScannedDevices)
-        recycler_view.adapter = mScannedAdapter
-        btn_monitor_on.setOnClickListener(this)
-        btn_monitor_off.setOnClickListener(this)
-        btn_sync_data.setOnClickListener(this)
-        tv_clear.setOnClickListener(this)
-        btn_open_global_live.setOnClickListener(this)
-        btn_parse.setOnClickListener(this)
+        binding.recyclerView.adapter = mScannedAdapter
+        binding.btnMonitorOn.setOnClickListener(this)
+        binding.btnMonitorOff.setOnClickListener(this)
+        binding.btnSyncData.setOnClickListener(this)
+        binding.tvClear.setOnClickListener(this)
+        binding.btnOpenGlobalLive.setOnClickListener(this)
+        binding.btnParse.setOnClickListener(this)
         // get token form shardPreference
-        et_token.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
-        et_token.addTextChangedListener(object : TextWatcher {
+        binding.etToken.setText(UtilsSharedPreference.get(this, UtilsSharedPreference.KEY_TOKEN))
+        binding.etToken.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                if (s != null) tv_clear.visibility = View.VISIBLE
+                if (s != null) binding.tvClear.visibility = View.VISIBLE
             }
 
             override fun onTextChanged(
@@ -442,13 +418,13 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun afterTextChanged(s: Editable) {
-                if (s.isEmpty()) tv_clear.visibility = View.INVISIBLE
+                if (s.isEmpty()) binding.tvClear.visibility = View.INVISIBLE
             }
         })
         findViewById<View>(android.R.id.content).setOnTouchListener { _, _ ->
             if (this@SimpleMainActivity.currentFocus != null) {
-                tv_clear.visibility = View.INVISIBLE
-                et_token.clearFocus()
+                binding.tvClear.visibility = View.INVISIBLE
+                binding.etToken.clearFocus()
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(
@@ -458,11 +434,11 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
             }
             false
         }
-        btn_get_mode.setOnClickListener(this)
-        btn_enable_enso_mode.setOnClickListener(this)
-        btn_disable_enso_mode.setOnClickListener(this)
-        btn_get_enso_mode.setOnClickListener(this)
-        btn_get_rawdata.setOnClickListener(this)
+        binding.btnGetMode.setOnClickListener(this)
+        binding.btnEnableEnsoMode.setOnClickListener(this)
+        binding.btnDisableEnsoMode.setOnClickListener(this)
+        binding.btnGetEnsoMode.setOnClickListener(this)
+        binding.btnGetRawdata.setOnClickListener(this)
     }
 
     private fun initBle() {
@@ -508,7 +484,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btn_get_rawdata -> megaBleClient!!.getRawData()
             R.id.tv_clear -> {
-                et_token!!.text = null
+                binding.etToken!!.text = null
                 UtilsSharedPreference.remove(this, UtilsSharedPreference.KEY_TOKEN)
             }
             // 解析血氧
@@ -556,10 +532,10 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         }
         mScannedDevices.clear()
         mScannedAdapter!!.notifyDataSetChanged()
-        btn_scan!!.isClickable = false
+        binding.btnScan!!.isClickable = false
         Observable.timer(SCAN_PERIOD, TimeUnit.SECONDS).subscribe { aLong: Long? ->
             mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
-            btn_scan!!.isClickable = true
+            binding.btnScan!!.isClickable = true
         }
         mBluetoothAdapter!!.startLeScan(mLeScanCallback)
         Observable.interval(1, TimeUnit.SECONDS)
@@ -644,30 +620,30 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
      * set UI
      */
     private fun setMegaDeviceInfo(device: MegaBleDevice) {
-        main_content.visibility = View.VISIBLE
-        tv_name.text = device.name
-        tv_mac.text = device.mac
-        tv_fw_version.text = device.fwVer
-        tv_sn.text = device.sn
-        tv_other_info.text = device.otherInfo
-        tv_device_status.text = "already connected"
+        binding.mainContent.visibility = View.VISIBLE
+        binding.tvName.text = device.name
+        binding.tvMac.text = device.mac
+        binding.tvFwVersion.text = device.fwVer
+        binding.tvSn.text = device.sn
+        binding.tvOtherInfo.text = device.otherInfo
+        binding.tvDeviceStatus.text = "already connected"
     }
 
     private fun clearMegaDeviceInfo() {
-        tv_name.text = null
-        tv_mac.text = null
-        tv_fw_version.text = null
-        tv_sn.text = null
-        tv_device_status.text = "offline"
-        tv_other_info.text = null
-        tv_batt.text = null
-        tv_batt_status.text = null
-        tv_rssi.text = null
-        tv_spo.text = null
-        tv_hr.text = null
-        tv_live_desc.text = null
-        tv_sync_progress.text = null
-        et_token.text = null
+        binding.tvName.text = null
+        binding.tvMac.text = null
+        binding.tvFwVersion.text = null
+        binding.tvSn.text = null
+        binding.tvDeviceStatus.text = "offline"
+        binding.tvOtherInfo.text = null
+        binding.tvBatt.text = null
+        binding.tvBattStatus.text = null
+        binding.tvRssi.text = null
+        binding.tvSpo.text = null
+        binding.tvHr.text = null
+        binding.tvLiveDesc.text = null
+        binding.tvSyncProgress.text = null
+        binding.etToken.text = null
         megaBleDevice = null
     }
 
