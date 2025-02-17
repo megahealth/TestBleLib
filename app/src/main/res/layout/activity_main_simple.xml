@@ -298,6 +298,13 @@
                             android:textColor="@color/colorAccent" />
 
                         <Button
+                            android:id="@+id/btn_disable_enso_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="disable enso mode"
+                            android:textColor="@color/colorAccent" />
+
+                        <Button
                             android:id="@+id/btn_monitor_off"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

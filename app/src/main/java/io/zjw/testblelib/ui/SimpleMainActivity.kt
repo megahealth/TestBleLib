@@ -460,6 +460,7 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
         }
         btn_get_mode.setOnClickListener(this)
         btn_enable_enso_mode.setOnClickListener(this)
+        btn_disable_enso_mode.setOnClickListener(this)
         btn_get_enso_mode.setOnClickListener(this)
         btn_get_rawdata.setOnClickListener(this)
     }
@@ -524,6 +525,9 @@ class SimpleMainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_get_mode -> megaBleClient?.getV2Mode()
             R.id.btn_enable_enso_mode -> {
                 megaBleClient?.enableEnsoMode(true)
+            }
+            R.id.btn_disable_enso_mode -> {
+                megaBleClient?.enableEnsoMode(false)
             }
             R.id.btn_get_enso_mode -> {
                 megaBleClient?.getEnsoMode()
