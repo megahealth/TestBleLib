@@ -10,32 +10,33 @@ name: megablelibopen
  - [demo v1.0.28](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
-|Version|Description|Date|
-|:-:|-|:-:|
-|1.6.28|Support 6.0 ring real-time rawdata and update SDK authorization matching rules|2024/11/18|
-|1.6.27|Set and get Enso mode, update DFU library version, add protection for the scheduled tasks, and add a simplified page|2024/09/11|
-|1.6.26|Optimize getting rawdata records and add a function to sync data without deleting it|2024/04/26|
-|1.6.25|Cache SDK authorization credentials|2024/02/05|
-|1.6.24|Add a function to get rawdata records|2024/01/30|
-|1.6.23|Fix the problem of collecting monitoring reports|2023/11/15|
-|1.6.23|Sync monitoring reports faster|2023/10/17|
-|1.6.21|Add an example to show how to draw Real-time ECG diagram|2023/10/11|
-|1.6.21|Add acc value in live data of SPO2Monitor mode|2023/08/02|
-|1.6.20|Add HRV switch|2023/04/27|
-|1.6.20|Add protection when parsing rawdata|2023/03/22|
-|1.6.20|Support parse rawdata for pulse|2023/03/15|
-|1.6.19|Support rings of C11H, P11G, P11H.|2023/02/27|
-|1.6.18|Add an example to show how to draw ECG diagram.|2022/05/23|
-|1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')|2022/03/04|
-|1.6.18|Fix the problem that can't save ble log on Android Q or above|2022/01/17|
-|1.6.17|1.Fix the problem of unresponsive API calls for a short time (in milliseconds)<br/>2.Demo update mock_daily.bin|2021/12/02|
-|1.6.16|1.Upgrade parse algorithm(V11449)<br/>2.Support for collecting blood pressure data<br/>3.Add parsing blood pressure data function<br/>4.Support for syncing hrv data<br/>5.Add parsing HRV data function<br/>|2021/11/26|
-|1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data|2021/10/26|
-|1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)|2021/10/18|
-|1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)|2021/09/08|
-|1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)|2021/08/24|
-|1.6.12|Add get crash log api|2021/06/18|
-|1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields |2021/06/09|
+|Version|Description|    Date    |
+|:-:|-|:----------:|
+|1.6.28|Add null-check protection for Log input parameters to prevent NullPointerException.| 2025/8/11  |
+|1.6.28|Support 6.0 ring real-time rawdata and update SDK authorization matching rules| 2024/11/18 |
+|1.6.27|Set and get Enso mode, update DFU library version, add protection for the scheduled tasks, and add a simplified page| 2024/09/11 |
+|1.6.26|Optimize getting rawdata records and add a function to sync data without deleting it| 2024/04/26 |
+|1.6.25|Cache SDK authorization credentials| 2024/02/05 |
+|1.6.24|Add a function to get rawdata records| 2024/01/30 |
+|1.6.23|Fix the problem of collecting monitoring reports| 2023/11/15 |
+|1.6.23|Sync monitoring reports faster| 2023/10/17 |
+|1.6.21|Add an example to show how to draw Real-time ECG diagram| 2023/10/11 |
+|1.6.21|Add acc value in live data of SPO2Monitor mode| 2023/08/02 |
+|1.6.20|Add HRV switch| 2023/04/27 |
+|1.6.20|Add protection when parsing rawdata| 2023/03/22 |
+|1.6.20|Support parse rawdata for pulse| 2023/03/15 |
+|1.6.19|Support rings of C11H, P11G, P11H.| 2023/02/27 |
+|1.6.18|Add an example to show how to draw ECG diagram.| 2022/05/23 |
+|1.6.18|Fix the problem that the firmware cannot be upgraded on Android 9 and above(Please check 'Tips of upgrading firmware')| 2022/03/04 |
+|1.6.18|Fix the problem that can't save ble log on Android Q or above| 2022/01/17 |
+|1.6.17|1.Fix the problem of unresponsive API calls for a short time (in milliseconds)<br/>2.Demo update mock_daily.bin| 2021/12/02 |
+|1.6.16|1.Upgrade parse algorithm(V11449)<br/>2.Support for collecting blood pressure data<br/>3.Add parsing blood pressure data function<br/>4.Support for syncing hrv data<br/>5.Add parsing HRV data function<br/>| 2021/11/26 |
+|1.6.15|1.MegaBleCallback add callback of parsing rawdata<br/>2.README add how to get temperature data| 2021/10/26 |
+|1.6.14|Fix parsing Spo2 events problem<br/>(Please remember update .so libary)| 2021/10/18 |
+|1.6.14|MegaSpoPrBean add Spo2 events array<br/>(Please remember update .so libary)| 2021/09/08 |
+|1.6.13|1.Support for ZG28<br/>2.MegaDailyBean add temperature<br/>3.Upgrade parse algorithm(V11141)| 2021/08/24 |
+|1.6.12|Add get crash log api| 2021/06/18 |
+|1.6.11|1.Upgrade parse algorithm(V10974)<br/>2.MegaSpoPrBean add parsing fields | 2021/06/09 |
 
 
 ## Quick start
