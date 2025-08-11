@@ -10,9 +10,9 @@ name: megablelibopen
  - [demo v1.0.28](https://github.com/megahealth/TestBleLib)
 
 ## Changelog
-|Version|Description|    Date   |
-|:-:|-|:---------:|
-|1.6.28|Add null-check protection for Log input parameters to prevent NullPointerException.| 2025/8/11 |
+|Version|Description|    Date    |
+|:-:|-|:----------:|
+|1.6.28|Add null-check protection for Log input parameters to prevent NullPointerException.| 2025/08/11 |
 |1.6.28|Support 6.0 ring real-time rawdata and update SDK authorization matching rules| 2024/11/18 |
 |1.6.27|Set and get Enso mode, update DFU library version, add protection for the scheduled tasks, and add a simplified page| 2024/09/11 |
 |1.6.26|Optimize getting rawdata records and add a function to sync data without deleting it| 2024/04/26 |
