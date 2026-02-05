@@ -475,6 +475,10 @@ targetSdkVersion 28
     1.Start of MegaDailyBean need calculate by yourself. start = MegaDailyBean.time-dailyUnit*60
     2.The unit of temp  is ℃ ,temp/10  to get  temperature .
     3.Please control the timing of sync daily data by yourself.
+## How to get monitoring data
+    1.Call client.syncData() to sync data
+    2.onSyncingDataProgress() is invoked to report data synchronization progress. After synchronization is complete, onSyncMonitorDataComplete() is called.The bytes parameter in onSyncMonitorDataComplete() is the monitored data.
+    3.When there is no more data to synchronize, onSyncNoDataOfMonitor() is invoked, indicating that the synchronization process has finished.
 ## How to get temperature in monitoring
     1.Stop monitoring
     2.Sync daily data
